@@ -1,0 +1,42 @@
+Package: edfinr
+Type: Package
+Title: Access Tidy Education Finance Data
+Version: 0.1.0
+Authors@R: c(
+    person(
+      "Alex", "Spurrier",
+      email = "alex.spurrier@bellwether.org",
+      role = c("aut", "cre")
+    ),
+    person(
+      "Krista", "Kaput",
+      role = "aut"
+    ),
+    person(
+      "Michael", "Chrzan",
+      role = "ctb"
+    )
+  )
+Description: Provides easy access to tidy education finance data combining
+    NCES F-33 Survey, Census Bureau Small Area Income Poverty Estimates (SAIPE),
+    and community data from the ACS 5-Year Estimates. The package simplifies
+    downloading, caching, and filtering education finance data by year and state,
+    enabling researchers and analysts to explore K-12 education funding patterns,
+    revenue sources, expenditure categories, and demographic factors across 
+    U.S. school districts.
+License: MIT + file LICENSE
+URL: https://github.com/bellwetherorg/edfinr, https://bellwetherorg.github.io/edfinr/
+BugReports: https://github.com/bellwetherorg/edfinr/issues
+Imports:
+ cli,
+ dplyr,
+ rappdirs,
+ rlang,
+ tibble
+Encoding: UTF-8
+LazyData: true
+RoxygenNote: 7.3.2
+Suggests: 
+    knitr,
+    rmarkdown
+VignetteBuilder: knitr
