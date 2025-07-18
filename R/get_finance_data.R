@@ -4,7 +4,7 @@
 #' NCES F-33 Survey, Census Bureau Small Area Income Poverty Estimates (SAIPE),
 #' and community data from the ACS 5-Year Estimates.
 #'
-#' #' @importFrom rlang .data
+#' @importFrom rlang .data
 #'
 #' @param yr A string specifying the year(s) to retrieve. Can be a single year ("2022"),
 #'           a range ("2020:2022"), or "all" for all available years.
@@ -163,21 +163,6 @@ get_finance_data <- function(yr = "2022", geo = "all", dataset_type = "skinny", 
     data <- tibble::as_tibble(data)
   }
 
-  # if cpi adjustment is requested, we need to get the baseline cpi before filtering
-  baseline_cpi <- NULL
-  if (cpi_adj != "none") {
-    cpi_year <- as.numeric(cpi_adj)
-    
-    # get the cpi value for the baseline year
-    baseline_data <- dplyr::filter(data, .data$year == cpi_year)
-    
-    if (nrow(baseline_data) == 0) {
-      cli::cli_abort("No data available for the specified baseline year {cpi_year}.")
-    }
-    # use the first cpi value as they should all be the same for a given year
-    baseline_cpi <- baseline_data$cpi_sy12[1]
-  }
-
   # process year parameter
   if (yr != "all") {
     if (grepl(":", yr)) {
@@ -198,6 +183,21 @@ get_finance_data <- function(yr = "2022", geo = "all", dataset_type = "skinny", 
     # handle comma-separated list of states
     states <- strsplit(geo, ",")[[1]]
     data <- dplyr::filter(data, .data$state %in% states)
+  }
+  
+  # if cpi adjustment is requested, we need to get the baseline cpi before filtering
+  baseline_cpi <- NULL
+  if (cpi_adj != "none") {
+    cpi_year <- as.numeric(cpi_adj)
+    
+    # get the cpi value for the baseline year
+    baseline_data <- dplyr::filter(data, .data$year == cpi_year)
+    
+    if (nrow(baseline_data) == 0) {
+      cli::cli_abort("No data available for the specified baseline year {cpi_year}.")
+    }
+    # use the first cpi value as they should all be the same for a given year
+    baseline_cpi <- baseline_data$cpi_sy12[1]
   }
   
   # apply cpi adjustment if requested
@@ -239,9 +239,6 @@ get_finance_data <- function(yr = "2022", geo = "all", dataset_type = "skinny", 
     # combine all columns to adjust
     cols_to_adjust <- c(revenue_cols, expenditure_cols, economic_cols)
     
-    # filter to only include columns that exist in the data
-    cols_to_adjust <- cols_to_adjust[cols_to_adjust %in% names(data)]
-    
     # apply cpi adjustment using mutate and across
     data <- data |>
       dplyr::mutate(
@@ -250,7 +247,7 @@ get_finance_data <- function(yr = "2022", geo = "all", dataset_type = "skinny", 
         # apply adjustment to financial columns
         dplyr::across(
           dplyr::all_of(cols_to_adjust),
-          ~ .x * .data$cpi_sy12 / baseline_cpi
+          ~ .x * cpi_adj_index
         )
       )
   }

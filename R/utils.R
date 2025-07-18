@@ -45,7 +45,7 @@ list_variables <- function(dataset_type = "skinny", category = "all") {
       "cong_dist", "state_leaid", "county", "cbsa", "urbanicity",
       "schlev", "lea_type", "lea_type_id",
       
-      # === FULL DATASET ONLY VARIABLES ===
+      # full dataset variables
       "exp_emp_salary", "exp_emp_bene",
       "exp_textbooks", "exp_utilities",
       "exp_tech_supp", "exp_tech_equip",
@@ -241,7 +241,8 @@ get_states <- function() {
     "HI", "ID", "IL", "IN", "IA", "KS", "KY", "LA", "ME", "MD", 
     "MA", "MI", "MN", "MS", "MO", "MT", "NE", "NV", "NH", "NJ", 
     "NM", "NY", "NC", "ND", "OH", "OK", "OR", "PA", "RI", "SC", 
-    "SD", "TN", "TX", "UT", "VT", "VA", "WA", "WV", "WI", "WY", "DC"
+    "SD", "TN", "TX", "UT", "VT", "VA", "WA", "WV", "WI", "WY", 
+    "DC"
   )
   
   return(states)

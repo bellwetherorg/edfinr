@@ -23,6 +23,7 @@ navbar:
       text: Articles
       menu:
       - text: Basic usage of edfinr
+      href: articles/basic-usage.html
     github:
       icon: fa-github fa-lg
       href: https://github.com/bellwetherorg/edfinr

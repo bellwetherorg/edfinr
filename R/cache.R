@@ -4,7 +4,7 @@
 #' @keywords internal
 #'
 cache_path <- function() {
-  cache_dir <- rappdirs::user_cache_dir("devedfinr")
+  cache_dir <- rappdirs::user_cache_dir("edfinr")
   if (!dir.exists(cache_dir)) {
     dir.create(cache_dir, recursive = TRUE)
   }

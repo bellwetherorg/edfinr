@@ -45,9 +45,6 @@ This function downloads tidy education finance data using data from the
 NCES F-33 Survey, Census Bureau Small Area Income Poverty Estimates (SAIPE),
 and community data from the ACS 5-Year Estimates.
 }
-\details{
-#' @importFrom rlang .data
-}
 \examples{
 \dontrun{
 # get data for all states for 2022
