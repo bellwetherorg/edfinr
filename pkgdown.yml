@@ -3,7 +3,7 @@ pkgdown: 2.1.3
 pkgdown_sha: ~
 articles:
   basic-usage: basic-usage.html
-last_built: 2025-07-16T13:57Z
+last_built: 2025-07-18T13:12Z
 urls:
   reference: https://bellwetherorg.github.io/edfinr/reference
   article: https://bellwetherorg.github.io/edfinr/articles
