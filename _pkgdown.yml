@@ -2,3 +2,27 @@ url: https://bellwetherorg.github.io/edfinr/
 template:
   bootstrap: 5
 
+navbar:
+  structure:
+    left:
+    - home
+    - intro
+    - reference
+    - articles
+    - tutorials
+    - news
+    right: github
+  components:
+    home:
+      icon: fa-home fa-lg
+      href: index.html
+    reference:
+      text: Reference
+      href: reference/index.html
+    articles:
+      text: Articles
+      menu:
+      - text: Basic usage of edfinr
+    github:
+      icon: fa-github fa-lg
+      href: https://github.com/bellwetherorg/edfinr
