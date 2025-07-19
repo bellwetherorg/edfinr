@@ -46,26 +46,25 @@ NCES F-33 Survey, Census Bureau Small Area Income Poverty Estimates (SAIPE),
 and community data from the ACS 5-Year Estimates.
 }
 \examples{
-\dontrun{
-# get data for all states for 2022
-df <- get_finance_data(yr = "2022", geo = "all")
+# Check valid parameters without downloading
+get_states()  # Valid state codes
 
-# get data for Kentucky for 2020-2022
-ky_data <- get_finance_data(yr = "2020:2022", geo = "KY")
+\donttest{
+# These examples require internet access and may take time to download
 
-# get data for multiple states for all available years
-regional_data <- get_finance_data(yr = "all", geo = "IN,KY,OH,TN")
+# get data for Kentucky for 2022
+ky_data <- get_finance_data(yr = "2022", geo = "KY")
+
+# get data for multiple years
+ky_multi <- get_finance_data(yr = "2020:2022", geo = "KY")
 
 # get full dataset with detailed expenditure data
-full_data <- get_finance_data(yr = "2022", geo = "KY", dataset_type = "full")
-
-# use with pipe
-library(dplyr)
-get_finance_data(yr = "2022", geo = "KY") |>
-  select(district_name, rev_total, exp_curr_total) |>
-  arrange(desc(rev_total))
+ky_full <- get_finance_data(yr = "2022", geo = "KY", dataset_type = "full")
   
-# get data adjusted to 2015 dollars
-adjusted_data <- get_finance_data(yr = "2020:2022", geo = "KY", cpi_adj = "2015")
+# get data adjusted to 2022 dollars
+ky_adjusted <- get_finance_data(yr = "2020:2022", geo = "KY", cpi_adj = "2022")
+
+#' # get data for multiple states for all available years
+regional_data <- get_finance_data(yr = "all", geo = "IN,KY,OH,TN")
 }
 }

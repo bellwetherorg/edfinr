@@ -14,16 +14,17 @@
 #' @export
 #'
 #' @examples
-#' \dontrun{
 #' # list all available variables in skinny dataset
 #' vars <- list_variables()
+#' head(vars)
 #' 
 #' # list all variables in full dataset
 #' full_vars <- list_variables(dataset_type = "full")
+#' nrow(full_vars)
 #' 
 #' # list only expenditure variables in full dataset
 #' exp_vars <- list_variables(dataset_type = "full", category = "expenditure")
-#' }
+#' head(exp_vars)
 list_variables <- function(dataset_type = "skinny", category = "all") {
   # validate dataset_type parameter
   if (!dataset_type %in% c("skinny", "full")) {
@@ -189,7 +190,7 @@ list_variables <- function(dataset_type = "skinny", category = "all") {
       "Other non-instructional services (V65)",
       "COVID-19 Federal Assistance Funds - Total expenditures (AE1)", 
       "COVID-19 Federal Assistance Funds - Instructional expenditures (AE2)", 
-      "COVID-19 Federal Assistance Funds - Support sservices expenditures (AE3)", 
+      "COVID-19 Federal Assistance Funds - Support services expenditures (AE3)", 
       "COVID-19 Federal Assistance Funds - Capital outlay expenditures (AE4)",
       "COVID-19 Federal Assistance Funds - Technology-related supplies and purchased services expenditures (AE5)", 
       "COVID-19 Federal Assistance Funds - Technology-related equipment expenditures (AE6)", 
@@ -232,9 +233,9 @@ list_variables <- function(dataset_type = "skinny", category = "all") {
 #' @export
 #'
 #' @examples
-#' \dontrun{
+#' # Get all valid state codes
 #' states <- get_states()
-#' }
+#' head(states)
 get_states <- function() {
   states <- c(
     "AL", "AK", "AZ", "AR", "CA", "CO", "CT", "DE", "FL", "GA", 

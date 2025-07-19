@@ -1,8 +1,8 @@
 ---
-title: "data-sources-methods"
+title: "Data Sources and Methods"
 output: rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{data-sources-methods}
+  %\VignetteIndexEntry{Data Sources and Methods}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
@@ -10,12 +10,18 @@ vignette: >
 ```{r, include = FALSE}
 knitr::opts_chunk$set(
   collapse = TRUE,
-  comment = "#>"
+  comment = "#>",
+  eval = FALSE
 )
 ```
 
+## Overview
+
+This vignette provides detailed information about the data sources, processing methods, and quality controls used in the `edfinr` package. Understanding these details will help you interpret the data correctly and make appropriate analytical decisions.
+
 ```{r setup}
 library(edfinr)
+library(dplyr)
 ```
 
 

@@ -22,14 +22,15 @@ in the education finance dataset, including their names, types,
 and brief descriptions.
 }
 \examples{
-\dontrun{
 # list all available variables in skinny dataset
 vars <- list_variables()
+head(vars)
 
 # list all variables in full dataset
 full_vars <- list_variables(dataset_type = "full")
+nrow(full_vars)
 
 # list only expenditure variables in full dataset
 exp_vars <- list_variables(dataset_type = "full", category = "expenditure")
-}
+head(exp_vars)
 }

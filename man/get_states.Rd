@@ -13,7 +13,7 @@ A character vector of state codes
 Returns the valid two-letter state codes that can be used with get_finance_data
 }
 \examples{
-\dontrun{
+# Get all valid state codes
 states <- get_states()
-}
+head(states)
 }

@@ -1,8 +1,8 @@
 ---
-title: "cpi-adjustments"
+title: "Understanding CPI Adjustments in edfinr"
 output: rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{cpi-adjustments}
+  %\VignetteIndexEntry{Understanding CPI Adjustments in edfinr}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
@@ -10,15 +10,211 @@ vignette: >
 ```{r, include = FALSE}
 knitr::opts_chunk$set(
   collapse = TRUE,
-  comment = "#>"
+  comment = "#>",
+  eval = FALSE
 )
 ```
 
+## Introduction
+
+When analyzing education finance data across multiple years, adjusting for inflation can help produce more meaningful comparisons. `edfinr` provides built-in functionality to adjust all dollar-denominated values for inflation using the Consumer Price Index for All Urban Consumers (CPI-U).
+
 ```{r setup}
 library(edfinr)
+library(dplyr)
+library(ggplot2)
 ```
 
+## Understanding Nominal vs. Real Dollars
 
-All dollar-denominated data are *nominal* by default, meaning they are *unadjusted for inflation.* Users can automatically adjust all dollar-denominated data (revenues, expenditures, median household income, and median property value) by setting the `cpi_adj` parameter (which defaults to `"none"`) to a base school year. For example, setting `cpi_adj = 2022` will adjust all dollar-denominated values for inflation using the CPI-U index for the 2021-22 school year as a baseline. 
+By default, all financial data returned by `get_finance_data()` is in **nominal dollars** - the actual dollar amounts reported in each year without any inflation adjustment. This means that $1,000 in 2012 and $1,000 in 2022 are treated as equal amounts, even though they have different purchasing power.
 
-The CPI-U for each school year is calculated by averaging the CPI-U index from "HALF2" of the first calendar year of a school year and "HALF1" of the second calendar year in a school year. For example, the 2021-22 CPI-U index is calculated by averaging "HALF2" from 2021 with "HALF1" from 2022. By default, data returned by `get_finance_data` includes a column, `cpi_sy12', that expresses the CPI-U index for each datapoint relative to the index from the 2011-12 school year (`cpi_sy12` = 1 for the 2011-12 school year). 
+To make valid comparisons across years, you need to convert to **real dollars** (also called constant dollars) by adjusting for inflation.
+
+## How CPI Adjustment Works
+
+`edfinr` uses the CPI-U index to adjust for inflation. The adjustment is aligned to the school year calendar:
+
+- Each school year's CPI is calculated by averaging:
+  - The second half of the first calendar year (July-December)
+  - The first half of the second calendar year (January-June)
+  
+For example, the 2021-22 school year CPI combines:
+- July-December 2021 (HALF2 2021)
+- January-June 2022 (HALF1 2022)
+
+## Using the cpi_adj Parameter
+
+The `get_finance_data()` function includes a `cpi_adj` parameter to automatically adjust all dollar values:
+
+```{r example-nominal}
+# Get nominal (unadjusted) data - this is the default
+nominal_data <- get_finance_data(yr = "2015:2022", geo = "KY")
+
+# View the nominal revenue for a specific district
+nominal_data |>
+  filter(dist_name == "Jefferson County") |>
+  select(year, dist_name, rev_total, rev_total_pp)
+```
+
+```{r example-adjusted}
+# Get data adjusted to 2022 dollars
+real_2022_data <- get_finance_data(yr = "2015:2022", geo = "KY", cpi_adj = 2022)
+
+# View the same district with inflation-adjusted values
+real_2022_data |>
+  filter(dist_name == "Jefferson County") |>
+  select(year, dist_name, rev_total, rev_total_pp)
+```
+
+## What Gets Adjusted?
+
+When you use `cpi_adj`, the following variables are automatically adjusted for inflation:
+
+- All revenue variables (total, local, state, federal)
+- All expenditure variables
+- Median household income
+- Median property values
+
+Variables that are NOT adjusted include:
+- Enrollment counts
+- Demographic percentages
+- Any ratio or percentage variables
+
+## Working with the CPI Index
+
+Every dataset includes a `cpi_sy12` column that shows the CPI index relative to the 2011-12 school year:
+
+```{r cpi-index}
+# Examine the CPI index values
+cpi_values <- get_finance_data(yr = "all", geo = "KY") |>
+  select(year, cpi_sy12) |>
+  distinct() |>
+  arrange(year)
+
+print(cpi_values)
+
+# Calculate cumulative inflation since 2012
+cpi_values |>
+  mutate(
+    inflation_since_2012 = (cpi_sy12 - 1) * 100,
+    inflation_label = paste0(round(inflation_since_2012, 1), "%")
+  )
+```
+
+## Practical Example: Tracking Real Spending Over Time
+
+Here's how to analyze whether education revenue has kept pace with inflation:
+
+```{r real-spending-analysis}
+# get multi-year data in nominal dollars
+ky_nominal <- get_finance_data(yr = "all", geo = "KY", cpi_adj = "none") |> 
+  mutate(type = "Nominal dollars")
+
+# get multi-year data adjusted to 2022 dollars
+ky_real <- get_finance_data(yr = "all", geo = "KY", cpi_adj = "2022") |> 
+  mutate(type = "Real 2022 dollars")
+
+# join data
+ky_data <- bind_rows(ky_nominal, ky_real)
+
+# calculate statewide per-pupil revenue trends for real dollars
+rev_trends <- ky_data |>
+  group_by(type, year) |>
+  summarize(
+    rev_local = sum(rev_local, na.rm = TRUE),
+    rev_state = sum(rev_state, na.rm = TRUE),
+    rev_fed = sum(rev_fed, na.rm = TRUE),
+    enroll = sum(enroll, na.rm = TRUE)
+  ) |> 
+  mutate(
+    rev_local_pp = rev_local / enroll,
+    rev_state_pp = rev_state / enroll,
+    rev_fed_pp = rev_fed / enroll
+  ) |> 
+  select(type, year, rev_local_pp:rev_fed_pp) |>
+  pivot_longer(
+    cols = rev_local_pp:rev_fed_pp,
+    names_to = "var", values_to = "val") |> 
+  mutate(
+    var = stringr::str_remove_all(var, "rev_"),
+    var = stringr::str_remove_all(var, "_pp"),
+    var = stringr::str_to_title(var),
+    var = str_replace_all(var, "Fed", "Federal")
+  )    
+
+# Plot the trend
+ggplot(rev_trends) +
+  geom_line(
+    aes(x = year, y = val, color = var, group = var), size = 1.2
+    ) +
+  facet_wrap(~type) +
+  scale_y_continuous(labels = scales::dollar) +
+  labs(
+    title = "Comparing Nominal and Real Per-Pupil Revenue in Kentucky",
+    subtitle = "Statewide average per-pupil revenue by source, 2012-2022",
+    x = "School Year",
+    y = "Per-Pupil Revenue",
+    color = "Revenue Source"
+  ) +
+  theme_minimal()
+```
+
+## Choosing a Base Year
+
+You can adjust to any year from 2012 to 2022. Common choices include:
+
+- **Most recent year** (e.g., 2022): Shows all values in current dollar terms
+- **First year of analysis**: Makes it easy to see percentage changes from baseline
+- **Midpoint year**: Minimizes the size of adjustments across the time series
+
+```{r base-year-comparison}
+# Compare different base years
+district_sample <- "Jefferson County"
+
+# Get data with different base years
+nominal <- get_finance_data(yr = "2012:2022", geo = "KY") |>
+  filter(dist_name == district_sample) |>
+  select(year, rev_total_pp) |>
+  mutate(type = "Nominal")
+
+adjusted_2012 <- get_finance_data(yr = "2012:2022", geo = "KY", cpi_adj = 2012) |>
+  filter(dist_name == district_sample) |>
+  select(year, rev_total_pp) |>
+  mutate(type = "2012 Dollars")
+
+adjusted_2022 <- get_finance_data(yr = "2012:2022", geo = "KY", cpi_adj = 2022) |>
+  filter(dist_name == district_sample) |>
+  select(year, rev_total_pp) |>
+  mutate(type = "2022 Dollars")
+
+# Combine and plot
+bind_rows(nominal, adjusted_2012, adjusted_2022) |>
+  ggplot(aes(x = year, y = rev_total_pp, color = type, group = type)) +
+  geom_line(size = 1.2) +
+  scale_y_continuous(labels = scales::dollar) +
+  labs(
+    title = paste("Per-Pupil Revenue:", district_sample),
+    x = "School Year",
+    y = "Revenue per Pupil",
+    color = "Adjustment"
+  ) +
+  theme_minimal()
+```
+
+## Best Practices
+
+1. **Always use inflation adjustment for multi-year analyses**: Comparing nominal dollars across years can be misleading
+
+2. **Be consistent with your base year**: Use the same `cpi_adj` value for all data in an analysis
+
+3. **Document your choice**: Always note whether values are nominal or real, and which base year you used
+
+4. **Consider your audience**: Current dollars (most recent year) are often most intuitive for general audiences
+
+## Technical Notes
+
+- The CPI data comes from the U.S. Bureau of Labor Statistics CPI-U series
+- School year alignment ensures the index matches the academic calendar
+- All adjustments are applied before any per-pupil calculations
+- The `cpi_sy12` column is always included regardless of adjustment choice 

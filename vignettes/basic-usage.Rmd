@@ -10,53 +10,155 @@ vignette: >
 ```{r, include = FALSE}
 knitr::opts_chunk$set(
   collapse = TRUE,
-  comment = "#>"
+  comment = "#>",
+  eval = FALSE
 )
 ```
 
-To use the `edfinr` package to access district-level school finance data, start by loading the package.
+## Introduction
+
+The `edfinr` package provides a simple, consistent interface for accessing comprehensive education finance data for U.S. school districts. This vignette will help you get started with the package's core functionality.
 
 ```{r setup}
 library(edfinr)
 ```
 
-The primary function in `edfinr` is `get_finance_data`, which allows users to download school finance data from school years 2011-12 through 2021-22. District-level revenue, expenditure, and enrollment data come from the National Center for Education Statistics (NCES) F-33 survey. Additional data are drawn from the NCES Common Core of Data Directory file (via the Urban Institute's `educationdata` package), along with the U.S. Census Bureau's 5-Year American Community Survey (via the `tidycensus` package) and Small Area Income and Poverty Estimates (SAIPE). Inflation is indexed using the U.S. Bureau of Labor Statistics Consumer Price Index for All Urban Consumers (CPI-U). 
+## Core Function: get_finance_data()
 
-Basic usage of `get_finance_data` starts with specifying the years and geographies of data you'd like to explore. Here's a simple example that will return finance data for Kentucky school districts from the 2015-16 school year:
+The primary function in `edfinr` is `get_finance_data()`, which provides access to comprehensive school finance data from school years 2011-12 through 2021-22. The function combines data from multiple sources:
+
+- **Financial data**: Revenue and expenditure data from NCES F-33 survey
+- **Enrollment**: Student counts from NCES Common Core of Data
+- **Demographics**: Poverty estimates from Census SAIPE
+- **Community characteristics**: Income and education data from American Community Survey
+- **Inflation adjustments**: CPI-U data for constant dollar calculations
+
+## Basic Usage
+
+The simplest way to use `get_finance_data()` is to specify a year and state. For example, to get finance data for Kentucky school districts from the 2015-16 school year:
 ```{r example-1}
 ky_sy16 <- get_finance_data(yr = 2016, geo = "KY")
+
+# View the structure of the returned data
+glimpse(ky_sy16)
 ```
 
-By default, `get_finance_data` returns a tibble with 41 columns. More detailed expenditure data can be added by adjusting the `dataset_type` parameter from its default (`"skinny"`) to `"full"`. This will return a tibble with 48 additional expenditure variables for a total of 89 columns.
+## Dataset Types: Skinny vs. Full
+
+By default, `get_finance_data()` returns a "skinny" dataset with 41 essential variables covering:
+- District identifiers and characteristics
+- Total revenues by source (local, state, federal)
+- Current expenditures
+- Key demographic and economic indicators
+
+For more detailed analysis, you can request the "full" dataset with 89 variables that includes:
+- All skinny dataset variables
+- Detailed expenditure breakdowns by function and object
+- Capital outlay and debt service details
+- COVID-19 federal assistance expenditures (2020-2022)
 
 ```{r example-2}
+# Get the full dataset with detailed expenditure data
 ky_full_sy16 <- get_finance_data(yr = "2016", geo = "KY", dataset_type = "full")
 
+# See what additional variables are available
+names(ky_full_sy16)[42:89]
 ```
 
-It's straighforward to access data from multiple years and/or states with `get_finance_data`. This example will return all available years of data for each state with a university in the Southeastern Conference:
+## Multiple Years and States
+
+The `get_finance_data()` function makes it easy to access data across multiple years and states:
 
 ```{r example-3}
-sec_sy12_thru_sy22 <- get_finance_data(yr = "2016:2022", geo = "AL,AR,FL,GA,KY,LA,MS,MO,OK,SC,TN,TX")
+# Get data for multiple states (SEC conference states) across multiple years
+sec_data <- get_finance_data(
+  yr = "2018:2022",  # Years 2018 through 2022
+  geo = "AL,AR,FL,GA,KY,LA,MS,MO,OK,SC,TN,TX"  # Comma-separated state codes
+)
+
+# Or get all available years for a single state
+ky_all_years <- get_finance_data(yr = "all", geo = "KY")
+
+# Or get the most recent year for all states
+us_sy22 <- get_finance_data(yr = 2022, geo = "all")
 ```
 
 
-### Working with the Data
+## Working with the Data
 
-```{r}
-library(tidyverse)
+Once you've retrieved the data, you can use standard data manipulation tools to analyze it. Here are some common analysis patterns:
 
-# basic analysis with skinny dataset
-get_finance_data(yr = "2022", geo = "KY") |>
+### Finding High and Low Spending Districts
+
+```{r analysis-1}
+library(dplyr)
+
+# identify the highest and lowest revenue districts in Kentucky
+ky_sy22 <- get_finance_data(yr = "2022", geo = "KY")
+
+# districts with highest per-pupil revenue
+high_spenders <- ky_sy22 |>
   select(dist_name, enroll, rev_total_pp, exp_cur_pp) |>
   arrange(desc(rev_total_pp)) |>
   head(10)
 
-# analysis with full dataset - examining detailed expenditures
-get_finance_data(yr = "2022", geo = "KY", dataset_type = "full") |>
-  select(ncesid, state, dist_name, enroll, exp_covid_total) |>
-  filter(!is.na(exp_covid_total)) |>
-  mutate(exp_covid_total_pp = exp_covid_total / enroll) |>
-  arrange(desc(exp_covid_total_pp))
+print(high_spenders)
 
+# districts with lowest per-pupil revenue
+low_spenders <- ky_sy22 |>
+  filter(enroll >= 100) |>  # focus on districts with meaningful enrollment
+  select(dist_name, enroll, rev_total_pp, exp_cur_pp) |>
+  arrange(rev_total_pp) |>
+  head(10)
+
+print(low_spenders)
 ```
+
+### Analyzing Revenue Sources
+
+```{r analysis-2}
+# compare revenue sources across districts
+revenue_analysis <- ky_sy22 |>
+  mutate(
+    pct_local = rev_local_total / rev_total * 100,
+    pct_state = rev_state_total / rev_total * 100,
+    pct_federal = rev_fed_total / rev_total * 100
+  ) |>
+  select(dist_name, urbanicity, pct_local, pct_state, pct_federal) |>
+  group_by(urbanicity) |>
+  summarize(
+    avg_pct_local = mean(pct_local, na.rm = TRUE),
+    avg_pct_state = mean(pct_state, na.rm = TRUE),
+    avg_pct_federal = mean(pct_federal, na.rm = TRUE),
+    n_districts = n()
+  )
+
+print(revenue_analysis)
+```
+
+### Working with Detailed Expenditure Data
+
+```{r analysis-3}
+# analyze COVID-19 federal assistance spending (requires full dataset)
+ky_full_sy22 <- get_finance_data(yr = "2022", geo = "KY", dataset_type = "full")
+
+covid_spending <- ky_full_sy22 |>
+  filter(!is.na(exp_covid_total), exp_covid_total > 0) |>
+  mutate(
+    covid_pp = exp_covid_total / enroll,
+    pct_of_total_exp = exp_covid_total / exp_total * 100
+  ) |>
+  select(dist_name, enroll, exp_covid_total, covid_pp, pct_of_total_exp) |>
+  arrange(desc(covid_pp))
+
+print(head(covid_spending, 10))
+```
+
+## Additional Resources
+
+For more information about the data and methods used in this package:
+
+- Use `list_variables()` to see all available variables and their descriptions
+- Use `get_states()` to see valid state codes
+- See the "CPI Adjustments" vignette for information about inflation adjustments
+- See the "Data Sources and Methods" vignette for detailed methodology
