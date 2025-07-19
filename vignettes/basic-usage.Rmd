@@ -40,6 +40,23 @@ It's straighforward to access data from multiple years and/or states with `get_f
 sec_sy12_thru_sy22 <- get_finance_data(yr = "2016:2022", geo = "AL,AR,FL,GA,KY,LA,MS,MO,OK,SC,TN,TX")
 ```
 
-All dollar-denominated data are *nominal* by default, meaning they are *unadjusted for inflation.* Users can automatically adjust all dollar-denominated data (revenues, expenditures, median household income, and median property value) by setting the `cpi_adj` parameter (which defaults to `"none"`) to a base school year. For example, setting `cpi_adj = 2022` will adjust all dollar-denominated values for inflation using the CPI-U index for the 2021-22 school year as a baseline. 
 
-The CPI-U for each school year is calculated by averaging the CPI-U index from "HALF2" of the first calendar year of a school year and "HALF1" of the second calendar year in a school year. For example, the 2021-22 CPI-U index is calculated by averaging "HALF2" from 2021 with "HALF1" from 2022. By default, data returned by `get_finance_data` includes a column, `cpi_sy12', that expresses the CPI-U index for each datapoint relative to the index from the 2011-12 school year (`cpi_sy12` = 1 for the 2011-12 school year). 
+### Working with the Data
+
+```{r}
+library(tidyverse)
+
+# basic analysis with skinny dataset
+get_finance_data(yr = "2022", geo = "KY") |>
+  select(dist_name, enroll, rev_total_pp, exp_cur_pp) |>
+  arrange(desc(rev_total_pp)) |>
+  head(10)
+
+# analysis with full dataset - examining detailed expenditures
+get_finance_data(yr = "2022", geo = "KY", dataset_type = "full") |>
+  select(ncesid, state, dist_name, enroll, exp_covid_total) |>
+  filter(!is.na(exp_covid_total)) |>
+  mutate(exp_covid_total_pp = exp_covid_total / enroll) |>
+  arrange(desc(exp_covid_total_pp))
+
+```

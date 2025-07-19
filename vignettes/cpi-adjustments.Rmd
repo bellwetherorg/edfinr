@@ -1,0 +1,24 @@
+---
+title: "cpi-adjustments"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{cpi-adjustments}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+```{r setup}
+library(edfinr)
+```
+
+
+All dollar-denominated data are *nominal* by default, meaning they are *unadjusted for inflation.* Users can automatically adjust all dollar-denominated data (revenues, expenditures, median household income, and median property value) by setting the `cpi_adj` parameter (which defaults to `"none"`) to a base school year. For example, setting `cpi_adj = 2022` will adjust all dollar-denominated values for inflation using the CPI-U index for the 2021-22 school year as a baseline. 
+
+The CPI-U for each school year is calculated by averaging the CPI-U index from "HALF2" of the first calendar year of a school year and "HALF1" of the second calendar year in a school year. For example, the 2021-22 CPI-U index is calculated by averaging "HALF2" from 2021 with "HALF1" from 2022. By default, data returned by `get_finance_data` includes a column, `cpi_sy12', that expresses the CPI-U index for each datapoint relative to the index from the 2011-12 school year (`cpi_sy12` = 1 for the 2011-12 school year). 
