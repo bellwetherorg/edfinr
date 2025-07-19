@@ -104,28 +104,38 @@ Default is FALSE.</p></dd>
 
     <div class="section level2">
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="kw">if</span> <span class="op">(</span><span class="cn">FALSE</span><span class="op">)</span> <span class="op">{</span> <span class="co"># \dontrun{</span></span></span>
-<span class="r-in"><span><span class="co"># get data for all states for 2022</span></span></span>
-<span class="r-in"><span><span class="va">df</span> <span class="op">&lt;-</span> <span class="fu">get_finance_data</span><span class="op">(</span>yr <span class="op">=</span> <span class="st">"2022"</span>, geo <span class="op">=</span> <span class="st">"all"</span><span class="op">)</span></span></span>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="co"># Check valid parameters without downloading</span></span></span>
+<span class="r-in"><span><span class="fu"><a href="get_states.html">get_states</a></span><span class="op">(</span><span class="op">)</span>  <span class="co"># Valid state codes</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  [1] "AL" "AK" "AZ" "AR" "CA" "CO" "CT" "DE" "FL" "GA" "HI" "ID" "IL" "IN" "IA"</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [16] "KS" "KY" "LA" "ME" "MD" "MA" "MI" "MN" "MS" "MO" "MT" "NE" "NV" "NH" "NJ"</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [31] "NM" "NY" "NC" "ND" "OH" "OK" "OR" "PA" "RI" "SC" "SD" "TN" "TX" "UT" "VT"</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [46] "VA" "WA" "WV" "WI" "WY" "DC"</span>
 <span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="co"># get data for Kentucky for 2020-2022</span></span></span>
-<span class="r-in"><span><span class="va">ky_data</span> <span class="op">&lt;-</span> <span class="fu">get_finance_data</span><span class="op">(</span>yr <span class="op">=</span> <span class="st">"2020:2022"</span>, geo <span class="op">=</span> <span class="st">"KY"</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="co"># \donttest{</span></span></span>
+<span class="r-in"><span><span class="co"># These examples require internet access and may take time to download</span></span></span>
 <span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="co"># get data for multiple states for all available years</span></span></span>
-<span class="r-in"><span><span class="va">regional_data</span> <span class="op">&lt;-</span> <span class="fu">get_finance_data</span><span class="op">(</span>yr <span class="op">=</span> <span class="st">"all"</span>, geo <span class="op">=</span> <span class="st">"IN,KY,OH,TN"</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="co"># get data for Kentucky for 2022</span></span></span>
+<span class="r-in"><span><span class="va">ky_data</span> <span class="op">&lt;-</span> <span class="fu">get_finance_data</span><span class="op">(</span>yr <span class="op">=</span> <span class="st">"2022"</span>, geo <span class="op">=</span> <span class="st">"KY"</span><span class="op">)</span></span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> Downloading education finance data...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Download complete.</span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co"># get data for multiple years</span></span></span>
+<span class="r-in"><span><span class="va">ky_multi</span> <span class="op">&lt;-</span> <span class="fu">get_finance_data</span><span class="op">(</span>yr <span class="op">=</span> <span class="st">"2020:2022"</span>, geo <span class="op">=</span> <span class="st">"KY"</span><span class="op">)</span></span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> Using cached data. Use refresh = TRUE to download fresh data.</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># get full dataset with detailed expenditure data</span></span></span>
-<span class="r-in"><span><span class="va">full_data</span> <span class="op">&lt;-</span> <span class="fu">get_finance_data</span><span class="op">(</span>yr <span class="op">=</span> <span class="st">"2022"</span>, geo <span class="op">=</span> <span class="st">"KY"</span>, dataset_type <span class="op">=</span> <span class="st">"full"</span><span class="op">)</span></span></span>
-<span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="co"># use with pipe</span></span></span>
-<span class="r-in"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://dplyr.tidyverse.org" class="external-link">dplyr</a></span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="fu">get_finance_data</span><span class="op">(</span>yr <span class="op">=</span> <span class="st">"2022"</span>, geo <span class="op">=</span> <span class="st">"KY"</span><span class="op">)</span> <span class="op">|&gt;</span></span></span>
-<span class="r-in"><span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html" class="external-link">select</a></span><span class="op">(</span><span class="va">district_name</span>, <span class="va">rev_total</span>, <span class="va">exp_curr_total</span><span class="op">)</span> <span class="op">|&gt;</span></span></span>
-<span class="r-in"><span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/arrange.html" class="external-link">arrange</a></span><span class="op">(</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/desc.html" class="external-link">desc</a></span><span class="op">(</span><span class="va">rev_total</span><span class="op">)</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">ky_full</span> <span class="op">&lt;-</span> <span class="fu">get_finance_data</span><span class="op">(</span>yr <span class="op">=</span> <span class="st">"2022"</span>, geo <span class="op">=</span> <span class="st">"KY"</span>, dataset_type <span class="op">=</span> <span class="st">"full"</span><span class="op">)</span></span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> Downloading education finance data...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Download complete.</span>
 <span class="r-in"><span>  </span></span>
-<span class="r-in"><span><span class="co"># get data adjusted to 2015 dollars</span></span></span>
-<span class="r-in"><span><span class="va">adjusted_data</span> <span class="op">&lt;-</span> <span class="fu">get_finance_data</span><span class="op">(</span>yr <span class="op">=</span> <span class="st">"2020:2022"</span>, geo <span class="op">=</span> <span class="st">"KY"</span>, cpi_adj <span class="op">=</span> <span class="st">"2015"</span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="op">}</span> <span class="co"># }</span></span></span>
+<span class="r-in"><span><span class="co"># get data adjusted to 2022 dollars</span></span></span>
+<span class="r-in"><span><span class="va">ky_adjusted</span> <span class="op">&lt;-</span> <span class="fu">get_finance_data</span><span class="op">(</span>yr <span class="op">=</span> <span class="st">"2020:2022"</span>, geo <span class="op">=</span> <span class="st">"KY"</span>, cpi_adj <span class="op">=</span> <span class="st">"2022"</span><span class="op">)</span></span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> Using cached data. Use refresh = TRUE to download fresh data.</span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co">#' # get data for multiple states for all available years</span></span></span>
+<span class="r-in"><span><span class="va">regional_data</span> <span class="op">&lt;-</span> <span class="fu">get_finance_data</span><span class="op">(</span>yr <span class="op">=</span> <span class="st">"all"</span>, geo <span class="op">=</span> <span class="st">"IN,KY,OH,TN"</span><span class="op">)</span></span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> Using cached data. Use refresh = TRUE to download fresh data.</span>
+<span class="r-in"><span><span class="co"># }</span></span></span>
 </code></pre></div>
     </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>

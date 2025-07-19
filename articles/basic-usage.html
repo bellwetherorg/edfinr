@@ -63,63 +63,180 @@
 
     
     
-<p>To use the <code>edfinr</code> package to access district-level
-school finance data, start by loading the package.</p>
+<div class="section level2">
+<h2 id="introduction">Introduction<a class="anchor" aria-label="anchor" href="#introduction"></a>
+</h2>
+<p>The <code>edfinr</code> package provides a simple, consistent
+interface for accessing comprehensive education finance data for U.S.
+school districts. This vignette will help you get started with the
+package’s core functionality.</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/bellwetherorg/edfinr" class="external-link">edfinr</a></span><span class="op">)</span></span></code></pre></div>
+</div>
+<div class="section level2">
+<h2 id="core-function-get_finance_data">Core Function: get_finance_data()<a class="anchor" aria-label="anchor" href="#core-function-get_finance_data"></a>
+</h2>
 <p>The primary function in <code>edfinr</code> is
-<code>get_finance_data</code>, which allows users to download school
-finance data from school years 2011-12 through 2021-22. District-level
-revenue, expenditure, and enrollment data come from the National Center
-for Education Statistics (NCES) F-33 survey. Additional data are drawn
-from the NCES Common Core of Data Directory file (via the Urban
-Institute’s <code>educationdata</code> package), along with the U.S.
-Census Bureau’s 5-Year American Community Survey (via the
-<code>tidycensus</code> package) and Small Area Income and Poverty
-Estimates (SAIPE). Inflation is indexed using the U.S. Bureau of Labor
-Statistics Consumer Price Index for All Urban Consumers (CPI-U).</p>
-<p>Basic usage of <code>get_finance_data</code> starts with specifying
-the years and geographies of data you’d like to explore. Here’s a simple
-example that will return finance data for Kentucky school districts from
-the 2015-16 school year:</p>
+<code><a href="../reference/get_finance_data.html">get_finance_data()</a></code>, which provides access to comprehensive
+school finance data from school years 2011-12 through 2021-22. The
+function combines data from multiple sources:</p>
+<ul>
+<li>
+<strong>Financial data</strong>: Revenue and expenditure data from
+NCES F-33 survey</li>
+<li>
+<strong>Enrollment</strong>: Student counts from NCES Common Core of
+Data</li>
+<li>
+<strong>Demographics</strong>: Poverty estimates from Census
+SAIPE</li>
+<li>
+<strong>Community characteristics</strong>: Income and education
+data from American Community Survey</li>
+<li>
+<strong>Inflation adjustments</strong>: CPI-U data for constant
+dollar calculations</li>
+</ul>
+</div>
+<div class="section level2">
+<h2 id="basic-usage">Basic Usage<a class="anchor" aria-label="anchor" href="#basic-usage"></a>
+</h2>
+<p>The simplest way to use <code><a href="../reference/get_finance_data.html">get_finance_data()</a></code> is to specify
+a year and state. For example, to get finance data for Kentucky school
+districts from the 2015-16 school year:</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">ky_sy16</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/get_finance_data.html">get_finance_data</a></span><span class="op">(</span>yr <span class="op">=</span> <span class="fl">2016</span>, geo <span class="op">=</span> <span class="st">"KY"</span><span class="op">)</span></span>
-<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> Downloading education finance data...</span></span>
-<span><span class="co">#&gt; <span style="color: #00BB00;">✔</span> Download complete.</span></span></code></pre></div>
-<p>By default, <code>get_finance_data</code> returns a tibble with 41
-columns. More detailed expenditure data can be added by adjusting the
-<code>dataset_type</code> parameter from its default
-(<code>"skinny"</code>) to <code>"full"</code>. This will return a
-tibble with 48 additional expenditure variables for a total of 89
-columns.</p>
+<span></span>
+<span><span class="co"># View the structure of the returned data</span></span>
+<span><span class="fu">glimpse</span><span class="op">(</span><span class="va">ky_sy16</span><span class="op">)</span></span></code></pre></div>
+</div>
+<div class="section level2">
+<h2 id="dataset-types-skinny-vs--full">Dataset Types: Skinny vs. Full<a class="anchor" aria-label="anchor" href="#dataset-types-skinny-vs--full"></a>
+</h2>
+<p>By default, <code><a href="../reference/get_finance_data.html">get_finance_data()</a></code> returns a “skinny”
+dataset with 41 essential variables covering: - District identifiers and
+characteristics - Total revenues by source (local, state, federal) -
+Current expenditures - Key demographic and economic indicators</p>
+<p>For more detailed analysis, you can request the “full” dataset with
+89 variables that includes: - All skinny dataset variables - Detailed
+expenditure breakdowns by function and object - Capital outlay and debt
+service details - COVID-19 federal assistance expenditures
+(2020-2022)</p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">ky_full_sy16</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/get_finance_data.html">get_finance_data</a></span><span class="op">(</span>yr <span class="op">=</span> <span class="st">"2016"</span>, geo <span class="op">=</span> <span class="st">"KY"</span>, dataset_type <span class="op">=</span> <span class="st">"full"</span><span class="op">)</span></span>
-<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> Downloading education finance data...</span></span>
-<span><span class="co">#&gt; <span style="color: #00BB00;">✔</span> Download complete.</span></span></code></pre></div>
-<p>It’s straighforward to access data from multiple years and/or states
-with <code>get_finance_data</code>. This example will return all
-available years of data for each state with a university in the
-Southeastern Conference:</p>
+<code class="sourceCode R"><span><span class="co"># Get the full dataset with detailed expenditure data</span></span>
+<span><span class="va">ky_full_sy16</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/get_finance_data.html">get_finance_data</a></span><span class="op">(</span>yr <span class="op">=</span> <span class="st">"2016"</span>, geo <span class="op">=</span> <span class="st">"KY"</span>, dataset_type <span class="op">=</span> <span class="st">"full"</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># See what additional variables are available</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/names.html" class="external-link">names</a></span><span class="op">(</span><span class="va">ky_full_sy16</span><span class="op">)</span><span class="op">[</span><span class="fl">42</span><span class="op">:</span><span class="fl">89</span><span class="op">]</span></span></code></pre></div>
+</div>
+<div class="section level2">
+<h2 id="multiple-years-and-states">Multiple Years and States<a class="anchor" aria-label="anchor" href="#multiple-years-and-states"></a>
+</h2>
+<p>The <code><a href="../reference/get_finance_data.html">get_finance_data()</a></code> function makes it easy to access
+data across multiple years and states:</p>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">sec_sy12_thru_sy22</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/get_finance_data.html">get_finance_data</a></span><span class="op">(</span>yr <span class="op">=</span> <span class="st">"2016:2022"</span>, geo <span class="op">=</span> <span class="st">"AL,AR,FL,GA,KY,LA,MS,MO,OK,SC,TN,TX"</span><span class="op">)</span></span>
-<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> Using cached data. Use refresh = TRUE to download fresh data.</span></span></code></pre></div>
-<p>All dollar-denominated data are <em>nominal</em> by default, meaning
-they are <em>unadjusted for inflation.</em> Users can automatically
-adjust all dollar-denominated data (revenues, expenditures, median
-household income, and median property value) by setting the
-<code>cpi_adj</code> parameter (which defaults to <code>"none"</code>)
-to a base school year. For example, setting <code>cpi_adj = 2022</code>
-will adjust all dollar-denominated values for inflation using the CPI-U
-index for the 2021-22 school year as a baseline.</p>
-<p>The CPI-U for each school year is calculated by averaging the CPI-U
-index from “HALF2” of the first calendar year of a school year and
-“HALF1” of the second calendar year in a school year. For example, the
-2021-22 CPI-U index is calculated by averaging “HALF2” from 2021 with
-“HALF1” from 2022. By default, data returned by
-<code>get_finance_data</code> includes a column,
-<code>cpi_sy12', that expresses the CPI-U index for each datapoint relative to the index from the 2011-12 school year (</code>cpi_sy12`
-= 1 for the 2011-12 school year).</p>
-  </main>
+<code class="sourceCode R"><span><span class="co"># Get data for multiple states (SEC conference states) across multiple years</span></span>
+<span><span class="va">sec_data</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/get_finance_data.html">get_finance_data</a></span><span class="op">(</span></span>
+<span>  yr <span class="op">=</span> <span class="st">"2018:2022"</span>,  <span class="co"># Years 2018 through 2022</span></span>
+<span>  geo <span class="op">=</span> <span class="st">"AL,AR,FL,GA,KY,LA,MS,MO,OK,SC,TN,TX"</span>  <span class="co"># Comma-separated state codes</span></span>
+<span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># Or get all available years for a single state</span></span>
+<span><span class="va">ky_all_years</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/get_finance_data.html">get_finance_data</a></span><span class="op">(</span>yr <span class="op">=</span> <span class="st">"all"</span>, geo <span class="op">=</span> <span class="st">"KY"</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># Or get the most recent year for all states</span></span>
+<span><span class="va">us_sy22</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/get_finance_data.html">get_finance_data</a></span><span class="op">(</span>yr <span class="op">=</span> <span class="fl">2022</span>, geo <span class="op">=</span> <span class="st">"all"</span><span class="op">)</span></span></code></pre></div>
+</div>
+<div class="section level2">
+<h2 id="working-with-the-data">Working with the Data<a class="anchor" aria-label="anchor" href="#working-with-the-data"></a>
+</h2>
+<p>Once you’ve retrieved the data, you can use standard data
+manipulation tools to analyze it. Here are some common analysis
+patterns:</p>
+<div class="section level3">
+<h3 id="finding-high-and-low-spending-districts">Finding High and Low Spending Districts<a class="anchor" aria-label="anchor" href="#finding-high-and-low-spending-districts"></a>
+</h3>
+<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://dplyr.tidyverse.org" class="external-link">dplyr</a></span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># identify the highest and lowest revenue districts in Kentucky</span></span>
+<span><span class="va">ky_sy22</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/get_finance_data.html">get_finance_data</a></span><span class="op">(</span>yr <span class="op">=</span> <span class="st">"2022"</span>, geo <span class="op">=</span> <span class="st">"KY"</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># districts with highest per-pupil revenue</span></span>
+<span><span class="va">high_spenders</span> <span class="op">&lt;-</span> <span class="va">ky_sy22</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html" class="external-link">select</a></span><span class="op">(</span><span class="va">dist_name</span>, <span class="va">enroll</span>, <span class="va">rev_total_pp</span>, <span class="va">exp_cur_pp</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/arrange.html" class="external-link">arrange</a></span><span class="op">(</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/desc.html" class="external-link">desc</a></span><span class="op">(</span><span class="va">rev_total_pp</span><span class="op">)</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="fl">10</span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">high_spenders</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># districts with lowest per-pupil revenue</span></span>
+<span><span class="va">low_spenders</span> <span class="op">&lt;-</span> <span class="va">ky_sy22</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">enroll</span> <span class="op">&gt;=</span> <span class="fl">100</span><span class="op">)</span> <span class="op">|&gt;</span>  <span class="co"># focus on districts with meaningful enrollment</span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html" class="external-link">select</a></span><span class="op">(</span><span class="va">dist_name</span>, <span class="va">enroll</span>, <span class="va">rev_total_pp</span>, <span class="va">exp_cur_pp</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/arrange.html" class="external-link">arrange</a></span><span class="op">(</span><span class="va">rev_total_pp</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="fl">10</span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">low_spenders</span><span class="op">)</span></span></code></pre></div>
+</div>
+<div class="section level3">
+<h3 id="analyzing-revenue-sources">Analyzing Revenue Sources<a class="anchor" aria-label="anchor" href="#analyzing-revenue-sources"></a>
+</h3>
+<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co"># compare revenue sources across districts</span></span>
+<span><span class="va">revenue_analysis</span> <span class="op">&lt;-</span> <span class="va">ky_sy22</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span></span>
+<span>    pct_local <span class="op">=</span> <span class="va">rev_local_total</span> <span class="op">/</span> <span class="va">rev_total</span> <span class="op">*</span> <span class="fl">100</span>,</span>
+<span>    pct_state <span class="op">=</span> <span class="va">rev_state_total</span> <span class="op">/</span> <span class="va">rev_total</span> <span class="op">*</span> <span class="fl">100</span>,</span>
+<span>    pct_federal <span class="op">=</span> <span class="va">rev_fed_total</span> <span class="op">/</span> <span class="va">rev_total</span> <span class="op">*</span> <span class="fl">100</span></span>
+<span>  <span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html" class="external-link">select</a></span><span class="op">(</span><span class="va">dist_name</span>, <span class="va">urbanicity</span>, <span class="va">pct_local</span>, <span class="va">pct_state</span>, <span class="va">pct_federal</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/group_by.html" class="external-link">group_by</a></span><span class="op">(</span><span class="va">urbanicity</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/summarise.html" class="external-link">summarize</a></span><span class="op">(</span></span>
+<span>    avg_pct_local <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/mean.html" class="external-link">mean</a></span><span class="op">(</span><span class="va">pct_local</span>, na.rm <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span>,</span>
+<span>    avg_pct_state <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/mean.html" class="external-link">mean</a></span><span class="op">(</span><span class="va">pct_state</span>, na.rm <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span>,</span>
+<span>    avg_pct_federal <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/mean.html" class="external-link">mean</a></span><span class="op">(</span><span class="va">pct_federal</span>, na.rm <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span>,</span>
+<span>    n_districts <span class="op">=</span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/context.html" class="external-link">n</a></span><span class="op">(</span><span class="op">)</span></span>
+<span>  <span class="op">)</span></span>
+<span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">revenue_analysis</span><span class="op">)</span></span></code></pre></div>
+</div>
+<div class="section level3">
+<h3 id="working-with-detailed-expenditure-data">Working with Detailed Expenditure Data<a class="anchor" aria-label="anchor" href="#working-with-detailed-expenditure-data"></a>
+</h3>
+<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co"># analyze COVID-19 federal assistance spending (requires full dataset)</span></span>
+<span><span class="va">ky_full_sy22</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/get_finance_data.html">get_finance_data</a></span><span class="op">(</span>yr <span class="op">=</span> <span class="st">"2022"</span>, geo <span class="op">=</span> <span class="st">"KY"</span>, dataset_type <span class="op">=</span> <span class="st">"full"</span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">covid_spending</span> <span class="op">&lt;-</span> <span class="va">ky_full_sy22</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="op">!</span><span class="fu"><a href="https://rdrr.io/r/base/NA.html" class="external-link">is.na</a></span><span class="op">(</span><span class="va">exp_covid_total</span><span class="op">)</span>, <span class="va">exp_covid_total</span> <span class="op">&gt;</span> <span class="fl">0</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span></span>
+<span>    covid_pp <span class="op">=</span> <span class="va">exp_covid_total</span> <span class="op">/</span> <span class="va">enroll</span>,</span>
+<span>    pct_of_total_exp <span class="op">=</span> <span class="va">exp_covid_total</span> <span class="op">/</span> <span class="va">exp_total</span> <span class="op">*</span> <span class="fl">100</span></span>
+<span>  <span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html" class="external-link">select</a></span><span class="op">(</span><span class="va">dist_name</span>, <span class="va">enroll</span>, <span class="va">exp_covid_total</span>, <span class="va">covid_pp</span>, <span class="va">pct_of_total_exp</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/arrange.html" class="external-link">arrange</a></span><span class="op">(</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/desc.html" class="external-link">desc</a></span><span class="op">(</span><span class="va">covid_pp</span><span class="op">)</span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">covid_spending</span>, <span class="fl">10</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
+</div>
+</div>
+<div class="section level2">
+<h2 id="additional-resources">Additional Resources<a class="anchor" aria-label="anchor" href="#additional-resources"></a>
+</h2>
+<p>For more information about the data and methods used in this
+package:</p>
+<ul>
+<li>Use <code><a href="../reference/list_variables.html">list_variables()</a></code> to see all available variables and
+their descriptions</li>
+<li>Use <code><a href="../reference/get_states.html">get_states()</a></code> to see valid state codes</li>
+<li>See the “CPI Adjustments” vignette for information about inflation
+adjustments</li>
+<li>See the “Data Sources and Methods” vignette for detailed
+methodology</li>
+</ul>
+</div>
+  </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
+    </nav></aside>
 </div>
 
 
