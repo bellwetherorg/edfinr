@@ -27,7 +27,7 @@ Description: Provides easy access to tidy education finance data combining
 License: MIT + file LICENSE
 URL: https://github.com/bellwetherorg/edfinr, https://bellwetherorg.github.io/edfinr/
 BugReports: https://github.com/bellwetherorg/edfinr/issues
-Depends: R (>= 3.5.0)
+Depends: R (>= 4.1.0)
 Imports:
  cli,
  dplyr,
@@ -40,6 +40,7 @@ Suggests:
     ggplot2,
     knitr,
     rmarkdown,
+    scales,
     stringr,
     tidyr
 VignetteBuilder: knitr

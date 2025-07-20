@@ -6,3 +6,5 @@
 ^pkgdown$
 ^\.github$
 index.md
+^doc$
+^Meta$

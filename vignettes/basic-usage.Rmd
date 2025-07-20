@@ -9,9 +9,9 @@ vignette: >
 
 ```{r, include = FALSE}
 knitr::opts_chunk$set(
-  collapse = TRUE,
-  comment = "#>",
-  eval = FALSE
+  message = FALSE, 
+  warning = FALSE,
+  eval = TRUE
 )
 ```
 
@@ -21,6 +21,7 @@ The `edfinr` package provides a simple, consistent interface for accessing compr
 
 ```{r setup}
 library(edfinr)
+library(dplyr)
 ```
 
 ## Core Function: get_finance_data()
@@ -88,30 +89,28 @@ us_sy22 <- get_finance_data(yr = 2022, geo = "all")
 
 Once you've retrieved the data, you can use standard data manipulation tools to analyze it. Here are some common analysis patterns:
 
-### Finding High and Low Spending Districts
+### Finding High and Low Revenue Districts
 
 ```{r analysis-1}
-library(dplyr)
-
 # identify the highest and lowest revenue districts in Kentucky
 ky_sy22 <- get_finance_data(yr = "2022", geo = "KY")
 
 # districts with highest per-pupil revenue
-high_spenders <- ky_sy22 |>
+hi_rev_dist <- ky_sy22 |>
   select(dist_name, enroll, rev_total_pp, exp_cur_pp) |>
   arrange(desc(rev_total_pp)) |>
   head(10)
 
-print(high_spenders)
+print(hi_rev_dist)
 
 # districts with lowest per-pupil revenue
-low_spenders <- ky_sy22 |>
+lo_rev_dist <- ky_sy22 |>
   filter(enroll >= 100) |>  # focus on districts with meaningful enrollment
   select(dist_name, enroll, rev_total_pp, exp_cur_pp) |>
   arrange(rev_total_pp) |>
   head(10)
 
-print(low_spenders)
+print(hi_rev_dist)
 ```
 
 ### Analyzing Revenue Sources
@@ -120,9 +119,9 @@ print(low_spenders)
 # compare revenue sources across districts
 revenue_analysis <- ky_sy22 |>
   mutate(
-    pct_local = rev_local_total / rev_total * 100,
-    pct_state = rev_state_total / rev_total * 100,
-    pct_federal = rev_fed_total / rev_total * 100
+    pct_local = rev_local / rev_total,
+    pct_state = rev_state / rev_total,
+    pct_federal = rev_fed / rev_total
   ) |>
   select(dist_name, urbanicity, pct_local, pct_state, pct_federal) |>
   group_by(urbanicity) |>
@@ -146,7 +145,7 @@ covid_spending <- ky_full_sy22 |>
   filter(!is.na(exp_covid_total), exp_covid_total > 0) |>
   mutate(
     covid_pp = exp_covid_total / enroll,
-    pct_of_total_exp = exp_covid_total / exp_total * 100
+    pct_of_total_exp = exp_covid_total / exp_cur_total
   ) |>
   select(dist_name, enroll, exp_covid_total, covid_pp, pct_of_total_exp) |>
   arrange(desc(covid_pp))

@@ -15,11 +15,10 @@ get_finance_data(
 }
 \arguments{
 \item{yr}{A string specifying the year(s) to retrieve. Can be a single year ("2022"),
-a range ("2020:2022"), or "all" for all available years.}
+a range ("2020:2022"), or "all" for all available years. Defaults to "2022".}
 
-\item{geo}{A string specifying the geographic scope. Can be "all" for all states,
-a single state code ("KY"), or a comma-separated list of state codes ("IN,KY,OH,TN").
-     Default is FALSE, which uses cached data if available.}
+\item{geo}{A string specifying the geographic scope. Can be "all" for all states (default),
+a single state code ("KY"), or a comma-separated list of uppercase state codes ("IN,KY,OH,TN").}
 
 \item{dataset_type}{A string specifying whether to download the "skinny" (default) or "full" dataset.
 The skinny version excludes detailed expenditure data for faster downloads.}
@@ -32,7 +31,7 @@ the months of the school year (e.g., "2022" uses the 2021-22 school year CPI).
 When cpi_adj is set to a value other than "none", a new column "cpi_adj_index" 
 will be added to the output showing the adjustment index used for each row.}
 
-\item{refresh}{A logical value indicating whether to force a refresh of the cached data.}
+\item{refresh}{A logical value indicating whether to force a refresh of the cached data. Default is FALSE.}
 
 \item{quiet}{A logical value indicating whether to suppress download progress messages.
 Default is FALSE.}

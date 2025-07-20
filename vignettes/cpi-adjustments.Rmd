@@ -9,9 +9,7 @@ vignette: >
 
 ```{r, include = FALSE}
 knitr::opts_chunk$set(
-  collapse = TRUE,
-  comment = "#>",
-  eval = FALSE
+  message = FALSE, warning = FALSE, fig.width = 8
 )
 ```
 
@@ -19,12 +17,18 @@ knitr::opts_chunk$set(
 
 When analyzing education finance data across multiple years, adjusting for inflation can help produce more meaningful comparisons. `edfinr` provides built-in functionality to adjust all dollar-denominated values for inflation using the Consumer Price Index for All Urban Consumers (CPI-U).
 
-```{r setup}
+```{r setup, include = FALSE}
 library(edfinr)
 library(dplyr)
+library(tidyr)
+library(stringr)
 library(ggplot2)
 ```
 
+```{r, eval = FALSE}
+library(tidyverse)
+library(edfinr)
+```
 ## Understanding Nominal vs. Real Dollars
 
 By default, all financial data returned by `get_finance_data()` is in **nominal dollars** - the actual dollar amounts reported in each year without any inflation adjustment. This means that $1,000 in 2012 and $1,000 in 2022 are treated as equal amounts, even though they have different purchasing power.
@@ -143,17 +147,18 @@ rev_trends <- ky_data |>
     var = str_replace_all(var, "Fed", "Federal")
   )    
 
-# Plot the trend
+# plot trends
 ggplot(rev_trends) +
   geom_line(
-    aes(x = year, y = val, color = var, group = var), size = 1.2
+    aes(x = year, y = val, color = var, group = var)
     ) +
   facet_wrap(~type) +
+  scale_x_discrete(breaks = c("2012", "2014", "2016", "2018", "2020", "2022")) +
   scale_y_continuous(labels = scales::dollar) +
   labs(
     title = "Comparing Nominal and Real Per-Pupil Revenue in Kentucky",
     subtitle = "Statewide average per-pupil revenue by source, 2012-2022",
-    x = "School Year",
+    x = "Year",
     y = "Per-Pupil Revenue",
     color = "Revenue Source"
   ) +
@@ -169,10 +174,10 @@ You can adjust to any year from 2012 to 2022. Common choices include:
 - **Midpoint year**: Minimizes the size of adjustments across the time series
 
 ```{r base-year-comparison}
-# Compare different base years
+# select ky district to assess
 district_sample <- "Jefferson County"
 
-# Get data with different base years
+# get data with nominal dollars and cpi-adjusted for different base years
 nominal <- get_finance_data(yr = "2012:2022", geo = "KY") |>
   filter(dist_name == district_sample) |>
   select(year, rev_total_pp) |>
@@ -188,16 +193,16 @@ adjusted_2022 <- get_finance_data(yr = "2012:2022", geo = "KY", cpi_adj = 2022) 
   select(year, rev_total_pp) |>
   mutate(type = "2022 Dollars")
 
-# Combine and plot
+# join and plot data
 bind_rows(nominal, adjusted_2012, adjusted_2022) |>
   ggplot(aes(x = year, y = rev_total_pp, color = type, group = type)) +
   geom_line(size = 1.2) +
   scale_y_continuous(labels = scales::dollar) +
   labs(
     title = paste("Per-Pupil Revenue:", district_sample),
-    x = "School Year",
+    x = "Year",
     y = "Revenue per Pupil",
-    color = "Adjustment"
+    color = "CPI Adjustment"
   ) +
   theme_minimal()
 ```

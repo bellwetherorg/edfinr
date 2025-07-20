@@ -7,10 +7,9 @@
 #' @importFrom rlang .data
 #'
 #' @param yr A string specifying the year(s) to retrieve. Can be a single year ("2022"),
-#'           a range ("2020:2022"), or "all" for all available years.
-#' @param geo A string specifying the geographic scope. Can be "all" for all states,
-#'           a single state code ("KY"), or a comma-separated list of state codes ("IN,KY,OH,TN").
-#'                Default is FALSE, which uses cached data if available.
+#'           a range ("2020:2022"), or "all" for all available years. Defaults to "2022".
+#' @param geo A string specifying the geographic scope. Can be "all" for all states (default),
+#'            a single state code ("KY"), or a comma-separated list of uppercase state codes ("IN,KY,OH,TN").
 #' @param dataset_type A string specifying whether to download the "skinny" (default) or "full" dataset.
 #'                     The skinny version excludes detailed expenditure data for faster downloads.
 #' @param cpi_adj A string specifying the CPI adjustment baseline year. Can be "none" (default) 
@@ -20,7 +19,7 @@
 #'                 the months of the school year (e.g., "2022" uses the 2021-22 school year CPI).
 #'                 When cpi_adj is set to a value other than "none", a new column "cpi_adj_index" 
 #'                 will be added to the output showing the adjustment index used for each row.
-#' @param refresh A logical value indicating whether to force a refresh of the cached data.
+#' @param refresh A logical value indicating whether to force a refresh of the cached data. Default is FALSE.
 #' @param quiet A logical value indicating whether to suppress download progress messages.
 #'              Default is FALSE.
 #' @return A tibble containing the requested education finance data.
