@@ -66,13 +66,12 @@ and community data from the ACS 5-Year Estimates.</p>
 
 <dl><dt id="arg-yr">yr<a class="anchor" aria-label="anchor" href="#arg-yr"></a></dt>
 <dd><p>A string specifying the year(s) to retrieve. Can be a single year ("2022"),
-a range ("2020:2022"), or "all" for all available years.</p></dd>
+a range ("2020:2022"), or "all" for all available years. Defaults to "2022".</p></dd>
 
 
 <dt id="arg-geo">geo<a class="anchor" aria-label="anchor" href="#arg-geo"></a></dt>
-<dd><p>A string specifying the geographic scope. Can be "all" for all states,
-a single state code ("KY"), or a comma-separated list of state codes ("IN,KY,OH,TN").
-     Default is FALSE, which uses cached data if available.</p></dd>
+<dd><p>A string specifying the geographic scope. Can be "all" for all states (default),
+a single state code ("KY"), or a comma-separated list of uppercase state codes ("IN,KY,OH,TN").</p></dd>
 
 
 <dt id="arg-dataset-type">dataset_type<a class="anchor" aria-label="anchor" href="#arg-dataset-type"></a></dt>
@@ -91,7 +90,7 @@ will be added to the output showing the adjustment index used for each row.</p><
 
 
 <dt id="arg-refresh">refresh<a class="anchor" aria-label="anchor" href="#arg-refresh"></a></dt>
-<dd><p>A logical value indicating whether to force a refresh of the cached data.</p></dd>
+<dd><p>A logical value indicating whether to force a refresh of the cached data. Default is FALSE.</p></dd>
 
 
 <dt id="arg-quiet">quiet<a class="anchor" aria-label="anchor" href="#arg-quiet"></a></dt>
