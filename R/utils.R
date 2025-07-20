@@ -57,7 +57,7 @@ list_variables <- function(dataset_type = "skinny", category = "all") {
       "exp_supp_instr_total", "exp_supp_instr_sal", "exp_supp_instr_bene",
       "exp_supp_gen_admin_total", "exp_supp_gen_admin_sal", "exp_supp_gen_admin_bene",
       "exp_supp_sch_admin_total", "exp_supp_sch_admin_sal", "exp_supp_sch_admin_bene",
-      "exp_supp_ops_total", "exp_supp_opps_sal", "exp_supp_opps_bene",
+      "exp_supp_ops_total", "exp_supp_ops_sal", "exp_supp_ops_bene",
       "exp_supp_trans_total", "exp_supp_trans_sal", "exp_supp_trans_bene",
       "exp_central_serv_total", "exp_central_serv_sal", "exp_central_serv_bene",
       "exp_noninstr_food_total", "exp_noninstr_food_sal", "exp_noninstr_food_bene",

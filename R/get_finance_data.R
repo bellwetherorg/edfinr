@@ -144,10 +144,34 @@ get_finance_data <- function(yr = "2022", geo = "all", dataset_type = "skinny", 
       cli::cli_alert_info("Downloading education finance data...")
     }
 
-    # download the file to cache
-    utils::download.file(url, cache_file_path, mode = "wb", quiet = quiet)
+    # download the file to cache with error handling
+    download_success <- FALSE
+    max_attempts <- 3
+    attempt <- 1
+    
+    while (!download_success && attempt <= max_attempts) {
+      tryCatch({
+        utils::download.file(url, cache_file_path, mode = "wb", quiet = quiet)
+        download_success <- TRUE
+      }, error = function(e) {
+        if (attempt < max_attempts) {
+          if (!quiet) {
+            cli::cli_alert_warning("Download attempt {attempt} failed. Retrying...")
+          }
+          Sys.sleep(2^(attempt - 1))  # exponential backoff: 1s, 2s, 4s
+        } else {
+          cli::cli_abort(c(
+            "Failed to download education finance data after {max_attempts} attempts.",
+            "x" = "Error: {e$message}",
+            "i" = "Check your internet connection and try again.",
+            "i" = "If the problem persists, the data source may be temporarily unavailable."
+          ))
+        }
+      })
+      attempt <- attempt + 1
+    }
 
-    if (!quiet) {
+    if (!quiet && download_success) {
       cli::cli_alert_success("Download complete.")
     }
   } else if (!quiet) {
