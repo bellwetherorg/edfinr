@@ -118,8 +118,8 @@ values:</p>
 <span></span>
 <span><span class="co"># View the nominal revenue for a specific district</span></span>
 <span><span class="va">nominal_data</span> <span class="op">|&gt;</span></span>
-<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">dist_name</span> <span class="op">==</span> <span class="st">"Jefferson County"</span><span class="op">)</span> <span class="op">|&gt;</span></span>
-<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html" class="external-link">select</a></span><span class="op">(</span><span class="va">year</span>, <span class="va">dist_name</span>, <span class="va">rev_total</span>, <span class="va">rev_total_pp</span><span class="op">)</span></span></code></pre></div>
+<span>  <span class="fu"><a href="https://rdrr.io/r/stats/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">dist_name</span> <span class="op">==</span> <span class="st">"Jefferson County"</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu">select</span><span class="op">(</span><span class="va">year</span>, <span class="va">dist_name</span>, <span class="va">rev_total</span>, <span class="va">rev_total_pp</span><span class="op">)</span></span></code></pre></div>
 <pre><code><span><span class="co">## <span style="color: #949494;"># A tibble: 8 × 4</span></span></span>
 <span><span class="co">##   year  dist_name         rev_total rev_total_pp</span></span>
 <span><span class="co">##   <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span> <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>                 <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>        <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span></span></span>
@@ -137,8 +137,8 @@ values:</p>
 <span></span>
 <span><span class="co"># View the same district with inflation-adjusted values</span></span>
 <span><span class="va">real_2022_data</span> <span class="op">|&gt;</span></span>
-<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">dist_name</span> <span class="op">==</span> <span class="st">"Jefferson County"</span><span class="op">)</span> <span class="op">|&gt;</span></span>
-<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html" class="external-link">select</a></span><span class="op">(</span><span class="va">year</span>, <span class="va">dist_name</span>, <span class="va">rev_total</span>, <span class="va">rev_total_pp</span><span class="op">)</span></span></code></pre></div>
+<span>  <span class="fu"><a href="https://rdrr.io/r/stats/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">dist_name</span> <span class="op">==</span> <span class="st">"Jefferson County"</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu">select</span><span class="op">(</span><span class="va">year</span>, <span class="va">dist_name</span>, <span class="va">rev_total</span>, <span class="va">rev_total_pp</span><span class="op">)</span></span></code></pre></div>
 <pre><code><span><span class="co">## <span style="color: #949494;"># A tibble: 8 × 4</span></span></span>
 <span><span class="co">##   year  dist_name          rev_total rev_total_pp</span></span>
 <span><span class="co">##   <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span> <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>                  <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>        <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span></span></span>
@@ -173,9 +173,9 @@ CPI index relative to the 2011-12 school year:</p>
 <div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Examine the CPI index values</span></span>
 <span><span class="va">cpi_values</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/get_finance_data.html">get_finance_data</a></span><span class="op">(</span>yr <span class="op">=</span> <span class="st">"all"</span>, geo <span class="op">=</span> <span class="st">"KY"</span><span class="op">)</span> <span class="op">|&gt;</span></span>
-<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html" class="external-link">select</a></span><span class="op">(</span><span class="va">year</span>, <span class="va">cpi_sy12</span><span class="op">)</span> <span class="op">|&gt;</span></span>
-<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/distinct.html" class="external-link">distinct</a></span><span class="op">(</span><span class="op">)</span> <span class="op">|&gt;</span></span>
-<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/arrange.html" class="external-link">arrange</a></span><span class="op">(</span><span class="va">year</span><span class="op">)</span></span>
+<span>  <span class="fu">select</span><span class="op">(</span><span class="va">year</span>, <span class="va">cpi_sy12</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu">distinct</span><span class="op">(</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu">arrange</span><span class="op">(</span><span class="va">year</span><span class="op">)</span></span>
 <span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">cpi_values</span><span class="op">)</span></span></code></pre></div>
 <pre><code><span><span class="co">## <span style="color: #949494;"># A tibble: 11 × 2</span></span></span>
@@ -195,7 +195,7 @@ CPI index relative to the 2011-12 school year:</p>
 <div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Calculate cumulative inflation since 2012</span></span>
 <span><span class="va">cpi_values</span> <span class="op">|&gt;</span></span>
-<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span></span>
+<span>  <span class="fu">mutate</span><span class="op">(</span></span>
 <span>    inflation_since_2012 <span class="op">=</span> <span class="op">(</span><span class="va">cpi_sy12</span> <span class="op">-</span> <span class="fl">1</span><span class="op">)</span> <span class="op">*</span> <span class="fl">100</span>,</span>
 <span>    inflation_label <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/Round.html" class="external-link">round</a></span><span class="op">(</span><span class="va">inflation_since_2012</span>, <span class="fl">1</span><span class="op">)</span>, <span class="st">"%"</span><span class="op">)</span></span>
 <span>  <span class="op">)</span></span></code></pre></div>
@@ -222,34 +222,34 @@ inflation:</p>
 <div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># get multi-year data in nominal dollars</span></span>
 <span><span class="va">ky_nominal</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/get_finance_data.html">get_finance_data</a></span><span class="op">(</span>yr <span class="op">=</span> <span class="st">"all"</span>, geo <span class="op">=</span> <span class="st">"KY"</span>, cpi_adj <span class="op">=</span> <span class="st">"none"</span><span class="op">)</span> <span class="op">|&gt;</span> </span>
-<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span>type <span class="op">=</span> <span class="st">"Nominal dollars"</span><span class="op">)</span></span>
+<span>  <span class="fu">mutate</span><span class="op">(</span>type <span class="op">=</span> <span class="st">"Nominal dollars"</span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># get multi-year data adjusted to 2022 dollars</span></span>
 <span><span class="va">ky_real</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/get_finance_data.html">get_finance_data</a></span><span class="op">(</span>yr <span class="op">=</span> <span class="st">"all"</span>, geo <span class="op">=</span> <span class="st">"KY"</span>, cpi_adj <span class="op">=</span> <span class="st">"2022"</span><span class="op">)</span> <span class="op">|&gt;</span> </span>
-<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span>type <span class="op">=</span> <span class="st">"Real 2022 dollars"</span><span class="op">)</span></span>
+<span>  <span class="fu">mutate</span><span class="op">(</span>type <span class="op">=</span> <span class="st">"Real 2022 dollars"</span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># join data</span></span>
-<span><span class="va">ky_data</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/bind_rows.html" class="external-link">bind_rows</a></span><span class="op">(</span><span class="va">ky_nominal</span>, <span class="va">ky_real</span><span class="op">)</span></span>
+<span><span class="va">ky_data</span> <span class="op">&lt;-</span> <span class="fu">bind_rows</span><span class="op">(</span><span class="va">ky_nominal</span>, <span class="va">ky_real</span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># calculate statewide per-pupil revenue trends for real dollars</span></span>
 <span><span class="va">rev_trends</span> <span class="op">&lt;-</span> <span class="va">ky_data</span> <span class="op">|&gt;</span></span>
-<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/group_by.html" class="external-link">group_by</a></span><span class="op">(</span><span class="va">type</span>, <span class="va">year</span><span class="op">)</span> <span class="op">|&gt;</span></span>
-<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/summarise.html" class="external-link">summarize</a></span><span class="op">(</span></span>
+<span>  <span class="fu">group_by</span><span class="op">(</span><span class="va">type</span>, <span class="va">year</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu">summarize</span><span class="op">(</span></span>
 <span>    rev_local <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/sum.html" class="external-link">sum</a></span><span class="op">(</span><span class="va">rev_local</span>, na.rm <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span>,</span>
 <span>    rev_state <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/sum.html" class="external-link">sum</a></span><span class="op">(</span><span class="va">rev_state</span>, na.rm <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span>,</span>
 <span>    rev_fed <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/sum.html" class="external-link">sum</a></span><span class="op">(</span><span class="va">rev_fed</span>, na.rm <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span>,</span>
 <span>    enroll <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/sum.html" class="external-link">sum</a></span><span class="op">(</span><span class="va">enroll</span>, na.rm <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
 <span>  <span class="op">)</span> <span class="op">|&gt;</span> </span>
-<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span></span>
+<span>  <span class="fu">mutate</span><span class="op">(</span></span>
 <span>    rev_local_pp <span class="op">=</span> <span class="va">rev_local</span> <span class="op">/</span> <span class="va">enroll</span>,</span>
 <span>    rev_state_pp <span class="op">=</span> <span class="va">rev_state</span> <span class="op">/</span> <span class="va">enroll</span>,</span>
 <span>    rev_fed_pp <span class="op">=</span> <span class="va">rev_fed</span> <span class="op">/</span> <span class="va">enroll</span></span>
 <span>  <span class="op">)</span> <span class="op">|&gt;</span> </span>
-<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html" class="external-link">select</a></span><span class="op">(</span><span class="va">type</span>, <span class="va">year</span>, <span class="va">rev_local_pp</span><span class="op">:</span><span class="va">rev_fed_pp</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu">select</span><span class="op">(</span><span class="va">type</span>, <span class="va">year</span>, <span class="va">rev_local_pp</span><span class="op">:</span><span class="va">rev_fed_pp</span><span class="op">)</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu">pivot_longer</span><span class="op">(</span></span>
 <span>    cols <span class="op">=</span> <span class="va">rev_local_pp</span><span class="op">:</span><span class="va">rev_fed_pp</span>,</span>
 <span>    names_to <span class="op">=</span> <span class="st">"var"</span>, values_to <span class="op">=</span> <span class="st">"val"</span><span class="op">)</span> <span class="op">|&gt;</span> </span>
-<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span></span>
+<span>  <span class="fu">mutate</span><span class="op">(</span></span>
 <span>    var <span class="op">=</span> <span class="fu">stringr</span><span class="fu">::</span><span class="fu"><a href="https://stringr.tidyverse.org/reference/str_remove.html" class="external-link">str_remove_all</a></span><span class="op">(</span><span class="va">var</span>, <span class="st">"rev_"</span><span class="op">)</span>,</span>
 <span>    var <span class="op">=</span> <span class="fu">stringr</span><span class="fu">::</span><span class="fu"><a href="https://stringr.tidyverse.org/reference/str_remove.html" class="external-link">str_remove_all</a></span><span class="op">(</span><span class="va">var</span>, <span class="st">"_pp"</span><span class="op">)</span>,</span>
 <span>    var <span class="op">=</span> <span class="fu">stringr</span><span class="fu">::</span><span class="fu"><a href="https://stringr.tidyverse.org/reference/case.html" class="external-link">str_to_title</a></span><span class="op">(</span><span class="va">var</span><span class="op">)</span>,</span>
@@ -296,22 +296,22 @@ across the time series</li>
 <span></span>
 <span><span class="co"># get data with nominal dollars and cpi-adjusted for different base years</span></span>
 <span><span class="va">nominal</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/get_finance_data.html">get_finance_data</a></span><span class="op">(</span>yr <span class="op">=</span> <span class="st">"2012:2022"</span>, geo <span class="op">=</span> <span class="st">"KY"</span><span class="op">)</span> <span class="op">|&gt;</span></span>
-<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">dist_name</span> <span class="op">==</span> <span class="va">district_sample</span><span class="op">)</span> <span class="op">|&gt;</span></span>
-<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html" class="external-link">select</a></span><span class="op">(</span><span class="va">year</span>, <span class="va">rev_total_pp</span><span class="op">)</span> <span class="op">|&gt;</span></span>
-<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span>type <span class="op">=</span> <span class="st">"Nominal"</span><span class="op">)</span></span>
+<span>  <span class="fu"><a href="https://rdrr.io/r/stats/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">dist_name</span> <span class="op">==</span> <span class="va">district_sample</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu">select</span><span class="op">(</span><span class="va">year</span>, <span class="va">rev_total_pp</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu">mutate</span><span class="op">(</span>type <span class="op">=</span> <span class="st">"Nominal"</span><span class="op">)</span></span>
 <span></span>
 <span><span class="va">adjusted_2012</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/get_finance_data.html">get_finance_data</a></span><span class="op">(</span>yr <span class="op">=</span> <span class="st">"2012:2022"</span>, geo <span class="op">=</span> <span class="st">"KY"</span>, cpi_adj <span class="op">=</span> <span class="fl">2012</span><span class="op">)</span> <span class="op">|&gt;</span></span>
-<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">dist_name</span> <span class="op">==</span> <span class="va">district_sample</span><span class="op">)</span> <span class="op">|&gt;</span></span>
-<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html" class="external-link">select</a></span><span class="op">(</span><span class="va">year</span>, <span class="va">rev_total_pp</span><span class="op">)</span> <span class="op">|&gt;</span></span>
-<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span>type <span class="op">=</span> <span class="st">"2012 Dollars"</span><span class="op">)</span></span>
+<span>  <span class="fu"><a href="https://rdrr.io/r/stats/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">dist_name</span> <span class="op">==</span> <span class="va">district_sample</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu">select</span><span class="op">(</span><span class="va">year</span>, <span class="va">rev_total_pp</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu">mutate</span><span class="op">(</span>type <span class="op">=</span> <span class="st">"2012 Dollars"</span><span class="op">)</span></span>
 <span></span>
 <span><span class="va">adjusted_2022</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/get_finance_data.html">get_finance_data</a></span><span class="op">(</span>yr <span class="op">=</span> <span class="st">"2012:2022"</span>, geo <span class="op">=</span> <span class="st">"KY"</span>, cpi_adj <span class="op">=</span> <span class="fl">2022</span><span class="op">)</span> <span class="op">|&gt;</span></span>
-<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">dist_name</span> <span class="op">==</span> <span class="va">district_sample</span><span class="op">)</span> <span class="op">|&gt;</span></span>
-<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html" class="external-link">select</a></span><span class="op">(</span><span class="va">year</span>, <span class="va">rev_total_pp</span><span class="op">)</span> <span class="op">|&gt;</span></span>
-<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span>type <span class="op">=</span> <span class="st">"2022 Dollars"</span><span class="op">)</span></span>
+<span>  <span class="fu"><a href="https://rdrr.io/r/stats/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">dist_name</span> <span class="op">==</span> <span class="va">district_sample</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu">select</span><span class="op">(</span><span class="va">year</span>, <span class="va">rev_total_pp</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu">mutate</span><span class="op">(</span>type <span class="op">=</span> <span class="st">"2022 Dollars"</span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># join and plot data</span></span>
-<span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/bind_rows.html" class="external-link">bind_rows</a></span><span class="op">(</span><span class="va">nominal</span>, <span class="va">adjusted_2012</span>, <span class="va">adjusted_2022</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span><span class="fu">bind_rows</span><span class="op">(</span><span class="va">nominal</span>, <span class="va">adjusted_2012</span>, <span class="va">adjusted_2022</span><span class="op">)</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu">ggplot</span><span class="op">(</span><span class="fu">aes</span><span class="op">(</span>x <span class="op">=</span> <span class="va">year</span>, y <span class="op">=</span> <span class="va">rev_total_pp</span>, color <span class="op">=</span> <span class="va">type</span>, group <span class="op">=</span> <span class="va">type</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu">geom_line</span><span class="op">(</span>size <span class="op">=</span> <span class="fl">1.2</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu">scale_y_continuous</span><span class="op">(</span>labels <span class="op">=</span> <span class="fu">scales</span><span class="fu">::</span><span class="va"><a href="https://scales.r-lib.org/reference/dollar_format.html" class="external-link">dollar</a></span><span class="op">)</span> <span class="op">+</span></span>

@@ -74,7 +74,7 @@ school districts. This vignette will help you get started with the
 package’s core functionality.</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/bellwetherorg/edfinr" class="external-link">edfinr</a></span><span class="op">)</span></span>
-<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://dplyr.tidyverse.org" class="external-link">dplyr</a></span><span class="op">)</span></span></code></pre></div>
+<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://tidyverse.tidyverse.org" class="external-link">tidyverse</a></span><span class="op">)</span></span></code></pre></div>
 </div>
 <div class="section level2">
 <h2 id="core-function-get_finance_data">Core Function: get_finance_data()<a class="anchor" aria-label="anchor" href="#core-function-get_finance_data"></a>
@@ -108,10 +108,11 @@ dollar calculations</li>
 a year and state. For example, to get finance data for Kentucky school
 districts from the 2015-16 school year:</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">ky_sy16</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/get_finance_data.html">get_finance_data</a></span><span class="op">(</span>yr <span class="op">=</span> <span class="fl">2016</span>, geo <span class="op">=</span> <span class="st">"KY"</span><span class="op">)</span></span>
+<code class="sourceCode R"><span><span class="co"># download "skinny" dataset for a single year and a single staet</span></span>
+<span><span class="va">ky_sy16</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/get_finance_data.html">get_finance_data</a></span><span class="op">(</span>yr <span class="op">=</span> <span class="fl">2016</span>, geo <span class="op">=</span> <span class="st">"KY"</span><span class="op">)</span></span>
 <span></span>
-<span><span class="co"># View the structure of the returned data</span></span>
-<span><span class="fu"><a href="https://pillar.r-lib.org/reference/glimpse.html" class="external-link">glimpse</a></span><span class="op">(</span><span class="va">ky_sy16</span><span class="op">)</span></span></code></pre></div>
+<span><span class="co"># view the structure of the returned data</span></span>
+<span><span class="fu">glimpse</span><span class="op">(</span><span class="va">ky_sy16</span><span class="op">)</span></span></code></pre></div>
 <pre><code><span><span class="co">## Rows: 173</span></span>
 <span><span class="co">## Columns: 41</span></span>
 <span><span class="co">## $ ncesid          <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span> "2100030"<span style="color: #949494;">, </span>"2100070"<span style="color: #949494;">, </span>"2100081"<span style="color: #949494;">, </span>"2100090"<span style="color: #949494;">, </span>"2100120"<span style="color: #949494;">,</span>…</span></span>
@@ -165,14 +166,13 @@ characteristics - Total revenues by source (local, state, federal) -
 Current expenditures - Key demographic and economic indicators</p>
 <p>For more detailed analysis, you can request the “full” dataset with
 89 variables that includes: - All skinny dataset variables - Detailed
-expenditure breakdowns by function and object - Capital outlay and debt
-service details - COVID-19 federal assistance expenditures
-(2020-2022)</p>
+expenditure data - Data on spending of temporary pandemic-related
+federal funding</p>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co"># Get the full dataset with detailed expenditure data</span></span>
+<code class="sourceCode R"><span><span class="co"># download the full dataset with detailed expenditure data for a single year/state</span></span>
 <span><span class="va">ky_full_sy16</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/get_finance_data.html">get_finance_data</a></span><span class="op">(</span>yr <span class="op">=</span> <span class="st">"2016"</span>, geo <span class="op">=</span> <span class="st">"KY"</span>, dataset_type <span class="op">=</span> <span class="st">"full"</span><span class="op">)</span></span>
 <span></span>
-<span><span class="co"># See what additional variables are available</span></span>
+<span><span class="co"># view additional variables in "full" dataset</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/names.html" class="external-link">names</a></span><span class="op">(</span><span class="va">ky_full_sy16</span><span class="op">)</span><span class="op">[</span><span class="fl">42</span><span class="op">:</span><span class="fl">89</span><span class="op">]</span></span></code></pre></div>
 <pre><code><span><span class="co">##  [1] "exp_emp_salary"             "exp_emp_bene"              </span></span>
 <span><span class="co">##  [3] "exp_textbooks"              "exp_utilities"             </span></span>
@@ -205,16 +205,13 @@ service details - COVID-19 federal assistance expenditures
 <p>The <code><a href="../reference/get_finance_data.html">get_finance_data()</a></code> function makes it easy to access
 data across multiple years and states:</p>
 <div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co"># Get data for multiple states (SEC conference states) across multiple years</span></span>
+<code class="sourceCode R"><span><span class="co"># get data for multiple states across multiple years</span></span>
 <span><span class="va">sec_data</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/get_finance_data.html">get_finance_data</a></span><span class="op">(</span></span>
-<span>  yr <span class="op">=</span> <span class="st">"2018:2022"</span>,  <span class="co"># Years 2018 through 2022</span></span>
-<span>  geo <span class="op">=</span> <span class="st">"AL,AR,FL,GA,KY,LA,MS,MO,OK,SC,TN,TX"</span>  <span class="co"># Comma-separated state codes</span></span>
+<span>  yr <span class="op">=</span> <span class="st">"2018:2022"</span>,  <span class="co"># years 2018 through 2022</span></span>
+<span>  geo <span class="op">=</span> <span class="st">"AL,AR,FL,GA,KY,LA,MS,MO,OK,SC,TN,TX"</span>  <span class="co"># comma-separated state codes</span></span>
 <span><span class="op">)</span></span>
 <span></span>
-<span><span class="co"># Or get all available years for a single state</span></span>
-<span><span class="va">ky_all_years</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/get_finance_data.html">get_finance_data</a></span><span class="op">(</span>yr <span class="op">=</span> <span class="st">"all"</span>, geo <span class="op">=</span> <span class="st">"KY"</span><span class="op">)</span></span>
-<span></span>
-<span><span class="co"># Or get the most recent year for all states</span></span>
+<span><span class="co"># get the most recent year of data for all states</span></span>
 <span><span class="va">us_sy22</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/get_finance_data.html">get_finance_data</a></span><span class="op">(</span>yr <span class="op">=</span> <span class="fl">2022</span>, geo <span class="op">=</span> <span class="st">"all"</span><span class="op">)</span></span></code></pre></div>
 </div>
 <div class="section level2">
@@ -224,114 +221,64 @@ data across multiple years and states:</p>
 manipulation tools to analyze it. Here are some common analysis
 patterns:</p>
 <div class="section level3">
-<h3 id="finding-high-and-low-revenue-districts">Finding High and Low Revenue Districts<a class="anchor" aria-label="anchor" href="#finding-high-and-low-revenue-districts"></a>
+<h3 id="analyze-local-vs--total-revenue-per-pupil">Analyze Local vs. Total Revenue Per-Pupil<a class="anchor" aria-label="anchor" href="#analyze-local-vs--total-revenue-per-pupil"></a>
 </h3>
 <div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co"># identify the highest and lowest revenue districts in Kentucky</span></span>
-<span><span class="va">ky_sy22</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/get_finance_data.html">get_finance_data</a></span><span class="op">(</span>yr <span class="op">=</span> <span class="st">"2022"</span>, geo <span class="op">=</span> <span class="st">"KY"</span><span class="op">)</span></span>
+<code class="sourceCode R"><span><span class="co"># download 2022 data for connecticut</span></span>
+<span><span class="va">ct_sy22</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/get_finance_data.html">get_finance_data</a></span><span class="op">(</span>yr <span class="op">=</span> <span class="st">"2022"</span>, geo <span class="op">=</span> <span class="st">"CT"</span><span class="op">)</span></span>
 <span></span>
-<span><span class="co"># districts with highest per-pupil revenue</span></span>
-<span><span class="va">hi_rev_dist</span> <span class="op">&lt;-</span> <span class="va">ky_sy22</span> <span class="op">|&gt;</span></span>
-<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html" class="external-link">select</a></span><span class="op">(</span><span class="va">dist_name</span>, <span class="va">enroll</span>, <span class="va">rev_total_pp</span>, <span class="va">exp_cur_pp</span><span class="op">)</span> <span class="op">|&gt;</span></span>
-<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/arrange.html" class="external-link">arrange</a></span><span class="op">(</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/desc.html" class="external-link">desc</a></span><span class="op">(</span><span class="va">rev_total_pp</span><span class="op">)</span><span class="op">)</span> <span class="op">|&gt;</span></span>
-<span>  <span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="fl">10</span><span class="op">)</span></span>
-<span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">hi_rev_dist</span><span class="op">)</span></span></code></pre></div>
-<pre><code><span><span class="co">## <span style="color: #949494;"># A tibble: 10 × 4</span></span></span>
-<span><span class="co">##    dist_name             enroll rev_total_pp exp_cur_pp</span></span>
-<span><span class="co">##    <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>                  <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>        <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>      <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span></span></span>
-<span><span class="co">## <span style="color: #BCBCBC;"> 1</span> Anchorage Independent    400       <span style="text-decoration: underline;">25</span>208.     <span style="text-decoration: underline;">23</span>152.</span></span>
-<span><span class="co">## <span style="color: #BCBCBC;"> 2</span> Newport Independent     <span style="text-decoration: underline;">1</span>339       <span style="text-decoration: underline;">22</span>994.     <span style="text-decoration: underline;">21</span>796.</span></span>
-<span><span class="co">## <span style="color: #BCBCBC;"> 3</span> Breathitt County        <span style="text-decoration: underline;">1</span>767       <span style="text-decoration: underline;">21</span>096.     <span style="text-decoration: underline;">14</span>097.</span></span>
-<span><span class="co">## <span style="color: #BCBCBC;"> 4</span> Jefferson County       <span style="text-decoration: underline;">94</span>393       <span style="text-decoration: underline;">21</span>055.     <span style="text-decoration: underline;">17</span>216.</span></span>
-<span><span class="co">## <span style="color: #BCBCBC;"> 5</span> Bardstown Independent   <span style="text-decoration: underline;">2</span>645       <span style="text-decoration: underline;">20</span>227.     <span style="text-decoration: underline;">13</span>800.</span></span>
-<span><span class="co">## <span style="color: #BCBCBC;"> 6</span> Robertson County         439       <span style="text-decoration: underline;">20</span>091.     <span style="text-decoration: underline;">14</span>754.</span></span>
-<span><span class="co">## <span style="color: #BCBCBC;"> 7</span> Trigg County            <span style="text-decoration: underline;">1</span>978       <span style="text-decoration: underline;">19</span>531.     <span style="text-decoration: underline;">12</span>417.</span></span>
-<span><span class="co">## <span style="color: #BCBCBC;"> 8</span> Knox County             <span style="text-decoration: underline;">3</span>970       <span style="text-decoration: underline;">19</span>529.     <span style="text-decoration: underline;">14</span>840.</span></span>
-<span><span class="co">## <span style="color: #BCBCBC;"> 9</span> Lawrence County         <span style="text-decoration: underline;">2</span>446       <span style="text-decoration: underline;">19</span>019.     <span style="text-decoration: underline;">13</span>157.</span></span>
-<span><span class="co">## <span style="color: #BCBCBC;">10</span> Fulton Independent       318       <span style="text-decoration: underline;">18</span>962.     <span style="text-decoration: underline;">18</span>038.</span></span></code></pre>
-<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co"># districts with lowest per-pupil revenue</span></span>
-<span><span class="va">lo_rev_dist</span> <span class="op">&lt;-</span> <span class="va">ky_sy22</span> <span class="op">|&gt;</span></span>
-<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">enroll</span> <span class="op">&gt;=</span> <span class="fl">100</span><span class="op">)</span> <span class="op">|&gt;</span>  <span class="co"># focus on districts with meaningful enrollment</span></span>
-<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html" class="external-link">select</a></span><span class="op">(</span><span class="va">dist_name</span>, <span class="va">enroll</span>, <span class="va">rev_total_pp</span>, <span class="va">exp_cur_pp</span><span class="op">)</span> <span class="op">|&gt;</span></span>
-<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/arrange.html" class="external-link">arrange</a></span><span class="op">(</span><span class="va">rev_total_pp</span><span class="op">)</span> <span class="op">|&gt;</span></span>
-<span>  <span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="fl">10</span><span class="op">)</span></span>
-<span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">hi_rev_dist</span><span class="op">)</span></span></code></pre></div>
-<pre><code><span><span class="co">## <span style="color: #949494;"># A tibble: 10 × 4</span></span></span>
-<span><span class="co">##    dist_name             enroll rev_total_pp exp_cur_pp</span></span>
-<span><span class="co">##    <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>                  <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>        <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>      <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span></span></span>
-<span><span class="co">## <span style="color: #BCBCBC;"> 1</span> Anchorage Independent    400       <span style="text-decoration: underline;">25</span>208.     <span style="text-decoration: underline;">23</span>152.</span></span>
-<span><span class="co">## <span style="color: #BCBCBC;"> 2</span> Newport Independent     <span style="text-decoration: underline;">1</span>339       <span style="text-decoration: underline;">22</span>994.     <span style="text-decoration: underline;">21</span>796.</span></span>
-<span><span class="co">## <span style="color: #BCBCBC;"> 3</span> Breathitt County        <span style="text-decoration: underline;">1</span>767       <span style="text-decoration: underline;">21</span>096.     <span style="text-decoration: underline;">14</span>097.</span></span>
-<span><span class="co">## <span style="color: #BCBCBC;"> 4</span> Jefferson County       <span style="text-decoration: underline;">94</span>393       <span style="text-decoration: underline;">21</span>055.     <span style="text-decoration: underline;">17</span>216.</span></span>
-<span><span class="co">## <span style="color: #BCBCBC;"> 5</span> Bardstown Independent   <span style="text-decoration: underline;">2</span>645       <span style="text-decoration: underline;">20</span>227.     <span style="text-decoration: underline;">13</span>800.</span></span>
-<span><span class="co">## <span style="color: #BCBCBC;"> 6</span> Robertson County         439       <span style="text-decoration: underline;">20</span>091.     <span style="text-decoration: underline;">14</span>754.</span></span>
-<span><span class="co">## <span style="color: #BCBCBC;"> 7</span> Trigg County            <span style="text-decoration: underline;">1</span>978       <span style="text-decoration: underline;">19</span>531.     <span style="text-decoration: underline;">12</span>417.</span></span>
-<span><span class="co">## <span style="color: #BCBCBC;"> 8</span> Knox County             <span style="text-decoration: underline;">3</span>970       <span style="text-decoration: underline;">19</span>529.     <span style="text-decoration: underline;">14</span>840.</span></span>
-<span><span class="co">## <span style="color: #BCBCBC;"> 9</span> Lawrence County         <span style="text-decoration: underline;">2</span>446       <span style="text-decoration: underline;">19</span>019.     <span style="text-decoration: underline;">13</span>157.</span></span>
-<span><span class="co">## <span style="color: #BCBCBC;">10</span> Fulton Independent       318       <span style="text-decoration: underline;">18</span>962.     <span style="text-decoration: underline;">18</span>038.</span></span></code></pre>
+<span><span class="co"># plot local revenue vs. total revenue w/ urbanicity + enrollment</span></span>
+<span><span class="fu">ggplot</span><span class="op">(</span><span class="va">ct_sy22</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu">geom_point</span><span class="op">(</span><span class="fu">aes</span><span class="op">(</span></span>
+<span>    x <span class="op">=</span> <span class="va">rev_local_pp</span>, </span>
+<span>    y <span class="op">=</span> <span class="va">rev_total_pp</span>,</span>
+<span>    color <span class="op">=</span> <span class="va">urbanicity</span>,</span>
+<span>    size <span class="op">=</span> <span class="va">enroll</span><span class="op">)</span>,</span>
+<span>    alpha <span class="op">=</span> <span class="fl">.6</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu">scale_size_area</span><span class="op">(</span></span>
+<span>    max_size <span class="op">=</span> <span class="fl">10</span>,</span>
+<span>    labels <span class="op">=</span> <span class="fu">scales</span><span class="fu">::</span><span class="fu"><a href="https://scales.r-lib.org/reference/label_number.html" class="external-link">label_comma</a></span><span class="op">(</span><span class="op">)</span></span>
+<span>    <span class="op">)</span> <span class="op">+</span>    </span>
+<span>  <span class="fu">scale_x_continuous</span><span class="op">(</span>labels <span class="op">=</span> <span class="fu">scales</span><span class="fu">::</span><span class="fu"><a href="https://scales.r-lib.org/reference/dollar_format.html" class="external-link">label_dollar</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu">scale_y_continuous</span><span class="op">(</span>labels <span class="op">=</span> <span class="fu">scales</span><span class="fu">::</span><span class="fu"><a href="https://scales.r-lib.org/reference/dollar_format.html" class="external-link">label_dollar</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu">labs</span><span class="op">(</span></span>
+<span>    title <span class="op">=</span> <span class="st">"Connecticut Districts' Local vs. Total Revenue Per-Pupil, SY2021-22"</span>,</span>
+<span>    x <span class="op">=</span> <span class="st">"Local Revenue Per-Pupil"</span>, </span>
+<span>    y <span class="op">=</span> <span class="st">"Total Revenue Per-Pupil"</span>, </span>
+<span>    size <span class="op">=</span> <span class="st">"Enrollment"</span>, </span>
+<span>    color <span class="op">=</span> <span class="st">"Urbanicity"</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu">theme_bw</span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
+<p><img src="basic-usage_files/figure-html/analysis-1-1.png" width="700"></p>
 </div>
 <div class="section level3">
-<h3 id="analyzing-revenue-sources">Analyzing Revenue Sources<a class="anchor" aria-label="anchor" href="#analyzing-revenue-sources"></a>
+<h3 id="analyzing-revenue-sources-by-urbanicity">Analyzing Revenue Sources by Urbanicity<a class="anchor" aria-label="anchor" href="#analyzing-revenue-sources-by-urbanicity"></a>
 </h3>
-<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># compare revenue sources across districts</span></span>
-<span><span class="va">revenue_analysis</span> <span class="op">&lt;-</span> <span class="va">ky_sy22</span> <span class="op">|&gt;</span></span>
-<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span></span>
+<span><span class="va">revenue_analysis</span> <span class="op">&lt;-</span> <span class="va">ct_sy22</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu">mutate</span><span class="op">(</span></span>
 <span>    pct_local <span class="op">=</span> <span class="va">rev_local</span> <span class="op">/</span> <span class="va">rev_total</span>,</span>
 <span>    pct_state <span class="op">=</span> <span class="va">rev_state</span> <span class="op">/</span> <span class="va">rev_total</span>,</span>
 <span>    pct_federal <span class="op">=</span> <span class="va">rev_fed</span> <span class="op">/</span> <span class="va">rev_total</span></span>
 <span>  <span class="op">)</span> <span class="op">|&gt;</span></span>
-<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html" class="external-link">select</a></span><span class="op">(</span><span class="va">dist_name</span>, <span class="va">urbanicity</span>, <span class="va">pct_local</span>, <span class="va">pct_state</span>, <span class="va">pct_federal</span><span class="op">)</span> <span class="op">|&gt;</span></span>
-<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/group_by.html" class="external-link">group_by</a></span><span class="op">(</span><span class="va">urbanicity</span><span class="op">)</span> <span class="op">|&gt;</span></span>
-<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/summarise.html" class="external-link">summarize</a></span><span class="op">(</span></span>
+<span>  <span class="fu">select</span><span class="op">(</span><span class="va">dist_name</span>, <span class="va">urbanicity</span>, <span class="va">enroll</span>, <span class="va">pct_local</span>, <span class="va">pct_state</span>, <span class="va">pct_federal</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu">group_by</span><span class="op">(</span><span class="va">urbanicity</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu">summarize</span><span class="op">(</span></span>
 <span>    avg_pct_local <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/mean.html" class="external-link">mean</a></span><span class="op">(</span><span class="va">pct_local</span>, na.rm <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span>,</span>
 <span>    avg_pct_state <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/mean.html" class="external-link">mean</a></span><span class="op">(</span><span class="va">pct_state</span>, na.rm <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span>,</span>
 <span>    avg_pct_federal <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/mean.html" class="external-link">mean</a></span><span class="op">(</span><span class="va">pct_federal</span>, na.rm <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span>,</span>
-<span>    n_districts <span class="op">=</span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/context.html" class="external-link">n</a></span><span class="op">(</span><span class="op">)</span></span>
+<span>    n_districts <span class="op">=</span> <span class="fu">n</span><span class="op">(</span><span class="op">)</span>,</span>
+<span>    enrollment <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/sum.html" class="external-link">sum</a></span><span class="op">(</span><span class="va">enroll</span>, na.rm <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
 <span>  <span class="op">)</span></span>
 <span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">revenue_analysis</span><span class="op">)</span></span></code></pre></div>
-<pre><code><span><span class="co">## <span style="color: #949494;"># A tibble: 4 × 5</span></span></span>
-<span><span class="co">##   urbanicity avg_pct_local avg_pct_state avg_pct_federal n_districts</span></span>
-<span><span class="co">##   <span style="color: #949494; font-style: italic;">&lt;fct&gt;</span>              <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>         <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>           <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>       <span style="color: #949494; font-style: italic;">&lt;int&gt;</span></span></span>
-<span><span class="co">## <span style="color: #BCBCBC;">1</span> City               0.342         0.454           0.205           6</span></span>
-<span><span class="co">## <span style="color: #BCBCBC;">2</span> Suburb             0.370         0.460           0.170          24</span></span>
-<span><span class="co">## <span style="color: #BCBCBC;">3</span> Town               0.254         0.520           0.226          55</span></span>
-<span><span class="co">## <span style="color: #BCBCBC;">4</span> Rural              0.223         0.542           0.235          86</span></span></code></pre>
-</div>
-<div class="section level3">
-<h3 id="working-with-detailed-expenditure-data">Working with Detailed Expenditure Data<a class="anchor" aria-label="anchor" href="#working-with-detailed-expenditure-data"></a>
-</h3>
-<div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co"># analyze COVID-19 federal assistance spending (requires full dataset)</span></span>
-<span><span class="va">ky_full_sy22</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/get_finance_data.html">get_finance_data</a></span><span class="op">(</span>yr <span class="op">=</span> <span class="st">"2022"</span>, geo <span class="op">=</span> <span class="st">"KY"</span>, dataset_type <span class="op">=</span> <span class="st">"full"</span><span class="op">)</span></span>
-<span></span>
-<span><span class="va">covid_spending</span> <span class="op">&lt;-</span> <span class="va">ky_full_sy22</span> <span class="op">|&gt;</span></span>
-<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="op">!</span><span class="fu"><a href="https://rdrr.io/r/base/NA.html" class="external-link">is.na</a></span><span class="op">(</span><span class="va">exp_covid_total</span><span class="op">)</span>, <span class="va">exp_covid_total</span> <span class="op">&gt;</span> <span class="fl">0</span><span class="op">)</span> <span class="op">|&gt;</span></span>
-<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span></span>
-<span>    covid_pp <span class="op">=</span> <span class="va">exp_covid_total</span> <span class="op">/</span> <span class="va">enroll</span>,</span>
-<span>    pct_of_total_exp <span class="op">=</span> <span class="va">exp_covid_total</span> <span class="op">/</span> <span class="va">exp_cur_total</span></span>
-<span>  <span class="op">)</span> <span class="op">|&gt;</span></span>
-<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html" class="external-link">select</a></span><span class="op">(</span><span class="va">dist_name</span>, <span class="va">enroll</span>, <span class="va">exp_covid_total</span>, <span class="va">covid_pp</span>, <span class="va">pct_of_total_exp</span><span class="op">)</span> <span class="op">|&gt;</span></span>
-<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/arrange.html" class="external-link">arrange</a></span><span class="op">(</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/desc.html" class="external-link">desc</a></span><span class="op">(</span><span class="va">covid_pp</span><span class="op">)</span><span class="op">)</span></span>
-<span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">covid_spending</span>, <span class="fl">10</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
-<pre><code><span><span class="co">## <span style="color: #949494;"># A tibble: 10 × 5</span></span></span>
-<span><span class="co">##    dist_name               enroll exp_covid_total covid_pp pct_of_total_exp</span></span>
-<span><span class="co">##    <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>                    <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>           <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>            <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span></span></span>
-<span><span class="co">## <span style="color: #BCBCBC;"> 1</span> Murray Independent        <span style="text-decoration: underline;">1</span>771         6<span style="text-decoration: underline;">918</span>000    <span style="text-decoration: underline;">3</span>906.            0.269</span></span>
-<span><span class="co">## <span style="color: #BCBCBC;"> 2</span> Owsley County              772         2<span style="text-decoration: underline;">680</span>000    <span style="text-decoration: underline;">3</span>472.            0.228</span></span>
-<span><span class="co">## <span style="color: #BCBCBC;"> 3</span> Newport Independent       <span style="text-decoration: underline;">1</span>339         3<span style="text-decoration: underline;">819</span>000    <span style="text-decoration: underline;">2</span>852.            0.131</span></span>
-<span><span class="co">## <span style="color: #BCBCBC;"> 4</span> Paris Independent          760         2<span style="text-decoration: underline;">067</span>000    <span style="text-decoration: underline;">2</span>720.            0.181</span></span>
-<span><span class="co">## <span style="color: #BCBCBC;"> 5</span> Bell County               <span style="text-decoration: underline;">2</span>518         6<span style="text-decoration: underline;">771</span>000    <span style="text-decoration: underline;">2</span>689.            0.190</span></span>
-<span><span class="co">## <span style="color: #BCBCBC;"> 6</span> Caverna Independent        645         1<span style="text-decoration: underline;">718</span>000    <span style="text-decoration: underline;">2</span>664.            0.151</span></span>
-<span><span class="co">## <span style="color: #BCBCBC;"> 7</span> Middlesboro Independent   <span style="text-decoration: underline;">1</span>079         2<span style="text-decoration: underline;">732</span>000    <span style="text-decoration: underline;">2</span>532.            0.165</span></span>
-<span><span class="co">## <span style="color: #BCBCBC;"> 8</span> Wolfe County              <span style="text-decoration: underline;">1</span>146         2<span style="text-decoration: underline;">821</span>000    <span style="text-decoration: underline;">2</span>462.            0.148</span></span>
-<span><span class="co">## <span style="color: #BCBCBC;"> 9</span> Breckinridge County       <span style="text-decoration: underline;">2</span>707         6<span style="text-decoration: underline;">299</span>000    <span style="text-decoration: underline;">2</span>327.            0.182</span></span>
-<span><span class="co">## <span style="color: #BCBCBC;">10</span> Lincoln County            <span style="text-decoration: underline;">3</span>399         7<span style="text-decoration: underline;">671</span>000    <span style="text-decoration: underline;">2</span>257.            0.169</span></span></code></pre>
+<pre><code><span><span class="co">## <span style="color: #949494;"># A tibble: 4 × 6</span></span></span>
+<span><span class="co">##   urbanicity avg_pct_local avg_pct_state avg_pct_federal n_districts enrollment</span></span>
+<span><span class="co">##   <span style="color: #949494; font-style: italic;">&lt;fct&gt;</span>              <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>         <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>           <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>       <span style="color: #949494; font-style: italic;">&lt;int&gt;</span>      <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span></span></span>
+<span><span class="co">## <span style="color: #BCBCBC;">1</span> City               0.250         0.608          0.143           29     <span style="text-decoration: underline;">126</span>751</span></span>
+<span><span class="co">## <span style="color: #BCBCBC;">2</span> Suburb             0.649         0.289          0.062<span style="text-decoration: underline;">3</span>          85     <span style="text-decoration: underline;">285</span>922</span></span>
+<span><span class="co">## <span style="color: #BCBCBC;">3</span> Town               0.584         0.351          0.064<span style="text-decoration: underline;">9</span>           8      <span style="text-decoration: underline;">14</span>823</span></span>
+<span><span class="co">## <span style="color: #BCBCBC;">4</span> Rural              0.649         0.303          0.049<span style="text-decoration: underline;">0</span>          65      <span style="text-decoration: underline;">52</span>477</span></span></code></pre>
 </div>
 </div>
 <div class="section level2">
