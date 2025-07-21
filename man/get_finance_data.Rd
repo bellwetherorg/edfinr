@@ -18,7 +18,7 @@ get_finance_data(
 a range ("2020:2022"), or "all" for all available years. Defaults to "2022".}
 
 \item{geo}{A string specifying the geographic scope. Can be "all" for all states (default),
-a single state code ("KY"), or a comma-separated list of uppercase state codes ("IN,KY,OH,TN").}
+a single state code ("KY"), or a comma-separated list of state codes ("IN,KY,OH,TN").}
 
 \item{dataset_type}{A string specifying whether to download the "skinny" (default) or "full" dataset.
 The skinny version excludes detailed expenditure data for faster downloads.}

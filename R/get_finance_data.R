@@ -9,7 +9,7 @@
 #' @param yr A string specifying the year(s) to retrieve. Can be a single year ("2022"),
 #'           a range ("2020:2022"), or "all" for all available years. Defaults to "2022".
 #' @param geo A string specifying the geographic scope. Can be "all" for all states (default),
-#'            a single state code ("KY"), or a comma-separated list of uppercase state codes ("IN,KY,OH,TN").
+#'            a single state code ("KY"), or a comma-separated list of state codes ("IN,KY,OH,TN").
 #' @param dataset_type A string specifying whether to download the "skinny" (default) or "full" dataset.
 #'                     The skinny version excludes detailed expenditure data for faster downloads.
 #' @param cpi_adj A string specifying the CPI adjustment baseline year. Can be "none" (default) 
@@ -98,7 +98,7 @@ get_finance_data <- function(yr = "2022", geo = "all", dataset_type = "skinny", 
 
   # validate geography parameter
   if (geo != "all") {
-    states <- strsplit(geo, ",")[[1]]
+    states <- toupper(strsplit(geo, ",")[[1]])
 
     # check if all provided states are valid
     invalid_states <- states[!states %in% valid_states]
