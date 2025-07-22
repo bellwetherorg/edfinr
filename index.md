@@ -1,3 +1,7 @@
+<!-- badges: start -->
+  [![R-CMD-check](https://github.com/bellwetherorg/edfinr/actions/workflows/R-CMD-check.yaml/badge.svghttps://github.com/bellwetherorg/edfinr/actions/workflows/R-CMD-check.yaml/badge.svghttps://github.com/bellwetherorg/edfinr/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/bellwetherorg/edfinr/actions/workflows/R-CMD-check.yaml)
+  <!-- badges: end -->
+
 __edfinr__ is an R package for downloading and analyzing education finance data. It includes cleaned data from the Annual Survey of School System Finances along with data from other surveys administered by the National Center for Education Statistics (NCES) and U.S Census Bureau.
 
 You can install the development version of __edfinr__ from GitHub with:
