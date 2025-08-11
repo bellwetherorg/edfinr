@@ -68,21 +68,10 @@
 <div class="section level2">
 <h2 id="overview">Overview<a class="anchor" aria-label="anchor" href="#overview"></a>
 </h2>
-<p>This vignette provides detailed information about the data sources,
-processing methods, and quality controls used in the <code>edfinr</code>
-package. Understanding these details will help you interpret the data
-correctly and make appropriate analytical decisions.</p>
-<div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/bellwetherorg/edfinr" class="external-link">edfinr</a></span><span class="op">)</span></span>
-<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://dplyr.tidyverse.org" class="external-link">dplyr</a></span><span class="op">)</span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; Attaching package: 'dplyr'</span></span>
-<span><span class="co">#&gt; The following objects are masked from 'package:stats':</span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt;     filter, lag</span></span>
-<span><span class="co">#&gt; The following objects are masked from 'package:base':</span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt;     intersect, setdiff, setequal, union</span></span></code></pre></div>
+<p>This vignette provides detailed information about the data sources
+and processing methods used to prepare the data used by the
+<code>edfinr</code> package. Understanding these details will help you
+interpret the data appropriately and inform analytical decisions.</p>
 </div>
 <div class="section level2">
 <h2 id="data-sources">Data Sources<a class="anchor" aria-label="anchor" href="#data-sources"></a>
@@ -274,6 +263,35 @@ excluded.</li>
 dollars are excluded.</li>
 <li>Connecticut LEAs consisting of semi-private high schools are removed
 (NCES IDs “0905371”, “0905372”, and “0905373”).</li>
+</ul>
+</div>
+<div class="section level2">
+<h2 id="data-notes-and-cautions">Data Notes and Cautions<a class="anchor" aria-label="anchor" href="#data-notes-and-cautions"></a>
+</h2>
+<p>Users should note the following when working with the
+<code>edfinr</code> datasets:</p>
+<ul>
+<li>Some variables were originally coded with <code>-1</code> to
+indicate missing values; these have been replaced with <code>NA</code>
+during processing.</li>
+<li>During data processing, we identified a sharp rise in the number of
+California districts appearing only from 2019 onward in the data. This
+reflects the fact that many charter schools became separate LEAs in
+those years. Beginning in 2018–19, a wave of California charter schools
+switched to independent CALPADS/CBEDS reporting and thus were assigned
+their own NCES LEA IDs for the first time. Once in the NCES LEA
+universe, those new charter‐LEAs automatically show up in the F-33
+finance survey (with blanks or flags if they report no finance data),
+and Census’s SAIPE and ACS school‐district products (which mirror NCES
+LEA boundaries).</li>
+<li>The joined dataset represents a synthesis of data from multiple
+sources; discrepancies in source data formats may lead to minor
+variations.</li>
+<li>Inflation and adjustment factors (e.g., CPI adjustments) are based
+on averages and may not perfectly reflect local cost variations.</li>
+<li><strong>Caution is advised when comparing data across fiscal years
+due to potential differences in data collection and processing
+methods.</strong></li>
 </ul>
 </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
