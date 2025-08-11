@@ -34,7 +34,8 @@ will be added to the output showing the adjustment index used for each row.}
 \item{refresh}{A logical value indicating whether to force a refresh of the cached data. Default is FALSE.}
 
 \item{quiet}{A logical value indicating whether to suppress download progress messages.
-Default is FALSE.}
+Default is FALSE. Note: Cache is stored in R's temporary directory and will be cleared when 
+the R session ends.}
 }
 \value{
 A tibble containing the requested education finance data.

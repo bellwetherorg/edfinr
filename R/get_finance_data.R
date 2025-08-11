@@ -21,7 +21,8 @@
 #'                 will be added to the output showing the adjustment index used for each row.
 #' @param refresh A logical value indicating whether to force a refresh of the cached data. Default is FALSE.
 #' @param quiet A logical value indicating whether to suppress download progress messages.
-#'              Default is FALSE.
+#'              Default is FALSE. Note: Cache is stored in R's temporary directory and will be cleared when 
+#'              the R session ends.
 #' @return A tibble containing the requested education finance data.
 #' @export
 #'
@@ -203,7 +204,7 @@ get_finance_data <- function(yr = "2022", geo = "all", dataset_type = "skinny", 
   # process geography parameter
   if (geo != "all") {
     # handle comma-separated list of states
-    states <- strsplit(geo, ",")[[1]]
+    states <- toupper(strsplit(geo, ",")[[1]])
     data <- dplyr::filter(data, .data$state %in% states)
   }
   
@@ -248,7 +249,7 @@ get_finance_data <- function(yr = "2022", geo = "all", dataset_type = "skinny", 
         "exp_supp_instr_sal", "exp_supp_instr_bene", "exp_supp_gen_admin_total", 
         "exp_supp_gen_admin_sal", "exp_supp_gen_admin_bene", "exp_supp_sch_admin_total", 
         "exp_supp_sch_admin_sal", "exp_supp_sch_admin_bene", "exp_supp_ops_total", 
-        "exp_supp_opps_sal", "exp_supp_opps_bene", "exp_supp_trans_total", 
+        "exp_supp_ops_sal", "exp_supp_ops_bene", "exp_supp_trans_total", 
         "exp_supp_trans_sal", "exp_supp_trans_bene", "exp_central_serv_total", 
         "exp_central_serv_sal", "exp_central_serv_bene", "exp_noninstr_food_total", 
         "exp_noninstr_food_sal", "exp_noninstr_food_bene", "exp_noninstr_ent_ops_total", 

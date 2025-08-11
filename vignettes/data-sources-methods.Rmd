@@ -7,23 +7,9 @@ vignette: >
   %\VignetteEncoding{UTF-8}
 ---
 
-```{r, include = FALSE}
-knitr::opts_chunk$set(
-  collapse = TRUE,
-  comment = "#>",
-  eval = TRUE
-)
-```
-
 ## Overview
 
-This vignette provides detailed information about the data sources, processing methods, and quality controls used in the `edfinr` package. Understanding these details will help you interpret the data correctly and make appropriate analytical decisions.
-
-```{r setup}
-library(edfinr)
-library(dplyr)
-```
-
+This vignette provides detailed information about the data sources and processing methods used to prepare the data used by the `edfinr` package. Understanding these details will help you interpret the data appropriately and inform analytical decisions.
 
 ## Data Sources
 
@@ -145,3 +131,13 @@ Additional transformations are applied after the join:
 - Districts where total revenue per-pupil is greater than $70,000 in 2011-12 dollars are excluded.
 - Districts where total revenue per pupil is less than $500 in 2011-12 dollars are excluded.
 - Connecticut LEAs consisting of semi-private high schools are removed (NCES IDs "0905371", "0905372", and "0905373").
+
+## Data Notes and Cautions
+
+Users should note the following when working with the `edfinr` datasets:
+
+- Some variables were originally coded with `-1` to indicate missing values; these have been replaced with `NA` during processing.
+- During data processing, we identified a sharp rise in the number of California districts appearing only from 2019 onward in the data. This reflects the fact that many charter schools became separate LEAs in those years. Beginning in 2018–19, a wave of California charter schools switched to independent CALPADS/CBEDS reporting and thus were assigned their own NCES LEA IDs for the first time. Once in the NCES LEA universe, those new charter‐LEAs automatically show up in the F-33 finance survey (with blanks or flags if they report no finance data), and Census’s SAIPE and ACS school‐district products (which mirror NCES LEA boundaries).
+- The joined dataset represents a synthesis of data from multiple sources; discrepancies in source data formats may lead to minor variations.
+- Inflation and adjustment factors (e.g., CPI adjustments) are based on averages and may not perfectly reflect local cost variations.
+- **Caution is advised when comparing data across fiscal years due to potential differences in data collection and processing methods.**
