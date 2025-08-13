@@ -31,7 +31,3 @@ Users should note the following when working with the __edfinr__ datasets:
 - **Alex Spurrier** ([alex.spurrier@bellwether.org](mailto:alex.spurrier@bellwether.org))  - lead developer and package maintainer
 - **Krista Kaput** - core development and feature implementation
 - **Michael Chrzan** - data processing functions and testing
-
-## License
-
-MIT License
