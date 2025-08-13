@@ -34,11 +34,11 @@ library(tidyverse)
 
 The primary function in `edfinr` is `get_finance_data()`, which provides access to comprehensive school finance data from school years 2011-12 through 2021-22. The function combines data from multiple sources:
 
-- **Financial data**: Revenue and expenditure data from NCES F-33 survey
-- **Enrollment**: Student counts from NCES Common Core of Data
-- **Demographics**: Poverty estimates from Census SAIPE
-- **Community characteristics**: Income and education data from American Community Survey
-- **Inflation adjustments**: CPI-U data for constant dollar calculations
+- **Financial data**: Revenue and expenditure data from the National Center for Education Statistics (NCES) version of the F-33 survey.
+- **Enrollment**: Student counts from NCES Common Core of Data.
+- **Demographics**: Poverty estimates from the U.S. Census Bureau Small Area Income and Poverty Estimates (SAIPE).
+- **Community characteristics**: Income and education data from American Community Survey (ACS).
+- **Inflation adjustments**: Consumer Price Index for All Urban Consumers (CPI-U) data for constant dollar calculations.
 
 ## Basic Usage
 
@@ -54,15 +54,15 @@ glimpse(ky_sy16)
 ## Dataset Types: Skinny vs. Full
 
 By default, `get_finance_data()` returns a "skinny" dataset with 41 essential variables covering:
-- District identifiers and characteristics
-- Total revenues by source (local, state, federal)
-- Current expenditures
-- Key demographic and economic indicators
+- District identifiers and characteristics.
+- Total revenues by source (local, state, federal).
+- Current expenditures.
+- Key demographic and economic indicators.
 
 For more detailed analysis, you can request the "full" dataset with 89 variables that includes:
-- All skinny dataset variables
-- Detailed expenditure data
-- Data on spending of temporary pandemic-related federal funding
+- All skinny dataset variables.
+- Detailed expenditure data.
+- Data on spending of temporary pandemic-related federal funding.
 
 ```{r example-2}
 # download the full dataset with detailed expenditure data for a single year/state
@@ -148,7 +148,7 @@ print(revenue_analysis)
 
 For more information about the data and methods used in this package:
 
-- Use `list_variables()` to see all available variables and their descriptions
-- Use `get_states()` to see valid state codes
-- See the "CPI Adjustments" vignette for information about inflation adjustments
-- See the "Data Sources and Methods" vignette for detailed methodology
+- Use `list_variables()` to see all available variables and their descriptions.
+- Use `get_states()` to see valid state codes.
+- See the "CPI Adjustments" vignette for information about inflation adjustments.
+- See the "Data Sources and Methods" vignette for detailed methodology.

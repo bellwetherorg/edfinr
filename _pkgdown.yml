@@ -22,11 +22,11 @@ navbar:
     articles:
       text: Articles
       menu:
-      - text: Basic usage of edfinr
+      - text: Basic Usage of edfinr
         href: articles/basic-usage.html
       - text: CPI Adjustments
         href: articles/cpi-adjustments.html
-      - text: Data sources and methods
+      - text: Data Sources and Methodology
         href: articles/data-sources-methods.html
     github:
       icon: fa-github fa-lg

@@ -1,3 +1,3 @@
-# edfinr 1.0.0
+# edfinr 0.1.0
 
 * Initial CRAN submission.
