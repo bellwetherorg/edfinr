@@ -5,14 +5,14 @@
 <meta charset="utf-8">
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-<title>Access Tidy Education Finance Data • edfinr</title>
+<title>Access Bellwether's Tidy Education Finance Data • edfinr</title>
 <script src="deps/jquery-3.6.0/jquery-3.6.0.min.js"></script><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 <link href="deps/bootstrap-5.3.1/bootstrap.min.css" rel="stylesheet">
 <script src="deps/bootstrap-5.3.1/bootstrap.bundle.min.js"></script><link href="deps/font-awesome-6.5.2/css/all.min.css" rel="stylesheet">
 <link href="deps/font-awesome-6.5.2/css/v4-shims.min.css" rel="stylesheet">
-<script src="deps/headroom-0.11.0/headroom.min.js"></script><script src="deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="deps/search-1.0.0/fuse.min.js"></script><script src="deps/search-1.0.0/mark.min.js"></script><!-- pkgdown --><script src="pkgdown.js"></script><meta property="og:title" content="Access Tidy Education Finance Data">
-<meta name="description" content="Provides easy access to tidy education finance data combining NCES F-33 Survey, Census Bureau Small Area Income Poverty Estimates (SAIPE), and community data from the ACS 5-Year Estimates. The package simplifies downloading, caching, and filtering education finance data by year and state, enabling researchers and analysts to explore K-12 education funding patterns, revenue sources, expenditure categories, and demographic factors across U.S. school districts.">
-<meta property="og:description" content="Provides easy access to tidy education finance data combining NCES F-33 Survey, Census Bureau Small Area Income Poverty Estimates (SAIPE), and community data from the ACS 5-Year Estimates. The package simplifies downloading, caching, and filtering education finance data by year and state, enabling researchers and analysts to explore K-12 education funding patterns, revenue sources, expenditure categories, and demographic factors across U.S. school districts.">
+<script src="deps/headroom-0.11.0/headroom.min.js"></script><script src="deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="deps/search-1.0.0/fuse.min.js"></script><script src="deps/search-1.0.0/mark.min.js"></script><!-- pkgdown --><script src="pkgdown.js"></script><meta property="og:title" content="Access Bellwether's Tidy Education Finance Data">
+<meta name="description" content="Provides easy access to Bellwether's tidy education finance data combining NCES F-33 Survey, Census Bureau Small Area Income Poverty Estimates (SAIPE), and community data from the ACS 5-Year Estimates. The package simplifies downloading, caching, and filtering education finance data by year and state, enabling researchers and analysts to explore K-12 education funding patterns, revenue sources, expenditure categories, and demographic factors across U.S. school districts.">
+<meta property="og:description" content="Provides easy access to Bellwether's tidy education finance data combining NCES F-33 Survey, Census Bureau Small Area Income Poverty Estimates (SAIPE), and community data from the ACS 5-Year Estimates. The package simplifies downloading, caching, and filtering education finance data by year and state, enabling researchers and analysts to explore K-12 education funding patterns, revenue sources, expenditure categories, and demographic factors across U.S. school districts.">
 </head>
 <body>
     <a href="#main" class="visually-hidden-focusable">Skip to contents</a>
@@ -22,7 +22,7 @@
 
     <a class="navbar-brand me-2" href="index.html">edfinr</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.0.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.1.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -36,9 +36,9 @@
 <li class="nav-item dropdown">
   <button class="nav-link dropdown-toggle" type="button" id="dropdown-articles" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">Articles</button>
   <ul class="dropdown-menu" aria-labelledby="dropdown-articles">
-<li><a class="dropdown-item" href="articles/basic-usage.html">Basic usage of edfinr</a></li>
+<li><a class="dropdown-item" href="articles/basic-usage.html">Basic Usage of edfinr</a></li>
     <li><a class="dropdown-item" href="articles/cpi-adjustments.html">CPI Adjustments</a></li>
-    <li><a class="dropdown-item" href="articles/data-sources-methods.html">Data sources and methods</a></li>
+    <li><a class="dropdown-item" href="articles/data-sources-methods.html">Data Sources and Methodology</a></li>
   </ul>
 </li>
 <li class="nav-item"><a class="nav-link" href="news/index.html">Changelog</a></li>
@@ -56,7 +56,7 @@
 <div class="page-header"><h1 id="edfinr">edfinr<a class="anchor" aria-label="anchor" href="#edfinr"></a>
 </h1></div>
 <p><a href="https://github.com/bellwetherorg/edfinr/actions/workflows/R-CMD-check.yaml" class="external-link"><img src="https://github.com/bellwetherorg/edfinr/actions/workflows/R-CMD-check.yaml/badge.svg" alt="R-CMD-check"></a></p>
-<p><strong>edfinr</strong> is an R package for downloading and analyzing education finance data. It includes cleaned data from the Annual Survey of School System Finances along with data from other surveys administered by the National Center for Education Statistics (NCES) and U.S Census Bureau.</p>
+<p><strong>edfinr</strong> is a <a href="https://bellwether.org/" class="external-link">Bellwether</a> R package for downloading and analyzing education finance data. It includes cleaned data from the U.S. Census Bureau’s Annual Survey of School System Finances along with data from other surveys administered by the National Center for Education Statistics (NCES) and U.S Census Bureau.</p>
 <p>You can install the development version of <strong>edfinr</strong> from GitHub with:</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu">pak</span><span class="fu">::</span><span class="fu"><a href="https://pak.r-lib.org/reference/pkg_install.html" class="external-link">pkg_install</a></span><span class="op">(</span><span class="st">"bellwetherorg/edfinr"</span><span class="op">)</span> </span></code></pre></div>
@@ -64,7 +64,7 @@
 <ul>
 <li><a href="articles/basic-usage.html">Basic use</a></li>
 <li><a href="articles/cpi-adjustments.html">CPI adjustments</a></li>
-<li><a href="articles/data-sources-methods.html">Data sources &amp; methodology</a></li>
+<li><a href="articles/data-sources-methods.html">Data sources and methodology</a></li>
 </ul>
 <div class="section level2">
 <h2 id="data-notes-and-cautions">Data Notes and Cautions<a class="anchor" aria-label="anchor" href="#data-notes-and-cautions"></a>
@@ -72,7 +72,7 @@
 <p>Users should note the following when working with the <strong>edfinr</strong> datasets:</p>
 <ul>
 <li>Some variables were originally coded with <code>-1</code> to indicate missing values; these have been replaced with <code>NA</code> during processing.</li>
-<li>During data processing, we identified a sharp rise in the number of California districts appearing only from 2019 onward in the data. This reflects the fact that many charter schools became separate LEAs in those years. Beginning in 2018–19, a wave of California charter schools switched to independent CALPADS/CBEDS reporting and thus were assigned their own NCES LEA IDs for the first time. Once in the NCES LEA universe, those new charter‐LEAs automatically show up in the F-33 finance survey (with blanks or flags if they report no finance data), and Census’s SAIPE and ACS school‐district products (which mirror NCES LEA boundaries).</li>
+<li>During data processing, we identified a sharp rise in the number of California districts appearing only from 2019 onward in the data. This reflects the fact that many charter schools became separate local education agencies (LEAs) in those years. Beginning in school year 2018–19, a wave of California charter schools switched to independent CALPADS/CBEDS reporting and thus were assigned their own NCES LEA IDs for the first time. Once in the NCES LEA universe, those new charter‐LEAs automatically show up in the F-33 finance survey (with blanks or flags if they report no finance data), and Census SAIPE and ACS school‐district products (which mirror NCES LEA boundaries).</li>
 <li>The joined dataset represents a synthesis of data from multiple sources; discrepancies in source data formats may lead to minor variations.</li>
 <li>Inflation and adjustment factors (e.g., CPI adjustments) are based on averages and may not perfectly reflect local cost variations.</li>
 <li><strong>Caution is advised when comparing data across fiscal years due to potential differences in data collection and processing methods.</strong></li>
@@ -83,11 +83,11 @@
 </h2>
 <ul>
 <li>
-<strong>Alex Spurrier</strong> (<a href="mailto:alex.spurrier@bellwether.org">alex.spurrier@bellwether.org</a>) - Lead developer and package maintainer</li>
+<strong>Alex Spurrier</strong> (<a href="mailto:alex.spurrier@bellwether.org">alex.spurrier@bellwether.org</a>) - lead developer and package maintainer</li>
 <li>
-<strong>Krista Kaput</strong> - Core development and feature implementation</li>
+<strong>Krista Kaput</strong> - core development and feature implementation</li>
 <li>
-<strong>Michael Chrzan</strong> - Data processing functions and testing</li>
+<strong>Michael Chrzan</strong> - data processing functions and testing</li>
 </ul>
 </div>
 <div class="section level2">
@@ -108,7 +108,7 @@
 <h2 data-toc-skip>License</h2>
 <ul class="list-unstyled">
 <li><a href="LICENSE.html">Full license</a></li>
-<li><small><a href="https://opensource.org/licenses/mit-license.php" class="external-link">MIT</a> + file <a href="LICENSE-text.html">LICENSE</a></small></li>
+<li><small><a href="https://creativecommons.org/licenses/by/4.0" class="external-link">CC BY 4.0</a> + file <a href="LICENSE-text.html">LICENSE</a></small></li>
 </ul>
 </div>
 

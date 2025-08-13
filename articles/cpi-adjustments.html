@@ -20,7 +20,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">edfinr</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.0.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.1.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -34,9 +34,9 @@
 <li class="active nav-item dropdown">
   <button class="nav-link dropdown-toggle" type="button" id="dropdown-articles" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">Articles</button>
   <ul class="dropdown-menu" aria-labelledby="dropdown-articles">
-<li><a class="dropdown-item" href="../articles/basic-usage.html">Basic usage of edfinr</a></li>
+<li><a class="dropdown-item" href="../articles/basic-usage.html">Basic Usage of edfinr</a></li>
     <li><a class="dropdown-item" href="../articles/cpi-adjustments.html">CPI Adjustments</a></li>
-    <li><a class="dropdown-item" href="../articles/data-sources-methods.html">Data sources and methods</a></li>
+    <li><a class="dropdown-item" href="../articles/data-sources-methods.html">Data Sources and Methodology</a></li>
   </ul>
 </li>
 <li class="nav-item"><a class="nav-link" href="../news/index.html">Changelog</a></li>
@@ -98,13 +98,13 @@ adjustment is aligned to the school year calendar:</p>
 <ul>
 <li>Each school year’s CPI is calculated by averaging:
 <ul>
-<li>The second half of the first calendar year (July-December)</li>
-<li>The first half of the second calendar year (January-June)</li>
+<li>The second half of the first calendar year (July-December).</li>
+<li>The first half of the second calendar year (January-June).</li>
 </ul>
 </li>
 </ul>
 <p>For example, the 2021-22 school year CPI combines: - July-December
-2021 (HALF2 2021) - January-June 2022 (HALF1 2022)</p>
+2021 (HALF2 2021). - January-June 2022 (HALF1 2022).</p>
 </div>
 <div class="section level2">
 <h2 id="using-the-cpi_adj-parameter">Using the cpi_adj Parameter<a class="anchor" aria-label="anchor" href="#using-the-cpi_adj-parameter"></a>
@@ -157,13 +157,13 @@ values:</p>
 <p>When you use <code>cpi_adj</code>, the following variables are
 automatically adjusted for inflation:</p>
 <ul>
-<li>All revenue variables (total, local, state, federal)</li>
-<li>All expenditure variables</li>
-<li>Median household income</li>
-<li>Median property values</li>
+<li>All revenue variables (total, local, state, federal).</li>
+<li>All expenditure variables.</li>
+<li>Median household income.</li>
+<li>Median property values.</li>
 </ul>
-<p>Variables that are NOT adjusted include: - Enrollment counts -
-Demographic percentages - Any ratio or percentage variables</p>
+<p>Variables that are NOT adjusted include: - Enrollment counts. -
+Demographic percentages. - Any ratio or percentage variables.</p>
 </div>
 <div class="section level2">
 <h2 id="working-with-the-cpi-index">Working with the CPI Index<a class="anchor" aria-label="anchor" href="#working-with-the-cpi-index"></a>
@@ -220,7 +220,7 @@ CPI index relative to the 2011-12 school year:</p>
 <p>Here’s how to analyze whether education revenue has kept pace with
 inflation:</p>
 <div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co"># get multi-year data in nominal dollars</span></span>
+<code class="sourceCode R"><span><span class="co"># get multiyear data in nominal dollars</span></span>
 <span><span class="va">ky_nominal</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/get_finance_data.html">get_finance_data</a></span><span class="op">(</span>yr <span class="op">=</span> <span class="st">"all"</span>, geo <span class="op">=</span> <span class="st">"KY"</span>, cpi_adj <span class="op">=</span> <span class="st">"none"</span><span class="op">)</span> <span class="op">|&gt;</span> </span>
 <span>  <span class="fu">mutate</span><span class="op">(</span>type <span class="op">=</span> <span class="st">"Nominal dollars"</span><span class="op">)</span></span>
 <span></span>
@@ -282,13 +282,13 @@ include:</p>
 <ul>
 <li>
 <strong>Most recent year</strong> (e.g., 2022): Shows all values in
-current dollar terms</li>
+current dollar terms.</li>
 <li>
 <strong>First year of analysis</strong>: Makes it easy to see
-percentage changes from baseline</li>
+percentage changes from baseline.</li>
 <li>
 <strong>Midpoint year</strong>: Minimizes the size of adjustments
-across the time series</li>
+across the time series.</li>
 </ul>
 <div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># select ky district to assess</span></span>
@@ -330,13 +330,13 @@ across the time series</li>
 <ol style="list-style-type: decimal">
 <li><p><strong>Always use inflation adjustment for multi-year
 analyses</strong>: Comparing nominal dollars across years can be
-misleading</p></li>
+misleading.</p></li>
 <li><p><strong>Be consistent with your base year</strong>: Use the same
-<code>cpi_adj</code> value for all data in an analysis</p></li>
+<code>cpi_adj</code> value for all data in an analysis.</p></li>
 <li><p><strong>Document your choice</strong>: Always note whether values
-are nominal or real, and which base year you used</p></li>
+are nominal or real, and which base year you used.</p></li>
 <li><p><strong>Consider your audience</strong>: Current dollars (most
-recent year) are often most intuitive for general audiences</p></li>
+recent year) are often most intuitive for general audiences.</p></li>
 </ol>
 </div>
 <div class="section level2">
@@ -344,12 +344,12 @@ recent year) are often most intuitive for general audiences</p></li>
 </h2>
 <ul>
 <li>The CPI data comes from the U.S. Bureau of Labor Statistics CPI-U
-series</li>
+series.</li>
 <li>School year alignment ensures the index matches the academic
-calendar</li>
-<li>All adjustments are applied before any per-pupil calculations</li>
+calendar.</li>
+<li>All adjustments are applied before any per-pupil calculations.</li>
 <li>The <code>cpi_sy12</code> column is always included regardless of
-adjustment choice</li>
+adjustment choice .</li>
 </ul>
 </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>

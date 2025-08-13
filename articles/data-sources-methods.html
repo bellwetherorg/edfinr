@@ -5,12 +5,12 @@
 <meta charset="utf-8">
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-<title>Data Sources and Methods • edfinr</title>
+<title>Data Sources and Methodology • edfinr</title>
 <script src="../deps/jquery-3.6.0/jquery-3.6.0.min.js"></script><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 <link href="../deps/bootstrap-5.3.1/bootstrap.min.css" rel="stylesheet">
 <script src="../deps/bootstrap-5.3.1/bootstrap.bundle.min.js"></script><link href="../deps/font-awesome-6.5.2/css/all.min.css" rel="stylesheet">
 <link href="../deps/font-awesome-6.5.2/css/v4-shims.min.css" rel="stylesheet">
-<script src="../deps/headroom-0.11.0/headroom.min.js"></script><script src="../deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="../deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="../deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="../deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="../deps/search-1.0.0/fuse.min.js"></script><script src="../deps/search-1.0.0/mark.min.js"></script><!-- pkgdown --><script src="../pkgdown.js"></script><meta property="og:title" content="Data Sources and Methods">
+<script src="../deps/headroom-0.11.0/headroom.min.js"></script><script src="../deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="../deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="../deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="../deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="../deps/search-1.0.0/fuse.min.js"></script><script src="../deps/search-1.0.0/mark.min.js"></script><!-- pkgdown --><script src="../pkgdown.js"></script><meta property="og:title" content="Data Sources and Methodology">
 </head>
 <body>
     <a href="#main" class="visually-hidden-focusable">Skip to contents</a>
@@ -20,7 +20,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">edfinr</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.0.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.1.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -34,9 +34,9 @@
 <li class="active nav-item dropdown">
   <button class="nav-link dropdown-toggle" type="button" id="dropdown-articles" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">Articles</button>
   <ul class="dropdown-menu" aria-labelledby="dropdown-articles">
-<li><a class="dropdown-item" href="../articles/basic-usage.html">Basic usage of edfinr</a></li>
+<li><a class="dropdown-item" href="../articles/basic-usage.html">Basic Usage of edfinr</a></li>
     <li><a class="dropdown-item" href="../articles/cpi-adjustments.html">CPI Adjustments</a></li>
-    <li><a class="dropdown-item" href="../articles/data-sources-methods.html">Data sources and methods</a></li>
+    <li><a class="dropdown-item" href="../articles/data-sources-methods.html">Data Sources and Methodology</a></li>
   </ul>
 </li>
 <li class="nav-item"><a class="nav-link" href="../news/index.html">Changelog</a></li>
@@ -56,7 +56,7 @@
 <div class="row">
   <main id="main" class="col-md-9"><div class="page-header">
 
-      <h1>Data Sources and Methods</h1>
+      <h1>Data Sources and Methodology</h1>
             
       
       <small class="dont-index">Source: <a href="https://github.com/bellwetherorg/edfinr/blob/main/vignettes/data-sources-methods.Rmd" class="external-link"><code>vignettes/data-sources-methods.Rmd</code></a></small>
@@ -78,19 +78,17 @@ interpret the data appropriately and inform analytical decisions.</p>
 </h2>
 <p>This package provides access to education finance data from:</p>
 <ul>
-<li><a href="https://nces.ed.gov/ccd/files.asp" class="external-link">NCES CCD F-33
-Data</a></li>
+<li>
+<a href="https://nces.ed.gov/ccd/files.asp" class="external-link">NCES CCD F-33
+Data</a>.</li>
 <li>NCES CCD Directory Data via the <a href="https://educationdata.urban.org/documentation/#r" class="external-link">Urban
-Institute’s <code>educationdata</code> package</a>
-</li>
+Institute’s <code>educationdata</code> package</a>.</li>
 <li><a href="https://www.census.gov/programs-surveys/saipe.html" class="external-link">Census
 Bureau SAIPE Estimates</a></li>
 <li>American Community Survey 5-Year Estimates via <a href="https://walker-data.com/tidycensus/" class="external-link"><code>tidycensus</code>
-package</a>
-</li>
+package</a>.</li>
 <li>U.S Bureau of Labor Statistics <a href="https://data.bls.gov/toppicks?survey=cu" class="external-link">Consumer Price Index for
-All Urban Consumers (CPI-U)</a>
-</li>
+All Urban Consumers (CPI-U)</a>.</li>
 </ul>
 </div>
 <div class="section level2">
@@ -107,7 +105,8 @@ Data Dictionary</a> informs our handling of F-33 data.</li>
 approach used by Kristen Blagg, Emily Gutierrez, and Fanny Terrones in
 <a href="https://apps.urban.org/features/school-funding-trends/files/202204_K12_funding_technical_appendix.pdf" class="external-link">Funding
 Flows: Which Students Receive a Greater Share of School
-Funding?</a>.</li>
+Funding?</a>
+</li>
 <li>Inflation adjustments use an average of second half CPI-U of one
 year and first half CPI-U of the following year to align with the
 academic calendar.</li>
@@ -123,22 +122,22 @@ academic calendar.</li>
 2011-12 through 2021-22.</p>
 <p>Raw variables selected:</p>
 <ul>
-<li>Basic information: state, leaid, name, yrdata, V33</li>
-<li>Revenue data: totalrev, tlocrev, tstrev, tfedrev</li>
-<li>Expenditure data: c11, u11, v91, v92, c24, l12, m12, d11, q11</li>
-<li>Current expenditure data: ce1, ce2, and ce3</li>
+<li>Basic information: state, leaid, name, yrdata, V33.</li>
+<li>Revenue data: totalrev, tlocrev, tstrev, tfedrev.</li>
+<li>Expenditure data: c11, u11, v91, v92, c24, l12, m12, d11, q11.</li>
+<li>Current expenditure data: ce1, ce2, and ce3.</li>
 <li>Detailed expenditure data: z32, z34, v93, v95, v02, k14, e13, z33,
 v10, e17, v11, v12, e07, v13, v14, e08, v15, v16, e09, v17, v18, v40,
 v21, v22, v45, v23, v24, v90, v37, v38, e11, v29, v30, v60, v32, v65,
-ae1, ae2, ae3, ae4, ae5, ae6, ae7, ae8</li>
+ae1, ae2, ae3, ae4, ae5, ae6, ae7, ae8.</li>
 </ul>
 <p>Adjustments:</p>
 <ul>
-<li>Rename variables</li>
-<li>Convert district names to title case</li>
-<li>Ensure enrollment is a numeric variable</li>
+<li>Rename variables.</li>
+<li>Convert district names to title case.</li>
+<li>Ensure enrollment is a numeric variable.</li>
 <li>Replace <code>-1</code> and <code>-2</code> codes with
-<code>NA</code> values</li>
+<code>NA</code> values.</li>
 </ul>
 </div>
 <div class="section level3">
@@ -149,26 +148,26 @@ package.</p>
 <p>Raw variables selected:</p>
 <ul>
 <li>Core district identifiers and location: state, ncesid, county,
-dist_name, state_leaid</li>
+dist_name, state_leaid.</li>
 <li>Institutional details: lea_type, lea_type_id, urbanicity,
-congressional_dist</li>
+congressional_dist.</li>
 </ul>
 <p>Adjustments:</p>
 <ul>
-<li>Rename variables to more intuitive names</li>
+<li>Rename variables to more intuitive names.</li>
 </ul>
 </div>
 <div class="section level3">
 <h3 id="saipe-poverty-estimates">SAIPE Poverty Estimates<a class="anchor" aria-label="anchor" href="#saipe-poverty-estimates"></a>
 </h3>
-<p>Data source: Census Bureau SAIPE Estimates</p>
+<p>Data source: Census Bureau SAIPE Estimates.</p>
 <p>Raw variables selected:</p>
 <ul>
 <li>Basic geographic and demographic fields: State Postal Code, State
 FIPS Code, District ID, Name</li>
 <li>Population estimates: Estimated Total Population, Estimated
-Population 5-17, and the estimated number of relevant children 5 to 17
-years old in poverty</li>
+Population ages 5-17, and the estimated number of relevant children ages
+5 to 17 living in poverty</li>
 </ul>
 <p>Adjustments:</p>
 <ul>
@@ -182,43 +181,43 @@ FIPS and District ID</li>
 </h3>
 <p>Data source: American Community Survey 5-Year Estimates accessed via
 the <a href="https://walker-data.com/tidycensus/" class="external-link"><code>tidycensus</code></a>
-package</p>
+package.</p>
 <p>Raw variables selected:</p>
 <ul>
 <li>Economic indicators: Median household income (B19013_001) and median
-property value (B25077_001)</li>
+property value (B25077_001).</li>
 <li>Educational attainment: Total population 25 years or older
 (B15003_001) and subsets of that population holding bachelor’s degrees
 (B15003_022), master’s degrees (B15003_023), professional degrees
 (B15003_024), and doctoral degrees (B15003_025).</li>
 <li>Data are pulled for different geographic breakdowns (unified,
-elementary, and secondary school districts)</li>
+elementary, and secondary school districts).</li>
 </ul>
 <p>Adjustments:</p>
 <ul>
-<li>Reshape data from long to wide format</li>
+<li>Reshape data from long to wide format.</li>
 <li>Rename “GEOID” to a standard <code>ncesid</code> and ensure proper
-formatting of district identifiers</li>
-<li>Convert estimates to numeric as needed</li>
+formatting of district identifiers.</li>
+<li>Convert estimates to numeric as needed.</li>
 </ul>
 </div>
 <div class="section level3">
 <h3 id="cpi">CPI<a class="anchor" aria-label="anchor" href="#cpi"></a>
 </h3>
 <p>Data source: U.S. Bureau of Labor Statistics, specifically the
-Consumer Price Index for All Urban Consumers (CPI-U)</p>
+Consumer Price Index for All Urban Consumers (CPI-U).</p>
 <p>Raw variables selected:</p>
 <ul>
 <li>CPI time series data (specific variable names as provided in the raw
-file)</li>
+file).</li>
 </ul>
 <p>Adjustments:</p>
 <ul>
 <li>Calculate an averaged CPI value using the second half of one year
 and the first half of the following year to align with the academic
-calendar, with the 2011-12 school year as the baseline year</li>
+calendar, with the 2011-12 school year as the baseline year.</li>
 <li>Clean and reformat CPI data for consistency across processing
-scripts</li>
+scripts.</li>
 </ul>
 </div>
 </div>
@@ -239,12 +238,12 @@ revenue, expenditure, demographic, and economic data.</li>
 <h2 id="revenue-adjustments">Revenue Adjustments<a class="anchor" aria-label="anchor" href="#revenue-adjustments"></a>
 </h2>
 <p>Additional transformations are applied after the join: - Capital
-expenditures and debt service (C11) are subtrated from state revenues -
-Property sales (U11) are subtracted from local revenues - For Texas LEAs
-in 2012-13 and earlier, payments to state governments (L12) are
-subtracted from local revenues - Payments to other school systems (V91,
-V92, and Q11) are proportionally subracted from local, state, and
-federal revenues</p>
+expenditures and debt service (C11) are subtrated from state revenues. -
+Property sales (U11) are subtracted from local revenues. - For Texas
+local education agencies (LEAs) in school year 2012-13 and earlier,
+payments to state governments (L12) are subtracted from local revenues.
+- Payments to other school systems (V91, V92, and Q11) are
+proportionally subracted from local, state, and federal revenues.</p>
 </div>
 <div class="section level2">
 <h2 id="exclusions">Exclusions<a class="anchor" aria-label="anchor" href="#exclusions"></a>
@@ -258,9 +257,9 @@ one of 1, 2, 3, or 7) are excluded.</li>
 not one of “01”, “02”, or “03”, except for specified CA exceptions) are
 excluded.</li>
 <li>Districts where total revenue per-pupil is greater than $70,000 in
-2011-12 dollars are excluded.</li>
-<li>Districts where total revenue per pupil is less than $500 in 2011-12
-dollars are excluded.</li>
+school year 2011-12 dollars are excluded.</li>
+<li>Districts where total revenue per pupil is less than $500 in school
+year 2011-12 dollars are excluded.</li>
 <li>Connecticut LEAs consisting of semi-private high schools are removed
 (NCES IDs “0905371”, “0905372”, and “0905373”).</li>
 </ul>
@@ -277,13 +276,13 @@ during processing.</li>
 <li>During data processing, we identified a sharp rise in the number of
 California districts appearing only from 2019 onward in the data. This
 reflects the fact that many charter schools became separate LEAs in
-those years. Beginning in 2018–19, a wave of California charter schools
-switched to independent CALPADS/CBEDS reporting and thus were assigned
-their own NCES LEA IDs for the first time. Once in the NCES LEA
-universe, those new charter‐LEAs automatically show up in the F-33
-finance survey (with blanks or flags if they report no finance data),
-and Census’s SAIPE and ACS school‐district products (which mirror NCES
-LEA boundaries).</li>
+those years. Beginning in school year 2018–19, a wave of California
+charter schools switched to independent CALPADS/CBEDS reporting and thus
+were assigned their own NCES LEA IDs for the first time. Once in the
+NCES LEA universe, those new charter‐LEAs automatically show up in the
+F-33 finance survey (with blanks or flags if they report no finance
+data), and Census’s SAIPE and ACS school‐district products (which mirror
+NCES LEA boundaries).</li>
 <li>The joined dataset represents a synthesis of data from multiple
 sources; discrepancies in source data formats may lead to minor
 variations.</li>
