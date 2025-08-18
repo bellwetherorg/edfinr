@@ -29,6 +29,8 @@ This package provides access to education finance data from:
 
 ## Data Processing Detail
 
+Full data processing methods and scripts are available on GitHub via [bellwetherorg/edfinr_data_cleaning](https://github.com/bellwetherorg/edfinr_data_cleaning).
+
 ### NCES F-33 Survey Data
 
 Data source: NCES Common Core of Data text files of F-33 data from 2011-12 through 2021-22.

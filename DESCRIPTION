@@ -1,6 +1,6 @@
 Package: edfinr
 Type: Package
-Title: Access Bellwether's Tidy Education Finance Data
+Title: Access Tidy Education Finance Data
 Version: 0.1.0
 Authors@R: c(
     person(
@@ -18,7 +18,7 @@ Authors@R: c(
     ),
     person("Bellwether", role = "cph")
   )
-Description: Provides easy access to Bellwether's tidy education finance data combining
+Description: Provides easy access to tidy education finance data using Bellwether's methodology to combine
     NCES F-33 Survey, Census Bureau Small Area Income Poverty Estimates (SAIPE),
     and community data from the ACS 5-Year Estimates. The package simplifies
     downloading, caching, and filtering education finance data by year and state,
