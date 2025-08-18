@@ -8,3 +8,6 @@
 index.md
 ^doc$
 ^Meta$
+logo.png
+^cran-comments\.md$
+^CRAN-SUBMISSION$

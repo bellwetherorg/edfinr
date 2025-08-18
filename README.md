@@ -1,4 +1,4 @@
-# `edfinr`
+# `edfinr` <img src=logo.png width = "250px" align = "right">
 
 An R package for downloading and analyzing education finance data from multiple sources.
 
@@ -7,7 +7,7 @@ An R package for downloading and analyzing education finance data from multiple 
 You can install the development version of `edfinr` from GitHub with:
 
 ```r
-pak::pgk_install("bellwetherorg/edfinr") 
+pak::pkg_install("bellwetherorg/edfinr") 
 ```
 
 ## Data Sources

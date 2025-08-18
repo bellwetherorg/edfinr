@@ -1,4 +1,4 @@
-# edfinr
+# edfinr <img src=logo.png width = "250px" align = "right">
 
   [![R-CMD-check](https://github.com/bellwetherorg/edfinr/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/bellwetherorg/edfinr/actions/workflows/R-CMD-check.yaml)
 
