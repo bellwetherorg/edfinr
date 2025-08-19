@@ -11,6 +11,8 @@ vignette: >
 
 This vignette provides detailed information about the data sources and processing methods used to prepare the data used by the `edfinr` package. Understanding these details will help you interpret the data appropriately and inform analytical decisions.
 
+Full data processing methods and scripts are available on GitHub via [bellwetherorg/edfinr_data_cleaning](https://github.com/bellwetherorg/edfinr_data_cleaning).
+
 ## Data Sources
 
 This package provides access to education finance data from:
