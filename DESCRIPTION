@@ -25,7 +25,7 @@ Description: Provides easy access to tidy education finance data using Bellwethe
     enabling researchers and analysts to explore K-12 education funding patterns,
     revenue sources, expenditure categories, and demographic factors across 
     U.S. school districts.
-License: CC BY 4.0 + file LICENSE
+License: CC BY 4.0
 URL: https://github.com/bellwetherorg/edfinr, https://bellwetherorg.github.io/edfinr/
 BugReports: https://github.com/bellwetherorg/edfinr/issues
 Depends: R (>= 4.1.0)

@@ -1,9 +1,14 @@
-# edfinr <img src=logo.png width = "250px" align = "right">
+# `edfinr` <img src=logo.png width = "250px" align = "right">
 
-  [![R-CMD-check](https://github.com/bellwetherorg/edfinr/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/bellwetherorg/edfinr/actions/workflows/R-CMD-check.yaml)
+  [![R-CMD-check](https://github.com/bellwetherorg/edfinr/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/bellwetherorg/edfinr/actions/workflows/R-CMD-check.yaml) ![CRAN Badge](http://www.r-pkg.org/badges/version/edfinr)  ![CRAN downloads](https://cranlogs.r-pkg.org/badges/grand-total/edfinr)
 
 
 __edfinr__ is a [Bellwether](https://bellwether.org/) R package for downloading and analyzing education finance data. It includes cleaned data from the U.S. Census Bureau’s Annual Survey of School System Finances along with data from other surveys administered by the National Center for Education Statistics (NCES) and U.S Census Bureau.
+
+You can install __edfinr__ from CRAN with:
+```r
+install.packages("edfinr")
+```
 
 You can install the development version of __edfinr__ from GitHub with:
 ```r

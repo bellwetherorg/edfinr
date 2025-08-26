@@ -1,8 +1,16 @@
 # `edfinr` <img src=logo.png width = "250px" align = "right">
 
+[![R-CMD-check](https://github.com/bellwetherorg/edfinr/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/bellwetherorg/edfinr/actions/workflows/R-CMD-check.yaml) ![CRAN Badge](http://www.r-pkg.org/badges/version/edfinr) ![CRAN downloads](https://cranlogs.r-pkg.org/badges/grand-total/edfinr)
+
+
 An R package for downloading and analyzing education finance data from multiple sources.
 
 ## Installation
+
+You can install __edfinr__ from CRAN with:
+```r
+install.packages("edfinr")
+```
 
 You can install the development version of `edfinr` from GitHub with:
 
