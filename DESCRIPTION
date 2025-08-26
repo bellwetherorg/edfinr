@@ -1,7 +1,7 @@
 Package: edfinr
 Type: Package
 Title: Access Tidy Education Finance Data
-Version: 0.1.1
+Version: 0.1.1.9000
 Authors@R: c(
     person(
       "Alex", "Spurrier",
