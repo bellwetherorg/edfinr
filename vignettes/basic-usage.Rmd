@@ -90,6 +90,8 @@ sec_data <- get_finance_data(
 us_sy22 <- get_finance_data(yr = 2022, geo = "all")
 ```
 
+Only the requested year(s) are downloaded: each year is hosted as its own file (roughly 3-6 MB), so a single-year or short-range request is lightweight even though the full panel spans 2012-2023. Requesting `yr = "all"` downloads the entire history from one combined file.
+
 
 ## Working with the Data
 

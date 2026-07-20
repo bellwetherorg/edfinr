@@ -32,6 +32,10 @@
   `rev_state_pp` across years alongside `c11_spike_flag`.
 * **Hosted data format.** The hosted datasets are now gzip-compressed Parquet
   (read with `nanoparquet`) instead of `.rds`. This is transparent to callers.
+* **Per-year downloads.** `get_finance_data()` now downloads only the requested
+  year(s) -- each year is a separate hosted file of roughly 3-6 MB -- so
+  single-year and short-range requests transfer far less than the full panel.
+  `yr = "all"` still fetches the entire history from one combined file.
 
 # edfinr 0.1.1
 

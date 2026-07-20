@@ -15,7 +15,13 @@ get_finance_data(
 }
 \arguments{
 \item{yr}{A string specifying the year(s) to retrieve. Can be a single year ("2023"),
-a range ("2020:2023"), or "all" for all available years. Defaults to "2023".}
+a range ("2020:2023"), or "all" for all available years. Defaults to "2023".
+Only the requested year(s) are downloaded -- each year is a separate
+hosted file of roughly 3-6 MB, so a single-year request transfers far
+less than the full panel. `yr = "all"` fetches the entire history from
+one combined file. When `cpi_adj` names a year outside the request, that
+year's file is also downloaded to source the baseline, then dropped from
+the returned data.}
 
 \item{geo}{A string specifying the geographic scope. Can be "all" for all states (default),
 a single state code ("KY"), or a comma-separated list of state codes ("IN,KY,OH,TN").}

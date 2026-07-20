@@ -8,6 +8,12 @@
 #'
 #' @param yr A string specifying the year(s) to retrieve. Can be a single year ("2023"),
 #'           a range ("2020:2023"), or "all" for all available years. Defaults to "2023".
+#'           Only the requested year(s) are downloaded -- each year is a separate
+#'           hosted file of roughly 3-6 MB, so a single-year request transfers far
+#'           less than the full panel. `yr = "all"` fetches the entire history from
+#'           one combined file. When `cpi_adj` names a year outside the request, that
+#'           year's file is also downloaded to source the baseline, then dropped from
+#'           the returned data.
 #' @param geo A string specifying the geographic scope. Can be "all" for all states (default),
 #'            a single state code ("KY"), or a comma-separated list of state codes ("IN,KY,OH,TN").
 #' @param dataset_type A string specifying whether to download the "skinny" (default) or "full" dataset.
@@ -127,61 +133,54 @@ get_finance_data <- function(yr = "2023", geo = "all", dataset_type = "skinny", 
     }
   }
 
-  # url for the parquet file
-  url_full <- "https://edfinr-tidy-data.s3.us-east-2.amazonaws.com/edfinr_data_fy12_fy23_full.parquet"
-  url_skinny <- "https://edfinr-tidy-data.s3.us-east-2.amazonaws.com/edfinr_data_fy12_fy23_skinny.parquet"
+  # base url for the hosted parquet files
+  base <- "https://edfinr-tidy-data.s3.us-east-2.amazonaws.com/"
 
-  # select URL based on dataset_type
-  url <- if (dataset_type == "full") url_full else url_skinny
+  # build the set of files to fetch. yr = "all" pulls the full history from one
+  # combined file; any other request pulls only the per-year slice files it
+  # needs -- plus the cpi_adj baseline year's slice, which the year filter below
+  # later drops -- so a single-year request downloads ~4 MB instead of ~50 MB.
+  if (yr == "all") {
+    urls <- paste0(base, "edfinr_data_fy12_fy23_", dataset_type, ".parquet")
+  } else {
+    if (grepl(":", yr)) {
+      yr_range <- strsplit(yr, ":")[[1]]
+      requested_years <- as.numeric(yr_range[1]):as.numeric(yr_range[2])
+    } else {
+      requested_years <- as.numeric(yr)
+    }
+    # include the cpi_adj baseline year so its cpi value is present even when it
+    # falls outside the requested range (the year filter later drops it)
+    fetch_years <- sort(unique(c(
+      requested_years,
+      if (cpi_adj != "none") as.numeric(cpi_adj)
+    )))
+    urls <- paste0(base, "edfinr_data_fy", fetch_years, "_", dataset_type, ".parquet")
+  }
 
-  # cache handling - derive the cache name from the url so the two never drift
-  cache_name <- basename(url)
-  cache_file_path <- cache_file(cache_name)
+  # report progress once for the whole set (not once per file); the set is
+  # "stale" if any of its files must be (re)downloaded
+  any_stale <- refresh ||
+    any(!vapply(urls, function(u) is_cache_current(basename(u)), logical(1)))
 
-  # check if we need to download the data
-  download_required <- refresh || !is_cache_current(cache_name)
-
-  if (download_required) {
+  if (any_stale) {
     if (!quiet) {
       cli::cli_alert_info("Downloading education finance data...")
-    }
-
-    # download the file to cache with error handling
-    download_success <- FALSE
-    max_attempts <- 3
-    attempt <- 1
-    
-    while (!download_success && attempt <= max_attempts) {
-      tryCatch({
-        utils::download.file(url, cache_file_path, mode = "wb", quiet = quiet)
-        download_success <- TRUE
-      }, error = function(e) {
-        if (attempt < max_attempts) {
-          if (!quiet) {
-            cli::cli_alert_warning("Download attempt {attempt} failed. Retrying...")
-          }
-          Sys.sleep(2^(attempt - 1))  # exponential backoff: 1s, 2s, 4s
-        } else {
-          cli::cli_abort(c(
-            "Failed to download education finance data after {max_attempts} attempts.",
-            "x" = "Error: {e$message}",
-            "i" = "Check your internet connection and try again.",
-            "i" = "If the problem persists, the data source may be temporarily unavailable."
-          ))
-        }
-      })
-      attempt <- attempt + 1
-    }
-
-    if (!quiet && download_success) {
-      cli::cli_alert_success("Download complete.")
     }
   } else if (!quiet) {
     cli::cli_alert_info("Using cached data. Use refresh = TRUE to download fresh data.")
   }
 
-  # read the parquet file from cache
-  data <- nanoparquet::read_parquet(cache_file_path)
+  # download (with retries) and read each file, then stack into one tibble.
+  # the slices share an identical schema -- column order, types, and factor
+  # levels -- so bind_rows preserves all of them without drift.
+  data <- dplyr::bind_rows(
+    lapply(urls, fetch_parquet, refresh = refresh, quiet = quiet)
+  )
+
+  if (any_stale && !quiet) {
+    cli::cli_alert_success("Download complete.")
+  }
 
   # convert to tibble
   if (!inherits(data, "tbl_df")) {

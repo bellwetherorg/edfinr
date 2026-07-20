@@ -8,7 +8,8 @@ test_that("fetched dimensions match expectations", {
   expect_equal(ncol(sk), 56)
   expect_equal(ncol(fu), 121)
   expect_equal(nrow(sk), nrow(fu))
-  expect_gt(nrow(fu), 190000)
+  # yr = "all" still reads the combined file: full 2012-2023 panel
+  expect_equal(nrow(fu), 192320L)
 })
 
 test_that("fetched columns and types match the dictionary", {
@@ -64,4 +65,52 @@ test_that("cwift_impute_method uses only the documented labels", {
   methods <- unique(d$cwift_impute_method[!is.na(d$cwift_impute_method)])
   expect_true(all(methods %in%
     c("observed", "interpolated_2019_2021", "carried_forward_2022")))
+})
+
+# --- per-year slice downloads --------------------------------------------
+# The requests below pull per-year slice files and bind them; yr = "all"
+# above still reads the single combined file.
+
+test_that("a single-year slice equals the combined file filtered to that year", {
+  skip_on_cran()
+  slice <- fetch_or_skip(yr = "2023", dataset_type = "full")
+  combined <- dplyr::filter(
+    fetch_or_skip(yr = "all", dataset_type = "full"), year == 2023L
+  )
+  slice <- dplyr::arrange(slice, ncesid)
+  combined <- dplyr::arrange(combined, ncesid)
+  expect_equal(dim(slice), dim(combined))
+  expect_equal(names(slice), names(combined))
+  expect_equal(slice, combined)
+})
+
+test_that("a year range returns exactly those years and all their rows", {
+  skip_on_cran()
+  d <- fetch_or_skip(yr = "2020:2022", dataset_type = "skinny")
+  expect_setequal(unique(d$year), 2020:2022)
+  # per-year counts: 2020 = 16,604; 2021 = 16,637; 2022 = 16,651
+  expect_equal(nrow(d), 16604L + 16637L + 16651L)
+})
+
+test_that("cpi_adj baseline outside the request is sourced then dropped", {
+  skip_on_cran()
+  d <- fetch_or_skip(yr = "2019", dataset_type = "full", cpi_adj = "2023")
+  # only the requested year is returned (the 2023 baseline slice is dropped)
+  expect_true(all(d$year == 2019L))
+  expect_gt(nrow(d), 0)
+  # the adjustment index is present, finite, and applied to a flow column
+  expect_true("cpi_adj_index" %in% names(d))
+  expect_true(all(is.finite(d$cpi_adj_index)))
+  expect_true(all(is.finite(d$exp_cur_total[!is.na(d$exp_cur_total)])))
+})
+
+test_that("factor columns keep full, identical level sets after binding slices", {
+  skip_on_cran()
+  multi <- fetch_or_skip(yr = "2020:2022", dataset_type = "full")
+  one <- fetch_or_skip(yr = "2023", dataset_type = "full")
+  for (col in c("urbanicity", "urbanicity_raw_cat", "lea_type")) {
+    expect_s3_class(multi[[col]], "factor")
+    # every slice carries the full dictionary, so levels never drift
+    expect_equal(levels(multi[[col]]), levels(one[[col]]))
+  }
 })
