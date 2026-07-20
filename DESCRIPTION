@@ -1,7 +1,7 @@
 Package: edfinr
 Type: Package
 Title: Access Tidy Education Finance Data
-Version: 0.1.1.9000
+Version: 0.2.0
 Authors@R: c(
     person(
       "Alex", "Spurrier",
@@ -20,7 +20,8 @@ Authors@R: c(
   )
 Description: Provides easy access to tidy education finance data using Bellwether's methodology 
     to combine NCES F-33 Survey, Census Bureau Small Area Income Poverty Estimates (SAIPE),
-    and community data from the ACS 5-Year Estimates. The package simplifies
+    community data from the ACS 5-Year Estimates, and the Comparable Wage Index for
+    Teachers (CWIFT) from NCES EDGE. The package simplifies
     downloading, caching, and filtering education finance data by year and state,
     enabling researchers and analysts to explore K-12 education funding patterns,
     revenue sources, expenditure categories, and demographic factors across 
@@ -32,16 +33,19 @@ Depends: R (>= 4.1.0)
 Imports:
  cli,
  dplyr,
+ nanoparquet (>= 0.5.0),
  rlang,
  tibble
 Encoding: UTF-8
 LazyData: true
 RoxygenNote: 7.3.2
-Suggests: 
+Suggests:
     ggplot2,
     knitr,
     rmarkdown,
     scales,
     stringr,
+    testthat (>= 3.0.0),
     tidyr
 VignetteBuilder: knitr
+Config/testthat/edition: 3

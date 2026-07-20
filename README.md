@@ -27,6 +27,7 @@ This package provides access to education finance data from:
 - [Census Bureau SAIPE Estimates](https://www.census.gov/programs-surveys/saipe.html)
 - American Community Survey 5-Year Estimates via [`tidycensus` package](https://walker-data.com/tidycensus/)
 - U.S Bureau of Labor Statistics [Consumer Price Index for All Urban Consumers (CPI-U)](https://data.bls.gov/toppicks?survey=cu)
+- NCES EDGE [Comparable Wage Index for Teachers (CWIFT)](https://nces.ed.gov/programs/edge/Economic/TeacherWage)
 
 ## Data Processing Methods
 
@@ -41,7 +42,7 @@ Full data processing methods and scripts are available on GitHub via [bellwether
 
 ### NCES F-33 Survey Data
 
-Data source: NCES Common Core of Data text files of F-33 data from 2011-12 through 2021-22.
+Data source: NCES Common Core of Data text files of F-33 data from 2011-12 through 2022-23.
 
 Raw variables selected:
 
@@ -50,6 +51,7 @@ Raw variables selected:
 - Expenditure data: c11, u11, v91, v92, c24, l12, m12, d11, q11
 - Current expenditure data: ce1, ce2, and ce3
 - Detailed expenditure data: z32, z34, v93, v95, v02, k14, e13, z33, v10, e17, v11, v12, e07, v13, v14, e08, v15, v16, e09, v17, v18, v40, v21, v22, v45, v23, v24, v90, v37, v38, e11, v29, v30, v60, v32, v65, ae1, ae2, ae3, ae4, ae5, ae6, ae7, ae8
+- Capital outlay, debt, and fund-balance data: tcapout, f12, g15, k09, k10, k11, i86, _19h, _21f, _31f, _41f, _61v, _66v, w01, w31, w61
 
 Adjustments:
 
@@ -94,7 +96,8 @@ Data source: American Community Survey 5-Year Estimates accessed via the
 
 Raw variables selected:
 
-- Economic indicators: Median household income (B19013_001) and median property value (B25077_001)
+- Economic indicators: Median household income (B19013_001), mean household income (aggregate income / households), median property value (B25077_001), and the Gini index of income inequality (B19083_001)
+- Household and labor characteristics: owner-occupied housing share (B25003), SNAP receipt (B22003), and the unemployment rate (B23025)
 - Educational attainment: Total population 25 years or older (B15003_001) and subsets of that population holding bachelor's degrees (B15003_022), master's degrees (B15003_023), professional degrees (B15003_024), and doctoral degrees (B15003_025).
 - Data are pulled for different geographic breakdowns (unified, elementary, and secondary school districts)
 
@@ -119,14 +122,14 @@ Adjustments:
 
 ## Joining Data
 
-- The joining process is implemented in the `07_edfinr_join_and_exclude.R` script.
-- Data from the F-33 survey, CCD Directory, ACS (unified, elementary, and secondary), and SAIPE sources are merged using left joins on shared district identifiers (ncesid) and fiscal year.
+- The joining process is implemented in the `08_edfinr_join_and_exclude.R` script (CWIFT is prepared in `07_cwift_clean.R` and joined there).
+- Data from the F-33 survey, CCD Directory, ACS (unified, elementary, and secondary), SAIPE, and CWIFT sources are merged using left joins on shared district identifiers (ncesid) and fiscal year.
 - The procedure ensures that each district record is enriched with revenue, expenditure, demographic, and economic data.
 
 ## Revenue Adjustments
 
 Additional transformations are applied after the join:
-- Capital expenditures and debt service (C11) are subtrated from state revenues
+- Capital expenditures and debt service (C11) are subtracted from state revenues; unadjusted state revenue is preserved in `rev_state_unadj`/`rev_state_unadj_pp`, and `c11_spike_flag` marks district-years where this adjustment produces an anomalous spike
 - Property sales (U11) are subtracted from local revenues
 - For Texas LEAs in 2012-13 and earlier, payments to state governments (L12) are subtracted from local revenues
 - Payments to other school systems (V91, V92, and Q11) are proportionally subracted from local, state, and federal revenues
@@ -149,6 +152,9 @@ Users should note the following when working with the `edfinr` datasets:
 - During data processing, we identified a sharp rise in the number of California districts appearing only from 2019 onward in the data. This reflects the fact that many charter schools became separate LEAs in those years. Beginning in 2018–19, a wave of California charter schools switched to independent CALPADS/CBEDS reporting and thus were assigned their own NCES LEA IDs for the first time. Once in the NCES LEA universe, those new charter‐LEAs automatically show up in the F-33 finance survey (with blanks or flags if they report no finance data), and Census’s SAIPE and ACS school‐district products (which mirror NCES LEA boundaries).
 - The joined dataset represents a synthesis of data from multiple sources; discrepancies in source data formats may lead to minor variations.
 - Inflation and adjustment factors (e.g., CPI adjustments) are based on averages and may not perfectly reflect local cost variations.
+- Capital outlay is excluded from `exp_cur_total`, is lumpy year to year (use multi-year averages), and `NA` means an item was not reported, not zero. Debt and fund-balance stocks (`debt_*`, `fund_bal_*`) are point-in-time levels and are never CPI-adjusted.
+- CWIFT is a relative labor-cost index (not a price deflator); FY2012-2014 are unavailable, FY2020 is interpolated, and FY2023 is carried forward from FY2022.
+- The hosted datasets are distributed as gzip-compressed Parquet files.
 - **Caution is advised when comparing data across fiscal years due to potential differences in data collection and processing methods.**
 
 ## Authors

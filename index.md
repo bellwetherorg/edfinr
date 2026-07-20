@@ -19,6 +19,8 @@ To learn more about how to use __edfinr__ to analyze school system revenues and 
 
 - [Basic use](articles/basic-usage.html)
 - [CPI adjustments](articles/cpi-adjustments.html)
+- [Capital and facilities](articles/capital-facilities.html)
+- [CWIFT](articles/cwift.html)
 - [Data sources and methodology](articles/data-sources-methods.html)
 
 ## Data Notes and Cautions

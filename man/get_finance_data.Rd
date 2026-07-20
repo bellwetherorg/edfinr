@@ -5,7 +5,7 @@
 \title{Get Education Finance Data}
 \usage{
 get_finance_data(
-  yr = "2022",
+  yr = "2023",
   geo = "all",
   dataset_type = "skinny",
   cpi_adj = "none",
@@ -14,8 +14,8 @@ get_finance_data(
 )
 }
 \arguments{
-\item{yr}{A string specifying the year(s) to retrieve. Can be a single year ("2022"),
-a range ("2020:2022"), or "all" for all available years. Defaults to "2022".}
+\item{yr}{A string specifying the year(s) to retrieve. Can be a single year ("2023"),
+a range ("2020:2023"), or "all" for all available years. Defaults to "2023".}
 
 \item{geo}{A string specifying the geographic scope. Can be "all" for all states (default),
 a single state code ("KY"), or a comma-separated list of state codes ("IN,KY,OH,TN").}
@@ -23,12 +23,14 @@ a single state code ("KY"), or a comma-separated list of state codes ("IN,KY,OH,
 \item{dataset_type}{A string specifying whether to download the "skinny" (default) or "full" dataset.
 The skinny version excludes detailed expenditure data for faster downloads.}
 
-\item{cpi_adj}{A string specifying the CPI adjustment baseline year. Can be "none" (default) 
-for no adjustment, or a year between 2012-2022 to use as the baseline year.
-When a year is specified (e.g., "2022"), revenue, expenditure, and economic 
-variables are adjusted to that school year's dollars using CPI averaged over 
-the months of the school year (e.g., "2022" uses the 2021-22 school year CPI).
-When cpi_adj is set to a value other than "none", a new column "cpi_adj_index" 
+\item{cpi_adj}{A string specifying the CPI adjustment baseline year. Can be "none" (default)
+for no adjustment, or a year between 2012-2023 to use as the baseline year.
+When a year is specified (e.g., "2023"), revenue, expenditure, and economic
+variables are adjusted to that school year's dollars using CPI averaged over
+the months of the school year (e.g., "2023" uses the 2022-23 school year CPI).
+Capital outlay and debt-interest flows are adjusted; debt and fund-balance
+stocks (debt_*, fund_bal_*) and the CWIFT index are returned nominal.
+When cpi_adj is set to a value other than "none", a new column "cpi_adj_index"
 will be added to the output showing the adjustment index used for each row.}
 
 \item{refresh}{A logical value indicating whether to force a refresh of the cached data. Default is FALSE.}

@@ -26,6 +26,10 @@ navbar:
         href: articles/basic-usage.html
       - text: CPI Adjustments
         href: articles/cpi-adjustments.html
+      - text: Capital and Facilities
+        href: articles/capital-facilities.html
+      - text: CWIFT
+        href: articles/cwift.html
       - text: Data Sources and Methodology
         href: articles/data-sources-methods.html
     github:

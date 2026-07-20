@@ -11,3 +11,4 @@ index.md
 logo.png
 ^cran-comments\.md$
 ^CRAN-SUBMISSION$
+^EDFINR_UPDATE_PLAN\.md$

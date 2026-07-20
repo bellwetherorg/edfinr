@@ -9,9 +9,9 @@ list_variables(dataset_type = "skinny", category = "all")
 \arguments{
 \item{dataset_type}{A string specifying whether to list variables for "skinny" (default) or "full" dataset.}
 
-\item{category}{Optional. Filter variables by category: "id", "time", "geographic", 
-"demographic", "revenue", "expenditure", "economic", "governance", 
-or "all" (default).}
+\item{category}{Optional. Filter variables by category: "id", "time", "geographic",
+"demographic", "revenue", "expenditure", "economic", "governance",
+"debt", "cwift", or "all" (default).}
 }
 \value{
 A tibble with variable information

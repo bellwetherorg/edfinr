@@ -73,17 +73,17 @@ real_2022_data |>
 
 ## What Gets Adjusted?
 
-When you use `cpi_adj`, the following variables are automatically adjusted for inflation:
+When you use `cpi_adj`, dollar-denominated **flows** are automatically adjusted for inflation:
 
-- All revenue variables (total, local, state, federal).
-- All expenditure variables.
-- Median household income.
-- Median property values.
+- All revenue variables (total, local, state, federal; adjusted and unadjusted, totals and per-pupil).
+- Current and capital expenditure flows, including `exp_cap_total`, its detailed components, and `exp_debt_interest`.
+- Median and mean household income and median property value.
 
 Variables that are NOT adjusted include:
-- Enrollment counts.
-- Demographic percentages.
-- Any ratio or percentage variables.
+
+- Enrollment counts, demographic percentages, and any ratio or rate variables.
+- **Debt and fund-balance stocks** (`debt_*`, `fund_bal_*`). These are balance-sheet levels measured at a point in time, not annual flows, so deflating them with a flow price index would be incorrect. They are always returned in nominal dollars.
+- The **CWIFT** teacher-wage index (`cwift_est`). It is a relative labor-cost index, not a dollar amount, and is never CPI-adjusted (see the "CWIFT" vignette).
 
 ## Working with the CPI Index
 
@@ -167,7 +167,7 @@ ggplot(rev_trends) +
 
 ## Choosing a Base Year
 
-You can adjust to any year from 2012 to 2022. Common choices include:
+You can adjust to any year from 2012 to 2023. Common choices include:
 
 - **Most recent year** (e.g., 2022): Shows all values in current dollar terms.
 - **First year of analysis**: Makes it easy to see percentage changes from baseline.

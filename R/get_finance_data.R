@@ -6,18 +6,20 @@
 #'
 #' @importFrom rlang .data
 #'
-#' @param yr A string specifying the year(s) to retrieve. Can be a single year ("2022"),
-#'           a range ("2020:2022"), or "all" for all available years. Defaults to "2022".
+#' @param yr A string specifying the year(s) to retrieve. Can be a single year ("2023"),
+#'           a range ("2020:2023"), or "all" for all available years. Defaults to "2023".
 #' @param geo A string specifying the geographic scope. Can be "all" for all states (default),
 #'            a single state code ("KY"), or a comma-separated list of state codes ("IN,KY,OH,TN").
 #' @param dataset_type A string specifying whether to download the "skinny" (default) or "full" dataset.
 #'                     The skinny version excludes detailed expenditure data for faster downloads.
-#' @param cpi_adj A string specifying the CPI adjustment baseline year. Can be "none" (default) 
-#'                 for no adjustment, or a year between 2012-2022 to use as the baseline year.
-#'                 When a year is specified (e.g., "2022"), revenue, expenditure, and economic 
-#'                 variables are adjusted to that school year's dollars using CPI averaged over 
-#'                 the months of the school year (e.g., "2022" uses the 2021-22 school year CPI).
-#'                 When cpi_adj is set to a value other than "none", a new column "cpi_adj_index" 
+#' @param cpi_adj A string specifying the CPI adjustment baseline year. Can be "none" (default)
+#'                 for no adjustment, or a year between 2012-2023 to use as the baseline year.
+#'                 When a year is specified (e.g., "2023"), revenue, expenditure, and economic
+#'                 variables are adjusted to that school year's dollars using CPI averaged over
+#'                 the months of the school year (e.g., "2023" uses the 2022-23 school year CPI).
+#'                 Capital outlay and debt-interest flows are adjusted; debt and fund-balance
+#'                 stocks (debt_*, fund_bal_*) and the CWIFT index are returned nominal.
+#'                 When cpi_adj is set to a value other than "none", a new column "cpi_adj_index"
 #'                 will be added to the output showing the adjustment index used for each row.
 #' @param refresh A logical value indicating whether to force a refresh of the cached data. Default is FALSE.
 #' @param quiet A logical value indicating whether to suppress download progress messages.
@@ -48,9 +50,9 @@
 #' #' # get data for multiple states for all available years
 #' regional_data <- get_finance_data(yr = "all", geo = "IN,KY,OH,TN")
 #' }
-get_finance_data <- function(yr = "2022", geo = "all", dataset_type = "skinny", cpi_adj = "none", refresh = FALSE, quiet = FALSE) {
-  # define valid years (assuming 2012-2022 based on filename)
-  valid_years <- 2012:2022
+get_finance_data <- function(yr = "2023", geo = "all", dataset_type = "skinny", cpi_adj = "none", refresh = FALSE, quiet = FALSE) {
+  # define valid years
+  valid_years <- 2012:2023
 
   # define valid state codes (all US states + DC)
   valid_states <- c(
@@ -118,22 +120,22 @@ get_finance_data <- function(yr = "2022", geo = "all", dataset_type = "skinny", 
   if (cpi_adj != "none") {
     cpi_year <- suppressWarnings(as.numeric(cpi_adj))
     if (is.na(cpi_year)) {
-      cli::cli_abort("cpi_adj must be 'none' or a valid year between 2012 and 2022.")
+      cli::cli_abort("cpi_adj must be 'none' or a valid year between {min(valid_years)} and {max(valid_years)}.")
     }
-    if (!cpi_year %in% 2012:2022) {
-      cli::cli_abort("cpi_adj year must be between 2012 and 2022.")
+    if (!cpi_year %in% valid_years) {
+      cli::cli_abort("cpi_adj year must be between {min(valid_years)} and {max(valid_years)}.")
     }
   }
 
-  # url for the .rds file
-  url_full <- "https://edfinr-tidy-data.s3.us-east-2.amazonaws.com/edfinr_data_fy12_fy22_full.rds"
-  url_skinny <- "https://edfinr-tidy-data.s3.us-east-2.amazonaws.com/edfinr_data_fy12_fy22_skinny.rds"
+  # url for the parquet file
+  url_full <- "https://edfinr-tidy-data.s3.us-east-2.amazonaws.com/edfinr_data_fy12_fy23_full.parquet"
+  url_skinny <- "https://edfinr-tidy-data.s3.us-east-2.amazonaws.com/edfinr_data_fy12_fy23_skinny.parquet"
 
   # select URL based on dataset_type
   url <- if (dataset_type == "full") url_full else url_skinny
 
-  # cache handling - different cache files for different dataset types
-  cache_name <- paste0("edfinr_data_fy12_fy22_", dataset_type, ".rds")
+  # cache handling - derive the cache name from the url so the two never drift
+  cache_name <- basename(url)
   cache_file_path <- cache_file(cache_name)
 
   # check if we need to download the data
@@ -178,12 +180,29 @@ get_finance_data <- function(yr = "2022", geo = "all", dataset_type = "skinny", 
     cli::cli_alert_info("Using cached data. Use refresh = TRUE to download fresh data.")
   }
 
-  # read the .rds file from cache
-  data <- readRDS(cache_file_path)
+  # read the parquet file from cache
+  data <- nanoparquet::read_parquet(cache_file_path)
 
   # convert to tibble
   if (!inherits(data, "tbl_df")) {
     data <- tibble::as_tibble(data)
+  }
+
+  # year is stored as character in the parquet; return it as integer
+  data <- dplyr::mutate(data, year = as.integer(.data$year))
+
+  # if cpi adjustment is requested, capture the baseline cpi from the full data
+  # before any year/geo filtering, so the baseline year need not fall within the
+  # requested year range
+  baseline_cpi <- NULL
+  if (cpi_adj != "none") {
+    cpi_year <- as.numeric(cpi_adj)
+    # cpi is national, so any row for the baseline year gives the same value
+    baseline_data <- dplyr::filter(data, .data$year == cpi_year)
+    if (nrow(baseline_data) == 0) {
+      cli::cli_abort("No data available for the specified baseline year {cpi_year}.")
+    }
+    baseline_cpi <- baseline_data$cpi_sy12[1]
   }
 
   # process year parameter
@@ -208,36 +227,23 @@ get_finance_data <- function(yr = "2022", geo = "all", dataset_type = "skinny", 
     data <- dplyr::filter(data, .data$state %in% states)
   }
   
-  # if cpi adjustment is requested, we need to get the baseline cpi before filtering
-  baseline_cpi <- NULL
-  if (cpi_adj != "none") {
-    cpi_year <- as.numeric(cpi_adj)
-    
-    # get the cpi value for the baseline year
-    baseline_data <- dplyr::filter(data, .data$year == cpi_year)
-    
-    if (nrow(baseline_data) == 0) {
-      cli::cli_abort("No data available for the specified baseline year {cpi_year}.")
-    }
-    # use the first cpi value as they should all be the same for a given year
-    baseline_cpi <- baseline_data$cpi_sy12[1]
-  }
-  
-  # apply cpi adjustment if requested
+  # apply cpi adjustment if requested (baseline_cpi captured before filtering)
   if (cpi_adj != "none" && !is.null(baseline_cpi)) {
     
     # define columns to adjust
     # revenue columns (both raw and adjusted versions)
     revenue_cols <- c("rev_total_pp", "rev_local_pp", "rev_state_pp", "rev_fed_pp",
                      "rev_total", "rev_local", "rev_state", "rev_fed",
-                     "rev_total_unadj", "rev_local_unadj", "rev_state_unadj", "rev_fed_unadj")
+                     "rev_total_unadj", "rev_local_unadj", "rev_state_unadj", "rev_fed_unadj",
+                     "rev_state_unadj_pp", "rev_local_unadj_pp")
     
     # expenditure columns (skinny dataset)
-    expenditure_cols <- c("exp_cur_pp", "rev_exp_pp_diff", "exp_cur_st_loc", 
-                         "exp_cur_fed", "exp_cur_resa", "exp_cur_total")
-    
+    expenditure_cols <- c("exp_cur_pp", "rev_exp_pp_diff", "exp_cur_st_loc",
+                         "exp_cur_fed", "exp_cur_resa", "exp_cur_total",
+                         "exp_cap_total", "exp_cap_total_pp")
+
     # economic columns (excluding cpi_sy12 itself)
-    economic_cols <- c("mhi", "mpv")
+    economic_cols <- c("mhi", "mpv", "mean_hhi")
     
     # additional expenditure columns for full dataset
     if (dataset_type == "full") {
@@ -255,7 +261,9 @@ get_finance_data <- function(yr = "2022", geo = "all", dataset_type = "skinny", 
         "exp_noninstr_food_sal", "exp_noninstr_food_bene", "exp_noninstr_ent_ops_total", 
         "exp_noninstr_ent_ops_bene", "exp_noninstr_other", "exp_covid_total", 
         "exp_covid_instr", "exp_covid_supp", "exp_covid_cap_out", "exp_covid_tech_supp", 
-        "exp_covid_tech_equip", "exp_covid_supp_plant", "exp_covid_food")
+        "exp_covid_tech_equip", "exp_covid_supp_plant", "exp_covid_food",
+        "exp_cap_construction", "exp_cap_land", "exp_cap_equip_instr",
+        "exp_cap_equip_other", "exp_cap_equip_nonspec", "exp_debt_interest")
       expenditure_cols <- c(expenditure_cols, full_expenditure_cols)
     }
     
