@@ -37,10 +37,20 @@
   nominal (never CPI-adjusted).
 * **New dictionary categories.** `list_variables()` now includes `"debt"` and
   `"cwift"` categories and lists all 121 variables (56 in the skinny dataset).
-* **Behavior change: NA propagation in `exp_cur_total`.** Missing F-33 items now
-  propagate to `NA` rather than being treated as zero, so totals differ from
-  0.1.x for districts with incomplete reporting. Use caution comparing
-  `rev_state_pp` across years alongside `c11_spike_flag`.
+* **Behavior change: `exp_cur_total` is now sourced from TCURELSC.** In 0.1.x
+  the total was the sum of the ESSA fund-type items (CE1 + CE2 + CE3), which
+  whole states skip (all of Illinois and Minnesota through FY23; New York --
+  including NYC -- New Jersey, Massachusetts, Oregon, and others in earlier
+  years) and which did not exist before FY16. `exp_cur_total`, `exp_cur_pp`,
+  and `rev_exp_pp_diff` are now available for nearly all districts in all
+  years 2012-2023. Values shift slightly where both were reported (the ESSA
+  items exclude payments to private, charter, and other school systems, so
+  the CE-sum differs from TCURELSC by more than 2% for roughly 40% of
+  reporting districts). The CE-based columns remain available as
+  `exp_cur_st_loc`, `exp_cur_fed`, and `exp_cur_resa`, `NA` where states did
+  not report them; missing values still propagate to `NA` rather than zero.
+  Use caution comparing `rev_state_pp` across years alongside
+  `c11_spike_flag`.
 * **Hosted data format.** The hosted datasets are now gzip-compressed Parquet
   (read with `nanoparquet`) instead of `.rds`. This is transparent to callers.
 * **Per-year downloads.** `get_finance_data()` now downloads only the requested

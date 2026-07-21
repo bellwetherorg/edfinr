@@ -42,8 +42,10 @@ defaults to `yr = "2023"`. The datasets add capital outlay detail, debt stocks,
 fund balances, and the NCES Comparable Wage Index for Teachers (CWIFT), each
 covered by a dedicated article on the package website. And downloads are now
 per-year files, so small requests transfer only the years they need. See the
-changelog (NEWS) for the full list, including a behavior change in how missing
-values propagate to `exp_cur_total`.
+changelog (NEWS) for the full list, including a behavior change in
+`exp_cur_total`: it is now sourced from the F-33 total current expenditure
+item (TCURELSC), so it is available for nearly all districts in all years
+rather than only where states reported the ESSA fund-type breakdown.
 
 ## Core function: get_finance_data()
 

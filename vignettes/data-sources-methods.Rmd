@@ -183,11 +183,20 @@ Additional transformations are applied after the join:
 Users comparing results against edfinr 0.1.x should be aware of these
 methodology-relevant changes in 0.2.0:
 
-- **NA propagation in `exp_cur_total`.** Missing F-33 items now propagate to
-  `NA` rather than being treated as zero, so current-expenditure totals differ
-  from 0.1.x for districts with incomplete reporting. This is the correct
-  behavior (an unreported item is unknown, not zero), but it changes published
-  numbers for affected district-years.
+- **`exp_cur_total` is sourced from TCURELSC.** In 0.1.x the total was the sum
+  of the ESSA fund-type items (CE1 + CE2 + CE3), which several states skip
+  entirely (all of Illinois and Minnesota through FY23; New York -- including
+  New York City -- New Jersey, Massachusetts, Oregon, and others in earlier
+  years) and which did not exist before FY16. Sourcing the total directly from
+  the F-33 TCURELSC item makes `exp_cur_total`, `exp_cur_pp`, and
+  `rev_exp_pp_diff` available for nearly all districts in every year 2012-2023.
+  Where states did report the fund-type items, values shift slightly: the ESSA
+  items exclude payments to private, charter, and other school systems, so the
+  CE-sum differs from TCURELSC by more than 2% for roughly 40% of reporting
+  districts. The fund-type split remains available as `exp_cur_st_loc`,
+  `exp_cur_fed`, and `exp_cur_resa` (`NA` where unreported); those components
+  should not be expected to sum exactly to `exp_cur_total`. Missing values
+  still propagate to `NA` rather than being treated as zero.
 - **`year` is returned as an integer** rather than a character column.
 - **Hosted data format.** The hosted datasets are gzip-compressed Parquet
   files read with `nanoparquet` (previously `.rds`), and each year is hosted

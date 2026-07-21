@@ -114,3 +114,20 @@ test_that("factor columns keep full, identical level sets after binding slices",
     expect_equal(levels(multi[[col]]), levels(one[[col]]))
   }
 })
+
+test_that("exp_cur_total (TCURELSC) covers non-ESSA-reporting states and years", {
+  skip_on_cran()
+  # NYC never reported the ESSA fund-type items before FY23, and FY12-15
+  # predate them entirely; the TCURELSC-sourced total must cover both
+  d <- fetch_or_skip(yr = "2012:2016", dataset_type = "skinny", geo = "NY")
+  nyc <- d[d$ncesid == "3620580", ]
+  expect_equal(nrow(nyc), 5)
+  expect_true(all(is.finite(nyc$exp_cur_total)))
+  expect_true(all(is.finite(nyc$exp_cur_pp)))
+  # coverage: NA share should be small in every fetched year
+  na_by_yr <- tapply(is.na(d$exp_cur_total), d$year, mean)
+  expect_true(all(na_by_yr < 0.05))
+  # the fund-type split stays NA where NY did not report it
+  full <- fetch_or_skip(yr = "2016", dataset_type = "full", geo = "NY")
+  expect_true(is.na(full$exp_cur_st_loc[full$ncesid == "3620580"]))
+})
