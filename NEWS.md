@@ -1,5 +1,16 @@
 # edfinr 0.2.0
 
+* **`list_variables()` gains an `f33_item` column** recording the F-33 survey
+  item(s) each F-33-sourced variable is drawn from (e.g., `"F12"`,
+  `"TCAPOUT / V33"`); `NA` for non-F-33 sources and edfinr-adjusted measures.
+  The "Data Sources and Methodology" vignette's crosswalk table is built from
+  it. Also fixes a typo in the `rev_state_unadj` description (TSTREV).
+* **Documentation overhaul.** The "Basic usage" vignette is now the package's
+  "Get started" page. "Capital and Facilities" and "CWIFT" moved to
+  pkgdown-only articles (no longer shipped in the CRAN package), joined by
+  four new articles: "Data Quality and Comparability", "COVID Relief
+  Spending", "Community and Economic Context", and "Mapping School Finance
+  Data". CRAN vignettes now skip evaluation on CRAN machines.
 * **FY2023 data.** Coverage now extends through the 2022-23 school year (fiscal
   year 2023). `get_finance_data()` defaults to `yr = "2023"` and accepts years
   2012-2023 (including `cpi_adj` base years).

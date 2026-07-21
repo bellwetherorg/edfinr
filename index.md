@@ -17,18 +17,22 @@ pak::pkg_install("bellwetherorg/edfinr")
 
 To learn more about how to use __edfinr__ to analyze school system revenues and expenditures, please refer to the following articles:
 
-- [Basic use](articles/basic-usage.html)
+- [Get started: basic usage](articles/edfinr.html)
 - [CPI adjustments](articles/cpi-adjustments.html)
 - [Capital and facilities](articles/capital-facilities.html)
 - [CWIFT](articles/cwift.html)
+- [COVID relief spending](articles/covid-relief.html)
+- [Community and economic context](articles/community-context.html)
+- [Mapping school finance data](articles/mapping.html)
+- [Data quality and comparability](articles/data-quality.html)
 - [Data sources and methodology](articles/data-sources-methods.html)
 
 ## Data Notes and Cautions
 
 Users should note the following when working with the __edfinr__ datasets:
 
-- Some variables were originally coded with `-1` to indicate missing values; these have been replaced with `NA` during processing.
-- During data processing, we identified a sharp rise in the number of California districts appearing only from 2019 onward in the data. This reflects the fact that many charter schools became separate local education agencies (LEAs) in those years. Beginning in school year 2018–19, a wave of California charter schools switched to independent CALPADS/CBEDS reporting and thus were assigned their own NCES LEA IDs for the first time. Once in the NCES LEA universe, those new charter‐LEAs automatically show up in the F-33 finance survey (with blanks or flags if they report no finance data), and Census SAIPE and ACS school‐district products (which mirror NCES LEA boundaries).
+- Some variables were originally coded with `-1` to indicate missing values; these have been replaced with `NA` during processing. An `NA` means an item was not reported, not that it is zero.
+- The number of California districts jumps from 2019 onward because a wave of charter schools became separate local education agencies (LEAs); see the [data quality and comparability](articles/data-quality.html) article for the full explanation and its implications for longitudinal analysis.
 - The joined dataset represents a synthesis of data from multiple sources; discrepancies in source data formats may lead to minor variations.
 - Inflation and adjustment factors (e.g., CPI adjustments) are based on averages and may not perfectly reflect local cost variations.
 - **Caution is advised when comparing data across fiscal years due to potential differences in data collection and processing methods.**

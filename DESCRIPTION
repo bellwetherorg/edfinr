@@ -49,3 +49,4 @@ Suggests:
     tidyr
 VignetteBuilder: knitr
 Config/testthat/edition: 3
+Config/Needs/website: sf, tigris

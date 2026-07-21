@@ -1,0 +1,206 @@
+---
+title: "Community and Economic Context"
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  message = FALSE,
+  warning = FALSE,
+  fig.width = 8
+)
+```
+
+## Introduction
+
+School finance rarely makes sense in isolation from the communities that fund
+and attend the schools. Alongside the F-33 finance items, `edfinr` joins each
+district to community measures from the American Community Survey (ACS) 5-Year
+Estimates and poverty estimates from the Census Bureau's Small Area Income and
+Poverty Estimates (SAIPE). This article tours those variables and shows how to
+use them for the most common framing in the field: comparing districts' fiscal
+**capacity** (what a community can raise) with student **need**.
+
+```{r setup, include = FALSE}
+library(edfinr)
+library(dplyr)
+library(tidyr)
+library(ggplot2)
+```
+
+```{r, eval = FALSE}
+library(edfinr)
+library(dplyr)
+library(tidyr)
+library(ggplot2)
+```
+
+## The community variables
+
+All of these are in the skinny dataset. The dictionary lists them with their
+source table codes:
+
+```{r variable-tour}
+list_variables("skinny") |>
+  filter(source %in% c("5-Year ACS Survey", "Census Bureau SAIPE")) |>
+  select(name, source, description) |>
+  knitr::kable()
+```
+
+Two timing caveats before using them:
+
+1. **ACS values are 5-year averages.** The ACS estimates attached to a fiscal
+   year summarize a five-year window, so they move slowly and lag sharp local
+   changes (a plant closing, a housing boom). SAIPE poverty estimates are
+   annual.
+2. **Estimates carry sampling error.** ACS district-level estimates,
+   especially for small districts, have nontrivial margins of error that
+   `edfinr` does not carry. Treat small-district differences in `gini`,
+   `snap_pct`, or `unemp_rate` as noisy.
+
+The examples below use the most recent year:
+
+```{r download}
+us_2023 <- get_finance_data(yr = "2023", geo = "all")
+```
+
+## Median vs. mean household income
+
+`mhi` (median) and `mean_hhi` (mean) answer different questions. The mean is
+pulled upward by high-income households, so the mean-to-median ratio is a
+quick screen for skewed income distributions -- useful for spotting
+communities where a small wealthy population coexists with a much less
+affluent majority:
+
+```{r income-skew}
+us_2023 |>
+  filter(!is.na(mhi), !is.na(mean_hhi), mhi > 0) |>
+  mutate(mean_to_median = mean_hhi / mhi) |>
+  filter(enroll >= 1000) |>
+  arrange(desc(mean_to_median)) |>
+  select(dist_name, state, enroll, mhi, mean_hhi, mean_to_median) |>
+  head(10)
+```
+
+## Fiscal capacity: property wealth and local revenue
+
+Local revenue depends heavily on the property tax base. Plotting per-pupil
+local revenue against median property value shows the capacity gradient --
+and how it differs by urbanicity:
+
+```{r capacity, fig.height = 5}
+us_2023 |>
+  filter(!is.na(mpv), !is.na(rev_local_pp), mpv > 0, rev_local_pp > 0,
+         !is.na(urbanicity)) |>
+  ggplot(aes(x = mpv, y = rev_local_pp, color = urbanicity)) +
+  geom_point(alpha = 0.2, size = 0.8) +
+  geom_smooth(se = FALSE) +
+  scale_x_log10(labels = scales::label_dollar()) +
+  scale_y_log10(labels = scales::label_dollar()) +
+  labs(
+    title = "Local Revenue Tracks Property Wealth, SY2022-23",
+    subtitle = "Each point is a district; log scales",
+    x = "Median Property Value",
+    y = "Local Revenue Per-Pupil",
+    color = "Urbanicity"
+  ) +
+  theme_minimal()
+```
+
+## Student need: poverty and total revenue
+
+The SAIPE-based `stpov_pct` measures the share of school-aged children in
+poverty. Whether total revenue rises with poverty -- that is, whether state
+and federal aid more than offset weaker local capacity -- varies sharply by
+state. Here is the national picture:
+
+```{r need, fig.height = 5}
+us_2023 |>
+  filter(!is.na(stpov_pct), !is.na(rev_total_pp)) |>
+  ggplot(aes(x = stpov_pct, y = rev_total_pp)) +
+  geom_point(alpha = 0.15, size = 0.8) +
+  geom_smooth(se = FALSE) +
+  scale_x_continuous(labels = scales::label_percent()) +
+  scale_y_log10(labels = scales::label_dollar()) +
+  labs(
+    title = "Student Poverty and Total Revenue Per-Pupil, SY2022-23",
+    x = "Students in Poverty",
+    y = "Total Revenue Per-Pupil (log scale)"
+  ) +
+  theme_minimal()
+```
+
+## Need vs. capacity within a state
+
+Cross-state comparisons mix different funding systems, so the need-capacity
+framing is sharpest within one state. Classifying districts against their
+state's median poverty and median property value yields four quadrants; the
+high-need, low-capacity quadrant is where funding systems are tested:
+
+```{r quadrants, fig.height = 5.5}
+oh_2023 <- us_2023 |>
+  filter(state == "OH", !is.na(stpov_pct), !is.na(mpv))
+
+oh_quad <- oh_2023 |>
+  mutate(
+    need = ifelse(stpov_pct > median(stpov_pct), "Higher need", "Lower need"),
+    capacity = ifelse(mpv > median(mpv), "Higher capacity", "Lower capacity"),
+    quadrant = paste(need, capacity, sep = ", ")
+  )
+
+# how does total revenue differ across the quadrants?
+oh_quad |>
+  group_by(quadrant) |>
+  summarize(
+    n_districts = n(),
+    med_rev_total_pp = median(rev_total_pp, na.rm = TRUE),
+    med_rev_local_pp = median(rev_local_pp, na.rm = TRUE),
+    med_rev_state_pp = median(rev_state_pp, na.rm = TRUE),
+    .groups = "drop"
+  )
+
+ggplot(oh_quad, aes(x = mpv, y = stpov_pct, color = rev_total_pp)) +
+  geom_point(alpha = 0.7) +
+  geom_vline(xintercept = median(oh_2023$mpv), linetype = "dashed") +
+  geom_hline(yintercept = median(oh_2023$stpov_pct), linetype = "dashed") +
+  scale_x_log10(labels = scales::label_dollar()) +
+  scale_y_continuous(labels = scales::label_percent()) +
+  scale_color_viridis_c(labels = scales::label_dollar()) +
+  labs(
+    title = "Need vs. Capacity in Ohio Districts, SY2022-23",
+    subtitle = "Dashed lines mark state medians",
+    x = "Median Property Value (capacity)",
+    y = "Students in Poverty (need)",
+    color = "Total Revenue\nPer-Pupil"
+  ) +
+  theme_minimal()
+```
+
+## The other indicators
+
+`gini` (income inequality), `owner_pct` (owner-occupied housing),
+`snap_pct` (SNAP receipt), and `unemp_rate` (unemployment) round out the
+community picture. They are most useful as controls or descriptive context;
+their distributions differ enough across urbanicity to be worth checking
+before pooling:
+
+```{r indicators, fig.height = 6}
+us_2023 |>
+  filter(!is.na(urbanicity)) |>
+  select(urbanicity, gini, owner_pct, snap_pct, unemp_rate) |>
+  pivot_longer(-urbanicity, names_to = "indicator", values_to = "value") |>
+  filter(!is.na(value)) |>
+  ggplot(aes(x = urbanicity, y = value)) +
+  geom_boxplot(outlier.alpha = 0.1) +
+  facet_wrap(~indicator, scales = "free_y") +
+  labs(
+    title = "Community Indicators by Urbanicity, SY2022-23",
+    x = "Urbanicity", y = NULL
+  ) +
+  theme_minimal()
+```
+
+## See also
+
+- The "Data Quality and Comparability" article, including its notes on ACS timing and panel composition.
+- The "Mapping School Finance Data" article to see these measures on a map.
+- The "Basic usage of edfinr" vignette for `list_variables()` and the data dictionary.

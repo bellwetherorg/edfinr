@@ -9,7 +9,6 @@ navbar:
     - intro
     - reference
     - articles
-    - tutorials
     - news
     right: github
   components:
@@ -19,19 +18,25 @@ navbar:
     reference:
       text: Reference
       href: reference/index.html
-    articles:
-      text: Articles
-      menu:
-      - text: Basic Usage of edfinr
-        href: articles/basic-usage.html
-      - text: CPI Adjustments
-        href: articles/cpi-adjustments.html
-      - text: Capital and Facilities
-        href: articles/capital-facilities.html
-      - text: CWIFT
-        href: articles/cwift.html
-      - text: Data Sources and Methodology
-        href: articles/data-sources-methods.html
     github:
       icon: fa-github fa-lg
       href: https://github.com/bellwetherorg/edfinr
+
+articles:
+- title: Working with the data
+  navbar: Working with the data
+  contents:
+  - cpi-adjustments
+  - articles/capital-facilities
+  - articles/cwift
+  - articles/covid-relief
+  - articles/community-context
+  - articles/mapping
+- title: Methods and data quality
+  navbar: Methods and data quality
+  contents:
+  - articles/data-quality
+  - data-sources-methods
+
+redirects:
+- ["articles/basic-usage.html", "articles/edfinr.html"]

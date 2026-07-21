@@ -13,3 +13,6 @@ logo.png
 ^CRAN-SUBMISSION$
 ^EDFINR_UPDATE_PLAN\.md$
 ^PER_YEAR_DOWNLOADS_PLAN\.md$
+^vignettes/articles$
+^VIGNETTE_UPDATE_PLAN\.md$
+^_to_delete$

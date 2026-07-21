@@ -26,6 +26,23 @@ test_that("debt stocks and fund balances are categorized as debt", {
   expect_true(all(c("debt_lt_end", "fund_bal_bond", "fund_bal_other") %in% debt))
 })
 
+test_that("f33_item maps F-33 variables and is NA elsewhere", {
+  full <- list_variables("full")
+  expect_true("f33_item" %in% names(full))
+  # 1:1 mappings
+  expect_equal(full$f33_item[full$name == "exp_cap_construction"], "F12")
+  expect_equal(full$f33_item[full$name == "debt_lt_begin"], "_19H")
+  expect_equal(full$f33_item[full$name == "rev_state_unadj"], "TSTREV")
+  # formula-style mappings
+  expect_equal(full$f33_item[full$name == "exp_cap_total_pp"], "TCAPOUT / V33")
+  # NA for non-F-33 sources and edfinr-adjusted measures
+  expect_true(is.na(full$f33_item[full$name == "cwift_est"]))
+  expect_true(is.na(full$f33_item[full$name == "mhi"]))
+  expect_true(is.na(full$f33_item[full$name == "rev_total"]))
+  # every non-NA f33_item belongs to an F-33-sourced variable
+  expect_true(all(full$source[!is.na(full$f33_item)] == "NCES F-33 Survey"))
+})
+
 test_that("skinny is a strict subset of full", {
   expect_true(all(list_variables("skinny")$name %in% list_variables("full")$name))
 })

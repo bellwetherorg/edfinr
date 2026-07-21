@@ -1,0 +1,221 @@
+---
+title: "Basic usage of edfinr"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Basic usage of edfinr}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+# chunks that download hosted data are skipped on CRAN machines; set
+# NOT_CRAN=true (as the pkgdown workflow does) to evaluate everything
+NOT_CRAN <- identical(Sys.getenv("NOT_CRAN"), "true")
+knitr::opts_chunk$set(
+  message = FALSE,
+  warning = FALSE,
+  eval = NOT_CRAN
+)
+```
+
+## Introduction
+
+The `edfinr` package provides a simple, consistent interface for accessing comprehensive education finance data for U.S. school districts. This vignette will help you get started with the package's core functionality.
+
+```{r setup, include = FALSE, eval = TRUE}
+library(edfinr)
+library(dplyr)
+library(ggplot2)
+```
+
+```{r, eval = FALSE}
+library(edfinr)
+library(dplyr)
+library(ggplot2)
+```
+
+## What's new in 0.2.0
+
+If you are returning to `edfinr` after using 0.1.x, three changes matter most.
+Coverage now extends through the 2022-23 school year, and `get_finance_data()`
+defaults to `yr = "2023"`. The datasets add capital outlay detail, debt stocks,
+fund balances, and the NCES Comparable Wage Index for Teachers (CWIFT), each
+covered by a dedicated article on the package website. And downloads are now
+per-year files, so small requests transfer only the years they need. See the
+changelog (NEWS) for the full list, including a behavior change in how missing
+values propagate to `exp_cur_total`.
+
+## Core function: get_finance_data()
+
+The primary function in `edfinr` is `get_finance_data()`, which provides access to comprehensive school finance data from school years 2011-12 through 2022-23. The function combines data from multiple sources:
+
+- **Financial data**: Revenue and expenditure data (including capital outlay, debt, and fund balances) from the National Center for Education Statistics (NCES) version of the F-33 survey.
+- **Enrollment**: Student counts from NCES Common Core of Data.
+- **Demographics**: Poverty estimates from the U.S. Census Bureau Small Area Income and Poverty Estimates (SAIPE).
+- **Community characteristics**: Income and education data from American Community Survey (ACS).
+- **Labor costs**: The NCES EDGE Comparable Wage Index for Teachers (CWIFT).
+- **Inflation adjustments**: Consumer Price Index for All Urban Consumers (CPI-U) data for constant dollar calculations.
+
+## Basic usage
+
+The simplest way to use `get_finance_data()` is to specify a year and state. For example, to get finance data for Kentucky school districts from the 2022-23 school year:
+
+```{r example-1}
+# download "skinny" dataset for a single year and a single state
+ky_sy23 <- get_finance_data(yr = 2023, geo = "KY")
+
+# view the structure of the returned data
+glimpse(ky_sy23)
+```
+
+## Dataset types: skinny vs. full
+
+By default, `get_finance_data()` returns a "skinny" dataset with 56 essential variables covering:
+
+- District identifiers and characteristics.
+- Total revenues by source (local, state, federal).
+- Current expenditures and total capital outlay (`exp_cap_total`, `exp_cap_total_pp`).
+- Key demographic and economic indicators (including the CWIFT teacher-wage index).
+
+For more detailed analysis, you can request the "full" dataset with 121 variables that includes:
+
+- All skinny dataset variables.
+- Detailed expenditure data.
+- Data on spending of temporary pandemic-related federal funding.
+- Detailed capital outlay, debt stocks, and fund balances (see the "Capital and Facilities" article).
+- The CWIFT standard error and imputation method (see the "CWIFT" article).
+
+```{r example-2}
+# download the full dataset with detailed expenditure data for a single year/state
+ky_full_sy23 <- get_finance_data(yr = "2023", geo = "KY", dataset_type = "full")
+
+# the full dataset adds detailed expenditure, capital, debt, and CWIFT variables
+setdiff(names(ky_full_sy23), names(ky_sy23))
+```
+
+## Finding variables
+
+With 121 variables in the full dataset, the data dictionary is the fastest way
+to find what you need. `list_variables()` returns it as a tibble, so you can
+filter and search it like any other data.
+
+```{r finding-variables, eval = TRUE}
+# the full dictionary: name, type, category, source, f33_item,
+# first_yr_avail, and description for every variable
+vars <- list_variables("full")
+vars
+
+# filter by category; 0.2.0 adds "debt" and "cwift" categories
+list_variables("full", category = "debt")
+```
+
+Two dictionary columns deserve special attention. `first_yr_avail` records the
+first fiscal year each variable is available, because not every variable spans
+the whole 2012-2023 panel:
+
+```{r first-yr-avail, eval = TRUE}
+vars |>
+  filter(first_yr_avail != "2012") |>
+  count(first_yr_avail, category)
+```
+
+And `f33_item` records the F-33 survey item(s) each F-33-sourced variable is
+drawn from (for example, `exp_cap_construction` comes from item F12), which is
+useful when comparing edfinr output against raw NCES files. See the "Data
+Sources and Methodology" vignette for the full crosswalk.
+
+## Multiple years and states
+
+The `get_finance_data()` function makes it easy to access data across multiple years and states:
+
+```{r example-3}
+# get data for multiple states across multiple years
+sec_data <- get_finance_data(
+  yr = "2019:2023",  # years 2019 through 2023
+  geo = "AL,AR,FL,GA,KY,LA,MS,MO,OK,SC,TN,TX"  # comma-separated state codes
+)
+
+# get the most recent year of data for all states
+us_sy23 <- get_finance_data(yr = 2023, geo = "all")
+```
+
+## Downloads and caching
+
+Only the requested year(s) are downloaded: each year is hosted as its own file
+(roughly 3-6 MB), so a single-year or short-range request is lightweight even
+though the full panel spans 2012-2023. Requesting `yr = "all"` downloads the
+entire history from one combined file.
+
+Downloaded files are cached in R's temporary directory for the length of your
+R session, so repeated calls with the same years re-read the cache instead of
+re-downloading. Two arguments control this behavior: `refresh = TRUE` forces a
+fresh download (for example, after a data update is announced), and
+`quiet = TRUE` suppresses the download progress messages.
+
+```{r caching, eval = FALSE}
+# re-download even if a cached copy exists, without progress messages
+ky_fresh <- get_finance_data(yr = 2023, geo = "KY", refresh = TRUE, quiet = TRUE)
+```
+
+## Working with the data
+
+Once you've retrieved the data, you can use standard data manipulation tools to analyze it. Here are some common analysis patterns:
+
+### How does local revenue relate to total revenue?
+
+```{r analysis-1}
+# download 2023 data for connecticut
+ct_sy23 <- get_finance_data(yr = "2023", geo = "CT")
+
+# plot local revenue vs. total revenue w/ urbanicity + enrollment
+ggplot(ct_sy23) +
+  geom_point(aes(
+    x = rev_local_pp,
+    y = rev_total_pp,
+    color = urbanicity,
+    size = enroll),
+    alpha = .6) +
+  scale_size_area(
+    max_size = 10,
+    labels = scales::label_comma()
+    ) +
+  scale_x_continuous(labels = scales::label_dollar()) +
+  scale_y_continuous(labels = scales::label_dollar()) +
+  labs(
+    title = "Connecticut Districts' Local vs. Total Revenue Per-Pupil, SY2022-23",
+    x = "Local Revenue Per-Pupil",
+    y = "Total Revenue Per-Pupil",
+    size = "Enrollment",
+    color = "Urbanicity") +
+  theme_bw()
+```
+
+### How do revenue sources differ by urbanicity?
+
+```{r analysis-2}
+# compare revenue sources across districts
+revenue_analysis <- ct_sy23 |>
+  mutate(
+    pct_local = rev_local / rev_total,
+    pct_state = rev_state / rev_total,
+    pct_federal = rev_fed / rev_total
+  ) |>
+  select(dist_name, urbanicity, enroll, pct_local, pct_state, pct_federal) |>
+  group_by(urbanicity) |>
+  summarize(
+    avg_pct_local = mean(pct_local, na.rm = TRUE),
+    avg_pct_state = mean(pct_state, na.rm = TRUE),
+    avg_pct_federal = mean(pct_federal, na.rm = TRUE),
+    n_districts = n(),
+    enrollment = sum(enroll, na.rm = TRUE)
+  )
+
+print(revenue_analysis)
+```
+
+## See also
+
+- Use `list_variables()` to see all available variables and their descriptions, and `get_states()` to see valid state codes.
+- The "CPI Adjustments" vignette for inflation adjustment across years.
+- The "Data Sources and Methodology" vignette for detailed methodology and the F-33 crosswalk.
+- On the package website: articles on capital and facilities, CWIFT, COVID relief spending, community and economic context, data quality and comparability, and mapping school finance data.
