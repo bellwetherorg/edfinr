@@ -15,12 +15,14 @@ navbar:
     home:
       icon: fa-home fa-lg
       href: index.html
+      aria-label: Home
     reference:
       text: Reference
       href: reference/index.html
     github:
       icon: fa-github fa-lg
       href: https://github.com/bellwetherorg/edfinr
+      aria-label: GitHub
 
 articles:
 - title: Working with the data

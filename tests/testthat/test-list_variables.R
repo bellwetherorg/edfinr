@@ -1,8 +1,8 @@
 # The variable dictionary is static, so these tests need no network access.
 
 test_that("dictionary has the expected number of rows", {
-  expect_equal(nrow(list_variables("skinny")), 56)
-  expect_equal(nrow(list_variables("full")), 121)
+  expect_equal(nrow(list_variables("skinny")), 57)
+  expect_equal(nrow(list_variables("full")), 122)
 })
 
 test_that("new debt and cwift categories are present", {

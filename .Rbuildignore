@@ -16,3 +16,4 @@ logo.png
 ^vignettes/articles$
 ^VIGNETTE_UPDATE_PLAN\.md$
 ^_to_delete$
+^\.claude$

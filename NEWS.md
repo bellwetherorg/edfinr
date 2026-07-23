@@ -31,12 +31,36 @@
   (`rev_state_unadj_pp`, `rev_local_unadj_pp`), raw NCES locale codes
   (`urbanicity_raw`, `urbanicity_raw_cat`), and the state-revenue anomaly fields
   `osp_pct` and `c11_spike_flag`.
+* **State capital/debt revenue exposed (skinny).** `rev_state_cap_debt` (F-33
+  item C11) is the state capital and debt-service revenue netted out of
+  `rev_state`, now shipped in both datasets so the state-revenue adjustment
+  can be reconstructed directly alongside `rev_state_unadj` and
+  `c11_spike_flag`. Because it feeds the adjustment arithmetic, it is
+  zero-filled -- not `NA` -- for non-reporting districts.
 * **`cpi_adj` scope.** Revenue, current/capital expenditure flows,
   `exp_debt_interest`, and income variables are adjusted. Debt and fund-balance
   **stocks** (`debt_*`, `fund_bal_*`) and the **CWIFT index** are returned
   nominal (never CPI-adjusted).
 * **New dictionary categories.** `list_variables()` now includes `"debt"` and
-  `"cwift"` categories and lists all 121 variables (56 in the skinny dataset).
+  `"cwift"` categories and lists all 122 variables (57 in the skinny dataset).
+* **Behavior change: CCD directory attributes now match the labeled fiscal
+  year.** Previous releases joined CCD directory data one school year forward:
+  fiscal year Y rows carried directory attributes (`dist_name`, `county`,
+  `state_leaid`, `cong_dist`, `urbanicity`, `urbanicity_raw`,
+  `urbanicity_raw_cat`, `lea_type`, `lea_type_id`) from SY Y to Y+1 instead of
+  SY Y-1 to Y. These columns now come from the directory vintage for the same
+  school year, so values change wherever an attribute changed between adjacent
+  years, and FY2023 now uses the final SY 2022-23 directory rather than the
+  SY 2023-24 vintage. The fix also restores the final operating year of
+  districts that closed: those district-years previously had no directory
+  match and were silently dropped by the LEA-type exclusion. Alongside it,
+  the LEA-type screen now tolerates single-vintage agency-type miscodes
+  (a district-year is excluded only if the following directory vintage
+  agrees it is not a regular district, supervisory union, or charter),
+  which keeps real districts -- e.g. all 60 MA regional districts in
+  FY2016, several newly formed AL city districts -- from dropping out of
+  single years. Row counts rise slightly in every year relative to
+  earlier releases.
 * **Behavior change: `exp_cur_total` is now sourced from TCURELSC.** In 0.1.x
   the total was the sum of the ESSA fund-type items (CE1 + CE2 + CE3), which
   whole states skip (all of Illinois and Minnesota through FY23; New York --
@@ -51,6 +75,20 @@
   not report them; missing values still propagate to `NA` rather than zero.
   Use caution comparing `rev_state_pp` across years alongside
   `c11_spike_flag`.
+* **Behavior change: flagged zero-filled missing values are now `NA`.** F-33
+  zero-fills some unreported items instead of using its `-1` missing code,
+  marking them with an `FL_* = "M"` data-item flag. The cleaning pipeline now
+  applies those flags to the COVID (`exp_covid_*`), capital-detail, debt,
+  fund-balance, CE fund-type, and expenditure-detail columns. Most visibly,
+  COVID relief spending is `NA` -- not $0 -- for all New York districts
+  (including NYC) in every year and for roughly a third to half of
+  California districts from FY21 onward. Genuine
+  reported zeros are unchanged, and column sums are unaffected (only
+  zero-filled values became `NA`; the small number of cells carrying real
+  values under a missing/not-applicable flag are retained). The revenue-adjustment inputs are
+  deliberately excluded, so adjusted revenue coverage is unchanged;
+  `osp_pct` and the `exp_pay_*` columns retain zero-filled values where
+  states did not report (see the cleaning-repo README).
 * **Hosted data format.** The hosted datasets are now gzip-compressed Parquet
   (read with `nanoparquet`) instead of `.rds`. This is transparent to callers.
 * **Per-year downloads.** `get_finance_data()` now downloads only the requested

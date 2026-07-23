@@ -234,7 +234,7 @@ get_finance_data <- function(yr = "2023", geo = "all", dataset_type = "skinny", 
     revenue_cols <- c("rev_total_pp", "rev_local_pp", "rev_state_pp", "rev_fed_pp",
                      "rev_total", "rev_local", "rev_state", "rev_fed",
                      "rev_total_unadj", "rev_local_unadj", "rev_state_unadj", "rev_fed_unadj",
-                     "rev_state_unadj_pp", "rev_local_unadj_pp")
+                     "rev_state_unadj_pp", "rev_local_unadj_pp", "rev_state_cap_debt")
     
     # expenditure columns (skinny dataset)
     expenditure_cols <- c("exp_cur_pp", "rev_exp_pp_diff", "exp_cur_st_loc",

@@ -129,7 +129,7 @@ Adjustments:
 ## Revenue Adjustments
 
 Additional transformations are applied after the join:
-- Capital expenditures and debt service (C11) are subtracted from state revenues; unadjusted state revenue is preserved in `rev_state_unadj`/`rev_state_unadj_pp`, and `c11_spike_flag` marks district-years where this adjustment produces an anomalous spike
+- State revenue for capital outlay and debt service (C11) is subtracted from state revenues; the subtracted amount ships as `rev_state_cap_debt` in both datasets (zero-filled, not `NA`, for non-reporting districts), unadjusted state revenue is preserved in `rev_state_unadj`/`rev_state_unadj_pp`, and `c11_spike_flag` marks district-years where this adjustment produces an anomalous spike
 - Property sales (U11) are subtracted from local revenues
 - For Texas LEAs in 2012-13 and earlier, payments to state governments (L12) are subtracted from local revenues
 - Payments to other school systems (V91, V92, and Q11) are proportionally subracted from local, state, and federal revenues
