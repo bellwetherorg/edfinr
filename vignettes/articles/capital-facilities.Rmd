@@ -66,7 +66,8 @@ Read these before ranking or comparing districts on capital spending.
    retirement (`debt_lt_retired`) is repayment of a liability, not an
    expenditure.
 6. **Interplay with the state-revenue adjustment.** edfinr nets state capital
-   and debt aid out of `rev_state`; the pre-adjustment value is preserved in
+   and debt aid out of `rev_state`; that netted-out amount ships as
+   `rev_state_cap_debt`, the pre-adjustment value is preserved in
    `rev_state_unadj` / `rev_state_unadj_pp`, and `c11_spike_flag` flags
    district-years where that adjustment spikes. Consider these when relating
    revenue to capital activity.
@@ -93,10 +94,14 @@ oh <- get_finance_data(
   dataset_type = "full", cpi_adj = "2023"
 )
 
+# group by ncesid, not dist_name: names can change across years
+# (e.g. "Grandview Heights City" became "Grandview Heights Schools" in 2015),
+# so we keep the most recent name as the label
 cap_multiyear <- oh |>
   filter(year >= 2019) |>
-  group_by(ncesid, dist_name) |>
+  group_by(ncesid) |>
   summarize(
+    dist_name = dist_name[which.max(year)],
     n_years = sum(!is.na(exp_cap_total_pp)),
     avg_cap_pp = mean(exp_cap_total_pp, na.rm = TRUE),
     avg_enroll = mean(enroll, na.rm = TRUE),
@@ -115,9 +120,15 @@ averages shows why single-year rankings mislead: a district's per-pupil capital
 outlay can swing by thousands of dollars from one year to the next as projects
 start and finish.
 
-```{r lumpiness-plot, fig.height = 6}
+```{r lumpiness-plot, fig.height = 6, fig.alt = "Small-multiple line charts of per-pupil capital outlay from 2012 to 2023 for six Ohio districts, each dominated by large single-year spikes rather than steady spending."}
+# join on ncesid and use cap_multiyear's canonical name so a district whose
+# name changed mid-panel doesn't split into two facets
 oh |>
-  semi_join(head(cap_multiyear, 6), by = "ncesid") |>
+  select(-dist_name) |>
+  inner_join(
+    head(cap_multiyear, 6) |> select(ncesid, dist_name),
+    by = "ncesid"
+  ) |>
   ggplot(aes(x = year, y = exp_cap_total_pp)) +
   geom_line() +
   geom_point(size = 1) +
@@ -158,9 +169,13 @@ cap_finance |>
 Districts with large per-pupil outlay and large per-pupil debt issuance are
 financing facilities with borrowing; those with high outlay but little new debt
 are more likely using current resources or accumulated bond-fund balances.
-Plotting the two against each other separates the financing strategies:
+Keep in mind that issuance and outlay are rarely contemporaneous: bond
+proceeds raised in one year fund construction over the following several, so
+a district drawing down a prior-year issue sits above the line without being
+pay-as-you-go. Plotting the two against each other still separates the
+financing strategies:
 
-```{r bond-vs-paygo-plot, fig.height = 5}
+```{r bond-vs-paygo-plot, fig.height = 5, fig.alt = "Scatterplot of Ohio districts' per-pupil capital outlay versus per-pupil long-term debt issued in SY2022-23, with a dashed 45-degree line separating districts that spent more than they borrowed."}
 ggplot(cap_finance, aes(x = debt_issued_pp, y = exp_cap_total_pp)) +
   geom_point(alpha = 0.5) +
   geom_abline(slope = 1, intercept = 0, linetype = "dashed") +
@@ -179,9 +194,13 @@ ggplot(cap_finance, aes(x = debt_issued_pp, y = exp_cap_total_pp)) +
 
 Statewide aggregates smooth out district-level lumpiness and show how much of
 each state's total K-12 spending goes to facilities. Shares are computed only
-from districts reporting both current and capital expenditure.
+from districts reporting both current and capital expenditure. Smoothing is
+not immunity, though: a state's single-year share still moves with
+bond-program cycles and any one big-city building program, so treat the
+ranking below as a snapshot and pool several years before drawing
+conclusions about a state's ranking.
 
-```{r state-shares, fig.height = 7}
+```{r state-shares, fig.height = 7, fig.alt = "Horizontal bar chart ranking states by capital outlay's share of current plus capital spending in SY2022-23."}
 us_2023 <- get_finance_data(yr = "2023", geo = "all", dataset_type = "full")
 
 state_cap <- us_2023 |>

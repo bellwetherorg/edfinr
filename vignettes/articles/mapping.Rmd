@@ -62,6 +62,11 @@ options(tigris_use_cache = TRUE)
    LEAs, for example) have no mapped boundary, and some mapped areas have no
    finance record. Count the misses after joining rather than assuming
    completeness.
+5. **Map area tracks geography, not students.** Geographically large,
+   sparsely populated rural districts dominate a statewide choropleth's ink,
+   while the districts serving the most students occupy the least. A map can
+   invert the visual impression of where most students actually are; consider
+   labeling or insetting major metros when that distinction matters.
 
 ## Joining finance data to boundaries
 
@@ -87,7 +92,7 @@ With an `sf` object, `ggplot2::geom_sf()` handles the rest. Binned scales
 usually communicate funding levels better than continuous gradients, because
 readers can attach a dollar range to each color:
 
-```{r revenue-map, fig.height = 6.5}
+```{r revenue-map, fig.height = 6.5, fig.alt = "Choropleth map of Ohio school districts shaded by total revenue per-pupil in SY2022-23 using a binned color scale."}
 ggplot(oh_map) +
   geom_sf(aes(fill = rev_total_pp), color = "white", linewidth = 0.05) +
   scale_fill_viridis_b(
@@ -107,7 +112,7 @@ Any `edfinr` variable maps the same way. The CWIFT teacher-wage index makes
 the metro/rural labor-cost geography visible (see the "CWIFT" article for what
 the index does and does not measure):
 
-```{r cwift-map, fig.height = 6.5}
+```{r cwift-map, fig.height = 6.5, fig.alt = "Choropleth map of Ohio school districts shaded by the CWIFT teacher wage index, with higher values concentrated around metro areas."}
 ggplot(oh_map) +
   geom_sf(aes(fill = cwift_est), color = "white", linewidth = 0.05) +
   scale_fill_viridis_c(option = "magma") +

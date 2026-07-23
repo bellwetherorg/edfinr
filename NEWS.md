@@ -59,8 +59,26 @@
   agrees it is not a regular district, supervisory union, or charter),
   which keeps real districts -- e.g. all 60 MA regional districts in
   FY2016, several newly formed AL city districts -- from dropping out of
-  single years. Row counts rise slightly in every year relative to
-  earlier releases.
+  single years.
+* **Coverage change: MA regional districts restored for FY2012-FY2015.** CCD
+  miscoded every Massachusetts regional school district as a service agency
+  (`agency_type` 4) for five consecutive directory vintages, SY 2011-12
+  through SY 2015-16, with a correction from SY 2016-17 onward. Because the
+  miscode spans adjacent vintages, the single-vintage tolerance above only
+  recovers FY2016; earlier releases had no data for these districts before
+  then. This release restores them for FY2012-FY2015 via an explicit vetted
+  list of 60 NCES LEA IDs: 236 district-years covering roughly 107,000 to
+  110,000 students per year (57 districts in FY2012 rising to 60 by FY2014 as
+  three newly formed regionals phase in). Restored rows pass all other
+  screens and show clean enrollment continuity into FY2016. Two cautions.
+  First, `lea_type` and `lea_type_id` report what the source vintage said, so
+  these rows (and the FY2016 rows) carry `lea_type_id` 4 ("Service agency");
+  filtering MA years 2012-2016 on `lea_type_id` will drop real regional
+  districts. Second, MA regional vocational-technical districts remain
+  excluded in every year: F-33 codes their school level 05 from FY2013
+  onward, outside the panel's elementary/secondary/unified scope. Row counts
+  rise slightly in every year relative to earlier releases, and by an
+  additional 57-60 rows in FY2012-FY2015.
 * **Behavior change: `exp_cur_total` is now sourced from TCURELSC.** In 0.1.x
   the total was the sum of the ESSA fund-type items (CE1 + CE2 + CE3), which
   whole states skip (all of Illinois and Minnesota through FY23; New York --

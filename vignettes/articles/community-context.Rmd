@@ -56,6 +56,12 @@ Two timing caveats before using them:
    especially for small districts, have nontrivial margins of error that
    `edfinr` does not carry. Treat small-district differences in `gini`,
    `snap_pct`, or `unemp_rate` as noisy.
+3. **SAIPE counts resident children, not enrolled students.** `stpov_pct`
+   measures poverty among children ages 5-17 who live within the district's
+   boundaries. Where many resident children attend charter, private, or
+   neighboring schools -- or where a charter LEA has no meaningful
+   residential geography -- the resident and enrolled populations can differ
+   substantially.
 
 The examples below use the most recent year:
 
@@ -85,9 +91,18 @@ us_2023 |>
 
 Local revenue depends heavily on the property tax base. Plotting per-pupil
 local revenue against median property value shows the capacity gradient --
-and how it differs by urbanicity:
+and how it differs by urbanicity.
 
-```{r capacity, fig.height = 5}
+One caution before leaning on `mpv` as a capacity measure: it is the ACS
+median value of owner-occupied homes, a proxy for *residential* property
+wealth only. Formal fiscal-capacity measures use assessed (or equalized)
+valuation per pupil, which also counts commercial, industrial, and utility
+property and is scaled by enrollment. A district with modest homes and a
+power plant or a shopping corridor is higher-capacity than `mpv` suggests.
+Where your state publishes assessed valuation per pupil, prefer it; `mpv` is
+the nationally consistent fallback.
+
+```{r capacity, fig.height = 5, fig.alt = "Scatterplot of median property value versus local revenue per-pupil on log scales, colored by urbanicity, with smoothed trend lines showing local revenue rising with property wealth."}
 us_2023 |>
   filter(!is.na(mpv), !is.na(rev_local_pp), mpv > 0, rev_local_pp > 0,
          !is.na(urbanicity)) |>
@@ -113,7 +128,7 @@ poverty. Whether total revenue rises with poverty -- that is, whether state
 and federal aid more than offset weaker local capacity -- varies sharply by
 state. Here is the national picture:
 
-```{r need, fig.height = 5}
+```{r need, fig.height = 5, fig.alt = "Scatterplot of student poverty rate versus total revenue per-pupil on a log scale for all districts in SY2022-23, with a nearly flat smoothed trend line."}
 us_2023 |>
   filter(!is.na(stpov_pct), !is.na(rev_total_pp)) |>
   ggplot(aes(x = stpov_pct, y = rev_total_pp)) +
@@ -129,6 +144,16 @@ us_2023 |>
   theme_minimal()
 ```
 
+Resist reading the flat national line as a statement about school funding
+progressivity. It pools fifty different funding systems, and it compares
+nominal dollars: high-poverty urban districts sit disproportionately in
+high-wage labor markets, so a dollar buys less there than in a low-cost rural
+district. The progressivity literature turns on exactly these choices --
+cost-adjusted, within-state analyses can and do reach different conclusions
+than this raw national scatter. See the "CWIFT" article for the labor-cost
+adjustment, and prefer the within-state framing below for any claim about how
+a funding system treats high-poverty districts.
+
 ## Need vs. capacity within a state
 
 Cross-state comparisons mix different funding systems, so the need-capacity
@@ -136,7 +161,7 @@ framing is sharpest within one state. Classifying districts against their
 state's median poverty and median property value yields four quadrants; the
 high-need, low-capacity quadrant is where funding systems are tested:
 
-```{r quadrants, fig.height = 5.5}
+```{r quadrants, fig.height = 5.5, fig.alt = "Scatterplot of Ohio districts' median property value versus student poverty rate, colored by total revenue per-pupil, with dashed lines at the state medians dividing districts into four need-capacity quadrants."}
 oh_2023 <- us_2023 |>
   filter(state == "OH", !is.na(stpov_pct), !is.na(mpv))
 
@@ -168,7 +193,7 @@ ggplot(oh_quad, aes(x = mpv, y = stpov_pct, color = rev_total_pp)) +
   labs(
     title = "Need vs. Capacity in Ohio Districts, SY2022-23",
     subtitle = "Dashed lines mark state medians",
-    x = "Median Property Value (capacity)",
+    x = "Median Home Value (capacity proxy)",
     y = "Students in Poverty (need)",
     color = "Total Revenue\nPer-Pupil"
   ) +
@@ -183,7 +208,7 @@ community picture. They are most useful as controls or descriptive context;
 their distributions differ enough across urbanicity to be worth checking
 before pooling:
 
-```{r indicators, fig.height = 6}
+```{r indicators, fig.height = 6, fig.alt = "Faceted boxplots of the Gini index, owner-occupancy rate, SNAP receipt rate, and unemployment rate by urbanicity, showing the distributions differ across city, suburban, town, and rural districts."}
 us_2023 |>
   filter(!is.na(urbanicity)) |>
   select(urbanicity, gini, owner_pct, snap_pct, unemp_rate) |>

@@ -21,7 +21,7 @@ knitr::opts_chunk$set(
 
 ## Introduction
 
-When analyzing education finance data across multiple years, adjusting for inflation can help produce more meaningful comparisons. `edfinr` provides built-in functionality to adjust all dollar-denominated values for inflation using the Consumer Price Index for All Urban Consumers (CPI-U).
+When analyzing education finance data across multiple years, adjusting for inflation can help produce more meaningful comparisons. `edfinr` provides built-in functionality to adjust dollar-denominated flows (revenues, expenditures, and income measures) for inflation using the Consumer Price Index for All Urban Consumers (CPI-U). See "What gets adjusted" below for the exact scope.
 
 ```{r setup, include = FALSE, eval = TRUE}
 library(edfinr)
@@ -60,7 +60,7 @@ For example, the 2022-23 school year CPI combines:
 
 ## Using the cpi_adj parameter
 
-The `get_finance_data()` function includes a `cpi_adj` parameter to automatically adjust all dollar values:
+The `get_finance_data()` function includes a `cpi_adj` parameter to automatically adjust dollar-denominated flows:
 
 ```{r example-nominal}
 # Get nominal (unadjusted) data - this is the default
@@ -101,7 +101,7 @@ When you use `cpi_adj`, dollar-denominated **flows** are automatically adjusted 
 Variables that are NOT adjusted include:
 
 - Enrollment counts, demographic percentages, and any ratio or rate variables.
-- **Debt and fund-balance stocks** (`debt_*`, `fund_bal_*`). These are balance-sheet levels measured at a point in time, not annual flows, so deflating them with a flow price index would be incorrect. They are always returned in nominal dollars.
+- **Debt and fund-balance stocks** (`debt_*`, `fund_bal_*`). These are balance-sheet levels measured at a point in time, not annual flows. `edfinr` leaves them in nominal dollars by design: debt is owed and repaid in nominal terms, and deflating stocks alongside flows invites accidental mixing of the two. Restating them in base-year dollars is a legitimate analysis choice; if yours calls for it, apply the deflator yourself.
 - The **CWIFT** teacher-wage index (`cwift_est`). It is a relative labor-cost index, not a dollar amount, and is never CPI-adjusted (see the "CWIFT" article on the package website).
 
 The flows-vs-stocks rule is easy to verify: the capital outlay flow scales, while the debt stock is identical with and without adjustment.
@@ -142,7 +142,7 @@ cpi_values |>
 
 Here's how to analyze whether education revenue has kept pace with inflation:
 
-```{r real-spending-analysis}
+```{r real-spending-analysis, fig.alt = "Two-panel line chart comparing nominal and real 2023-dollar per-pupil revenue in Kentucky by source (local, state, federal) from 2012 to 2023; the nominal series rise steadily while the real series are much flatter."}
 # get multiyear data in nominal dollars
 ky_nominal <- get_finance_data(yr = "all", geo = "KY", cpi_adj = "none") |>
   mutate(type = "Nominal dollars")
@@ -186,7 +186,7 @@ ggplot(rev_trends) +
     ) +
   facet_wrap(~type) +
   scale_x_continuous(breaks = seq(2013, 2023, 2)) +
-  scale_y_continuous(labels = scales::dollar) +
+  scale_y_continuous(labels = scales::label_dollar()) +
   labs(
     title = "Comparing Nominal and Real Per-Pupil Revenue in Kentucky",
     subtitle = "Statewide average per-pupil revenue by source, 2012-2023",
@@ -205,7 +205,7 @@ You can adjust to any year from 2012 to 2023. Common choices include:
 - **First year of analysis**: Makes it easy to see percentage changes from baseline.
 - **Midpoint year**: Minimizes the size of adjustments across the time series.
 
-```{r base-year-comparison}
+```{r base-year-comparison, fig.alt = "Line chart of Jefferson County, Kentucky per-pupil total revenue from 2012 to 2023 shown in nominal dollars, 2012 dollars, and 2023 dollars; the three lines share the same shape at different levels."}
 # select ky district to assess
 district_sample <- "Jefferson County"
 
@@ -230,7 +230,7 @@ bind_rows(nominal, adjusted_2012, adjusted_2023) |>
   ggplot(aes(x = year, y = rev_total_pp, color = type)) +
   geom_line(linewidth = 1.2) +
   scale_x_continuous(breaks = seq(2013, 2023, 2)) +
-  scale_y_continuous(labels = scales::dollar) +
+  scale_y_continuous(labels = scales::label_dollar()) +
   labs(
     title = paste("Per-Pupil Revenue:", district_sample),
     x = "Year",
@@ -254,7 +254,7 @@ bind_rows(nominal, adjusted_2012, adjusted_2023) |>
 
 - The CPI data comes from the U.S. Bureau of Labor Statistics CPI-U series.
 - School year alignment ensures the index matches the academic calendar.
-- All adjustments are applied before any per-pupil calculations.
+- Total and per-pupil columns are scaled by the same `cpi_adj_index`, so adjusted per-pupil values equal adjusted totals divided by enrollment.
 - The `cpi_sy12` column is always included regardless of adjustment choice.
 - If the `cpi_adj` baseline year falls outside the requested `yr` range, that year's file is downloaded to source the baseline and then dropped from the returned data.
 

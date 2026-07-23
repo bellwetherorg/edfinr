@@ -132,13 +132,13 @@ Additional transformations are applied after the join:
 - State revenue for capital outlay and debt service (C11) is subtracted from state revenues; the subtracted amount ships as `rev_state_cap_debt` in both datasets (zero-filled, not `NA`, for non-reporting districts), unadjusted state revenue is preserved in `rev_state_unadj`/`rev_state_unadj_pp`, and `c11_spike_flag` marks district-years where this adjustment produces an anomalous spike
 - Property sales (U11) are subtracted from local revenues
 - For Texas LEAs in 2012-13 and earlier, payments to state governments (L12) are subtracted from local revenues
-- Payments to other school systems (V91, V92, and Q11) are proportionally subracted from local, state, and federal revenues
+- Payments to other school systems (V91, V92, and Q11) are proportionally subtracted from local, state, and federal revenues
 
 ## Exclusions
 
-- Districts with enrollment less than 0 are removed.
-- Districts with total revenue less than 0 are removed.
-- Districts with an invalid LEA type (i.e. where lea_type_id is not one of 1, 2, 3, or 7) are excluded.
+- Districts with enrollment of zero or below are removed.
+- Districts with total revenue of zero or below are removed.
+- Districts with an invalid LEA type (i.e. where lea_type_id is not one of 1, 2, 3, or 7) are excluded. Since 0.2.0 the screen tolerates single-vintage miscodes (a district-year is excluded only if the following directory vintage agrees), and Massachusetts regional districts miscoded as service agencies are retained for FY2012-FY2016; see the "Data Sources and Methodology" vignette.
 - Districts with invalid LEA/school level type (i.e. where schlev is not one of "01", "02", or "03", except for specified CA exceptions) are excluded.
 - Districts where total revenue per-pupil is greater than $70,000 in 2011-12 dollars are excluded.
 - Districts where total revenue per pupil is less than $500 in 2011-12 dollars are excluded.

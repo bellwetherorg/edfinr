@@ -148,7 +148,7 @@ list_variables <- function(dataset_type = "skinny", category = "all") {
     "exp_noninstr_ent_ops_total", "numeric", "expenditure", "NCES F-33 Survey", "V60", "2012", "Enterprise operations - Total (V60)", "full",
     "exp_noninstr_ent_ops_bene", "numeric", "expenditure", "NCES F-33 Survey", "V32", "2012", "Enterprise operations - Benefits (V32)", "full",
     "exp_noninstr_other", "numeric", "expenditure", "NCES F-33 Survey", "V65", "2012", "Other non-instructional services (V65)", "full",
-    "exp_covid_total", "numeric", "expenditure", "NCES F-33 Survey", "AE1", "2020", "COVID-19 Federal Assistance Funds - Total expenditures (AE1); NA where the state did not report the COVID items (all of NY in every year; CA from FY21)", "full",
+    "exp_covid_total", "numeric", "expenditure", "NCES F-33 Survey", "AE1", "2020", "COVID-19 Federal Assistance Funds - Total expenditures (AE1); NA where districts did not report the COVID items (all of NY in every year; roughly a third to half of CA districts from FY21)", "full",
     "exp_covid_instr", "numeric", "expenditure", "NCES F-33 Survey", "AE2", "2020", "COVID-19 Federal Assistance Funds - Instructional expenditures (AE2)", "full",
     "exp_covid_supp", "numeric", "expenditure", "NCES F-33 Survey", "AE3", "2020", "COVID-19 Federal Assistance Funds - Support services expenditures (AE3)", "full",
     "exp_covid_cap_out", "numeric", "expenditure", "NCES F-33 Survey", "AE4", "2020", "COVID-19 Federal Assistance Funds - Capital outlay expenditures (AE4)", "full",

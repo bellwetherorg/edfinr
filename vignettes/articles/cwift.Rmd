@@ -86,7 +86,7 @@ Before ranking districts, it helps to see the index's spread. Labor costs rise
 with urbanization, so the distribution shifts upward from rural districts to
 cities. This example uses FY2022, the most recent observed (non-imputed) year.
 
-```{r distribution, fig.height = 4.5}
+```{r distribution, fig.height = 4.5, fig.alt = "Boxplots of CWIFT estimates by urbanicity in FY2022 with a dashed line at the national average of 1.0; city and suburban districts sit mostly above the average and rural districts below it."}
 us_2022 <- get_finance_data(yr = "2022", geo = "all", dataset_type = "full")
 
 us_2022 |>
@@ -136,7 +136,7 @@ the overlap visible. Among Ohio's largest districts, several point estimates
 that differ in the second decimal place have intervals that overlap
 substantially, so the data cannot distinguish their labor costs:
 
-```{r se-intervals, fig.height = 5}
+```{r se-intervals, fig.height = 5, fig.alt = "Dot-and-interval chart of CWIFT estimates with 95 percent intervals for the 15 largest Ohio districts in FY2022; many of the intervals overlap substantially."}
 us_2022 |>
   filter(state == "OH", !is.na(cwift_est), !is.na(cwift_se)) |>
   slice_max(enroll, n = 15) |>
@@ -159,7 +159,11 @@ us_2022 |>
 `edfinr` ships the raw index rather than precomputed adjusted columns, so you
 can divide any per-pupil dollar figure by `cwift_est` to express it in
 labor-cost-adjusted terms. Districts in expensive labor markets look relatively
-lower after adjustment.
+lower after adjustment. One known simplification: only the labor share of
+spending (roughly 80 percent of current expenditure) actually varies with
+wages, so dividing all dollars by the index applies the labor-cost correction
+to non-labor spending too. This is the standard convention, but it overstates
+the correction somewhat.
 
 ```{r recipe}
 d |>

@@ -20,7 +20,7 @@ knitr::opts_chunk$set(
 
 ## Introduction
 
-The `edfinr` package provides a simple, consistent interface for accessing comprehensive education finance data for U.S. school districts. This vignette will help you get started with the package's core functionality.
+The `edfinr` package provides a simple, consistent interface for accessing school district finance data: NCES F-33 revenues and expenditures joined with enrollment, poverty, community, and labor-cost measures for U.S. school districts. This vignette will help you get started with the package's core functionality.
 
 ```{r setup, include = FALSE, eval = TRUE}
 library(edfinr)
@@ -49,10 +49,10 @@ rather than only where states reported the ESSA fund-type breakdown.
 
 ## Core function: get_finance_data()
 
-The primary function in `edfinr` is `get_finance_data()`, which provides access to comprehensive school finance data from school years 2011-12 through 2022-23. The function combines data from multiple sources:
+The primary function in `edfinr` is `get_finance_data()`, which provides access to school finance data from school years 2011-12 through 2022-23. F-33 data are released roughly two years after a fiscal year closes, so FY2023 (SY2022-23) is the most recent federal release; the package is as current as the survey allows. The function combines data from multiple sources:
 
 - **Financial data**: Revenue and expenditure data (including capital outlay, debt, and fund balances) from the National Center for Education Statistics (NCES) version of the F-33 survey.
-- **Enrollment**: Student counts from NCES Common Core of Data.
+- **Enrollment**: Fall membership counts (F-33 item V33), the denominator for all per-pupil measures.
 - **Demographics**: Poverty estimates from the U.S. Census Bureau Small Area Income and Poverty Estimates (SAIPE).
 - **Community characteristics**: Income and education data from American Community Survey (ACS).
 - **Labor costs**: The NCES EDGE Comparable Wage Index for Teachers (CWIFT).
@@ -64,7 +64,7 @@ The simplest way to use `get_finance_data()` is to specify a year and state. For
 
 ```{r example-1}
 # download "skinny" dataset for a single year and a single state
-ky_sy23 <- get_finance_data(yr = 2023, geo = "KY")
+ky_sy23 <- get_finance_data(yr = "2023", geo = "KY")
 
 # view the structure of the returned data
 glimpse(ky_sy23)
@@ -72,14 +72,14 @@ glimpse(ky_sy23)
 
 ## Dataset types: skinny vs. full
 
-By default, `get_finance_data()` returns a "skinny" dataset with 56 essential variables covering:
+By default, `get_finance_data()` returns a "skinny" dataset with 57 essential variables covering:
 
 - District identifiers and characteristics.
 - Total revenues by source (local, state, federal).
 - Current expenditures and total capital outlay (`exp_cap_total`, `exp_cap_total_pp`).
 - Key demographic and economic indicators (including the CWIFT teacher-wage index).
 
-For more detailed analysis, you can request the "full" dataset with 121 variables that includes:
+For more detailed analysis, you can request the "full" dataset with 122 variables that includes:
 
 - All skinny dataset variables.
 - Detailed expenditure data.
@@ -97,7 +97,7 @@ setdiff(names(ky_full_sy23), names(ky_sy23))
 
 ## Finding variables
 
-With 121 variables in the full dataset, the data dictionary is the fastest way
+With 122 variables in the full dataset, the data dictionary is the fastest way
 to find what you need. `list_variables()` returns it as a tibble, so you can
 filter and search it like any other data.
 
@@ -138,7 +138,7 @@ sec_data <- get_finance_data(
 )
 
 # get the most recent year of data for all states
-us_sy23 <- get_finance_data(yr = 2023, geo = "all")
+us_sy23 <- get_finance_data(yr = "2023", geo = "all")
 ```
 
 ## Downloads and caching
@@ -156,23 +156,28 @@ fresh download (for example, after a data update is announced), and
 
 ```{r caching, eval = FALSE}
 # re-download even if a cached copy exists, without progress messages
-ky_fresh <- get_finance_data(yr = 2023, geo = "KY", refresh = TRUE, quiet = TRUE)
+ky_fresh <- get_finance_data(yr = "2023", geo = "KY", refresh = TRUE, quiet = TRUE)
 ```
 
 ## Working with the data
 
 Once you've retrieved the data, you can use standard data manipulation tools to analyze it. Here are some common analysis patterns:
 
-### How does local revenue relate to total revenue?
+### Do locally-reliant districts end up with more total revenue?
 
-```{r analysis-1}
+Plotting the local *share* of revenue against total per-pupil revenue shows
+whether districts that fund themselves mostly from local sources also end up
+with more money overall. (Plotting local dollars against total dollars would
+be close to mechanical, since total revenue includes local revenue.)
+
+```{r analysis-1, fig.alt = "Scatterplot of Connecticut districts' local share of revenue versus total revenue per-pupil for SY2022-23, with point size showing enrollment and color showing urbanicity; the most locally-reliant districts tend to have higher total revenue per-pupil."}
 # download 2023 data for connecticut
 ct_sy23 <- get_finance_data(yr = "2023", geo = "CT")
 
-# plot local revenue vs. total revenue w/ urbanicity + enrollment
+# plot local share of revenue vs. total revenue w/ urbanicity + enrollment
 ggplot(ct_sy23) +
   geom_point(aes(
-    x = rev_local_pp,
+    x = rev_local / rev_total,
     y = rev_total_pp,
     color = urbanicity,
     size = enroll),
@@ -181,11 +186,11 @@ ggplot(ct_sy23) +
     max_size = 10,
     labels = scales::label_comma()
     ) +
-  scale_x_continuous(labels = scales::label_dollar()) +
+  scale_x_continuous(labels = scales::label_percent()) +
   scale_y_continuous(labels = scales::label_dollar()) +
   labs(
-    title = "Connecticut Districts' Local vs. Total Revenue Per-Pupil, SY2022-23",
-    x = "Local Revenue Per-Pupil",
+    title = "Connecticut Districts' Local Revenue Share vs. Total Revenue Per-Pupil, SY2022-23",
+    x = "Local Share of Total Revenue",
     y = "Total Revenue Per-Pupil",
     size = "Enrollment",
     color = "Urbanicity") +
@@ -194,20 +199,21 @@ ggplot(ct_sy23) +
 
 ### How do revenue sources differ by urbanicity?
 
+Summing dollars before dividing gives each group's true revenue mix, weighted
+by where the money actually flows. The alternative, averaging each district's
+share with `mean()`, weights a 300-student district the same as the state's
+largest system; the two can diverge substantially wherever large and small
+districts fund themselves differently, so be deliberate about which one your
+question needs.
+
 ```{r analysis-2}
-# compare revenue sources across districts
+# compare revenue mix across urbanicity groups (dollar-weighted)
 revenue_analysis <- ct_sy23 |>
-  mutate(
-    pct_local = rev_local / rev_total,
-    pct_state = rev_state / rev_total,
-    pct_federal = rev_fed / rev_total
-  ) |>
-  select(dist_name, urbanicity, enroll, pct_local, pct_state, pct_federal) |>
   group_by(urbanicity) |>
   summarize(
-    avg_pct_local = mean(pct_local, na.rm = TRUE),
-    avg_pct_state = mean(pct_state, na.rm = TRUE),
-    avg_pct_federal = mean(pct_federal, na.rm = TRUE),
+    pct_local = sum(rev_local, na.rm = TRUE) / sum(rev_total, na.rm = TRUE),
+    pct_state = sum(rev_state, na.rm = TRUE) / sum(rev_total, na.rm = TRUE),
+    pct_federal = sum(rev_fed, na.rm = TRUE) / sum(rev_total, na.rm = TRUE),
     n_districts = n(),
     enrollment = sum(enroll, na.rm = TRUE)
   )
