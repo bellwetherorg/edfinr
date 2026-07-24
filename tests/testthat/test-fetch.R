@@ -8,8 +8,10 @@ test_that("fetched dimensions match expectations", {
   expect_equal(ncol(sk), 57)
   expect_equal(ncol(fu), 122)
   expect_equal(nrow(sk), nrow(fu))
-  # yr = "all" still reads the combined file: full 2012-2023 panel
-  expect_equal(nrow(fu), 192364L)
+  # yr = "all" still reads the combined file: full 2012-2023 panel.
+  # 192,600 = 192,364 + the 236 MA regional district-years restored for
+  # FY2012-FY2015 in the final 0.2.0 data build (see NEWS.md).
+  expect_equal(nrow(fu), 192600L)
 })
 
 test_that("fetched columns and types match the dictionary", {
@@ -57,6 +59,44 @@ test_that("rev_state_cap_debt is zero-filled and reconstructs the adjustment", {
   # the other-system-payment adjustment, so it must be non-negative
   resid <- d$rev_state_unadj - d$rev_state_cap_debt - d$rev_state
   expect_true(all(resid >= -1e-6, na.rm = TRUE))
+})
+
+test_that("cpi_adj works on the skinny dataset too", {
+  skip_on_cran()
+  # the skinny schema takes a different cols_to_adjust list than full; a
+  # column listed for adjustment but absent from the skinny parquet would
+  # make dplyr::all_of() abort, so pin the whole path here
+  raw <- fetch_or_skip(yr = "2022", dataset_type = "skinny", cpi_adj = "none")
+  adj <- fetch_or_skip(yr = "2022", dataset_type = "skinny", cpi_adj = "2023")
+  expect_true("cpi_adj_index" %in% names(adj))
+  # flows scale by the index
+  expect_equal(adj$rev_total_pp, raw$rev_total_pp * adj$cpi_adj_index)
+  expect_equal(adj$mhi, raw$mhi * adj$cpi_adj_index)
+  # the CWIFT index and ratio columns stay untouched
+  expect_equal(adj$cwift_est, raw$cwift_est)
+  expect_equal(adj$osp_pct, raw$osp_pct)
+})
+
+test_that("cpi_adj combines with yr = 'all' (combined-file baseline path)", {
+  skip_on_cran()
+  d <- fetch_or_skip(yr = "all", dataset_type = "skinny", cpi_adj = "2023")
+  expect_true("cpi_adj_index" %in% names(d))
+  # the baseline year's own rows carry an index of exactly 1
+  expect_true(all(d$cpi_adj_index[d$year == 2023L] == 1))
+  expect_setequal(unique(d$year), 2012:2023)
+})
+
+test_that("numeric yr and untrimmed/cased geo are normalized", {
+  skip_on_cran()
+  # numeric year (not character) works
+  d <- fetch_or_skip(yr = 2023, geo = "DE", dataset_type = "skinny")
+  expect_true(all(d$year == 2023L))
+  # whitespace after the comma and lowercase codes are trimmed/upcased
+  d2 <- fetch_or_skip(yr = "2023", geo = "DE, ri", dataset_type = "skinny")
+  expect_setequal(unique(d2$state), c("DE", "RI"))
+  # "all" is case-insensitive
+  d3 <- fetch_or_skip(yr = "2023", geo = "All", dataset_type = "skinny")
+  expect_equal(sort(unique(d3$state)), sort(get_states()))
 })
 
 test_that("cpi_adj scales capital flows but leaves debt/fund stocks nominal", {

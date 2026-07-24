@@ -1,6 +1,6 @@
-# `edfinr` <img src=logo.png width = "250px" align = "right">
+# `edfinr` <img src="man/figures/logo.png" width="250px" align="right">
 
-[![R-CMD-check](https://github.com/bellwetherorg/edfinr/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/bellwetherorg/edfinr/actions/workflows/R-CMD-check.yaml) ![CRAN Badge](http://www.r-pkg.org/badges/version/edfinr) ![CRAN downloads](https://cranlogs.r-pkg.org/badges/grand-total/edfinr)
+[![R-CMD-check](https://github.com/bellwetherorg/edfinr/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/bellwetherorg/edfinr/actions/workflows/R-CMD-check.yaml) ![CRAN Badge](https://www.r-pkg.org/badges/version/edfinr) ![CRAN downloads](https://cranlogs.r-pkg.org/badges/grand-total/edfinr)
 
 
 An R package for downloading and analyzing education finance data from multiple sources.

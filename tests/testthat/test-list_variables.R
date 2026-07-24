@@ -54,3 +54,9 @@ test_that("the internal dataset column is not exposed", {
 test_that("invalid dataset_type is rejected", {
   expect_error(list_variables("medium"), "skinny")
 })
+
+test_that("unknown category is rejected instead of returning zero rows", {
+  expect_error(list_variables("full", category = "expenditures"), "Unknown category")
+  # valid categories still filter
+  expect_gt(nrow(list_variables("full", category = "expenditure")), 0)
+})

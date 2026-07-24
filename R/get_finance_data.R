@@ -29,45 +29,70 @@
 #'                 will be added to the output showing the adjustment index used for each row.
 #' @param refresh A logical value indicating whether to force a refresh of the cached data. Default is FALSE.
 #' @param quiet A logical value indicating whether to suppress download progress messages.
-#'              Default is FALSE. Note: Cache is stored in R's temporary directory and will be cleared when 
-#'              the R session ends.
+#'              Default is FALSE.
 #' @return A tibble containing the requested education finance data.
+#'
+#' @details
+#' Downloaded files are cached for the duration of the R session in a
+#' subdirectory of [tempdir()], so repeated calls in one session do not
+#' re-download; the cache is cleared when the session ends. Use
+#' `refresh = TRUE` to force a fresh download. During downloads the package
+#' temporarily raises R's download timeout to at least 600 seconds (the
+#' `yr = "all"` combined files are 38-54 MB); a higher user-set
+#' `options(timeout = )` is respected.
+#'
 #' @export
 #'
 #' @examples
 #' # Check valid parameters without downloading
 #' get_states()  # Valid state codes
-#' 
+#'
 #' \donttest{
 #' # These examples require internet access and may take time to download
-#' 
-#' # get data for Kentucky for 2022
-#' ky_data <- get_finance_data(yr = "2022", geo = "KY")
+#'
+#' # get data for Kentucky for 2023
+#' ky_data <- get_finance_data(yr = "2023", geo = "KY")
 #'
 #' # get data for multiple years
-#' ky_multi <- get_finance_data(yr = "2020:2022", geo = "KY")
+#' ky_multi <- get_finance_data(yr = "2021:2023", geo = "KY")
 #'
 #' # get full dataset with detailed expenditure data
-#' ky_full <- get_finance_data(yr = "2022", geo = "KY", dataset_type = "full")
-#'   
-#' # get data adjusted to 2022 dollars
-#' ky_adjusted <- get_finance_data(yr = "2020:2022", geo = "KY", cpi_adj = "2022")
-#' 
-#' #' # get data for multiple states for all available years
-#' regional_data <- get_finance_data(yr = "all", geo = "IN,KY,OH,TN")
+#' ky_full <- get_finance_data(yr = "2023", geo = "KY", dataset_type = "full")
+#'
+#' # get data adjusted to 2023 dollars
+#' ky_adjusted <- get_finance_data(yr = "2021:2023", geo = "KY", cpi_adj = "2023")
+#'
+#' # get data for multiple states for several years
+#' regional_data <- get_finance_data(yr = "2021:2023", geo = "IN,KY,OH,TN")
 #' }
 get_finance_data <- function(yr = "2023", geo = "all", dataset_type = "skinny", cpi_adj = "none", refresh = FALSE, quiet = FALSE) {
+  # all arguments must be length-1 and non-NA before any string operations,
+  # which would otherwise fail with raw R errors that don't name the argument
+  if (length(yr) != 1 || is.na(yr)) {
+    cli::cli_abort("{.arg yr} must be a single year (\"2023\"), a range (\"2020:2022\"), or \"all\".")
+  }
+  if (length(geo) != 1 || is.na(geo)) {
+    cli::cli_abort("{.arg geo} must be \"all\", a state code (\"KY\"), or a comma-separated list (\"IN,KY,OH\").")
+  }
+  if (length(dataset_type) != 1 || is.na(dataset_type)) {
+    cli::cli_abort("{.arg dataset_type} must be either \"skinny\" or \"full\".")
+  }
+  if (length(cpi_adj) != 1 || is.na(cpi_adj)) {
+    cli::cli_abort("{.arg cpi_adj} must be \"none\" or a single baseline year.")
+  }
+
+  # normalize geography: trim whitespace and accept any casing of "all", so
+  # geo = "KY, OH" and geo = "All" behave as users expect
+  geo <- trimws(as.character(geo))
+  if (tolower(geo) == "all") {
+    geo <- "all"
+  }
+
   # define valid years
   valid_years <- 2012:2023
 
-  # define valid state codes (all US states + DC)
-  valid_states <- c(
-    "AL", "AK", "AZ", "AR", "CA", "CO", "CT", "DE", "FL", "GA",
-    "HI", "ID", "IL", "IN", "IA", "KS", "KY", "LA", "ME", "MD",
-    "MA", "MI", "MN", "MS", "MO", "MT", "NE", "NV", "NH", "NJ",
-    "NM", "NY", "NC", "ND", "OH", "OK", "OR", "PA", "RI", "SC",
-    "SD", "TN", "TX", "UT", "VT", "VA", "WA", "WV", "WI", "WY", "DC"
-  )
+  # valid state codes (all US states + DC)
+  valid_states <- get_states()
 
   # validate year parameter
   if (yr != "all") {
@@ -107,7 +132,7 @@ get_finance_data <- function(yr = "2023", geo = "all", dataset_type = "skinny", 
 
   # validate geography parameter
   if (geo != "all") {
-    states <- toupper(strsplit(geo, ",")[[1]])
+    states <- trimws(toupper(strsplit(geo, ",")[[1]]))
 
     # check if all provided states are valid
     invalid_states <- states[!states %in% valid_states]
@@ -222,7 +247,7 @@ get_finance_data <- function(yr = "2023", geo = "all", dataset_type = "skinny", 
   # process geography parameter
   if (geo != "all") {
     # handle comma-separated list of states
-    states <- toupper(strsplit(geo, ",")[[1]])
+    states <- trimws(toupper(strsplit(geo, ",")[[1]]))
     data <- dplyr::filter(data, .data$state %in% states)
   }
   

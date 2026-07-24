@@ -193,8 +193,16 @@ list_variables <- function(dataset_type = "skinny", category = "all") {
   # remove the dataset column before returning
   variables <- dplyr::select(variables, -"dataset")
 
-  # filter by category if requested
+  # filter by category if requested, rejecting unknown categories so a typo
+  # (e.g. "expenditures") errors instead of silently returning zero rows
   if (category != "all") {
+    valid_categories <- unique(all_variables$category)
+    if (!category %in% valid_categories) {
+      cli::cli_abort(c(
+        "Unknown category {.val {category}}.",
+        "i" = "category must be \"all\" or one of: {.val {valid_categories}}."
+      ))
+    }
     variables <- dplyr::filter(variables, .data$category == !!category)
   }
 

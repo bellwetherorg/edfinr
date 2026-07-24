@@ -72,10 +72,11 @@ us |>
 
 `exp_cur_total` is near-fully populated in every year: it is sourced from the
 F-33 summary item TCURELSC, not from the ESSA fund-type items (CE1/CE2/CE3),
-which whole states skip and which only begin in FY2016. The fund-type
-components (`exp_cur_st_loc`, `exp_cur_fed`, `exp_cur_resa`) do carry that
-coverage boundary; the dictionary's `first_yr_avail` column records these
-boundaries (see "Variable availability by year" below). Summary items like
+which whole states skip and which only begin in FY2016 (CE3, `exp_cur_resa`,
+in FY2018). The fund-type
+components (`exp_cur_st_loc`, `exp_cur_fed`, `exp_cur_resa`) do carry those
+coverage boundaries; the dictionary's `first_yr_avail` column records them
+(see "Variable availability by year" below). Summary items like
 TCURELSC carry no data-item flags, so the flag-aware cleaning above cannot
 detect zero-filled missingness there -- another reason to treat exact zeros
 in totals with mild suspicion.

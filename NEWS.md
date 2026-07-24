@@ -10,7 +10,8 @@
   pkgdown-only articles (no longer shipped in the CRAN package), joined by
   four new articles: "Data Quality and Comparability", "COVID Relief
   Spending", "Community and Economic Context", and "Mapping School Finance
-  Data". CRAN vignettes now skip evaluation on CRAN machines.
+  Data". The CRAN vignettes that download hosted data now skip evaluation on
+  CRAN machines.
 * **FY2023 data.** Coverage now extends through the 2022-23 school year (fiscal
   year 2023). `get_finance_data()` defaults to `yr = "2023"` and accepts years
   2012-2023 (including `cpi_adj` base years).
@@ -36,7 +37,9 @@
   `rev_state`, now shipped in both datasets so the state-revenue adjustment
   can be reconstructed directly alongside `rev_state_unadj` and
   `c11_spike_flag`. Because it feeds the adjustment arithmetic, it is
-  zero-filled -- not `NA` -- for non-reporting districts.
+  zero-filled -- not `NA` -- for non-reporting districts. Use caution
+  comparing `rev_state_pp` across years for districts where
+  `c11_spike_flag` is `TRUE`.
 * **`cpi_adj` scope.** Revenue, current/capital expenditure flows,
   `exp_debt_interest`, and income variables are adjusted. Debt and fund-balance
   **stocks** (`debt_*`, `fund_bal_*`) and the **CWIFT index** are returned
@@ -81,9 +84,10 @@
   additional 57-60 rows in FY2012-FY2015.
 * **Behavior change: `exp_cur_total` is now sourced from TCURELSC.** In 0.1.x
   the total was the sum of the ESSA fund-type items (CE1 + CE2 + CE3), which
-  whole states skip (all of Illinois and Minnesota through FY23; New York --
-  including NYC -- New Jersey, Massachusetts, Oregon, and others in earlier
-  years) and which did not exist before FY16. `exp_cur_total`, `exp_cur_pp`,
+  whole states skip (all of Illinois, Minnesota, Massachusetts, and Oregon
+  through FY23; New York -- including NYC -- through FY22; New Jersey in
+  FY22; and others in scattered years) and which did not exist before FY16
+  (CE3 before FY18). `exp_cur_total`, `exp_cur_pp`,
   and `rev_exp_pp_diff` are now available for nearly all districts in all
   years 2012-2023. Values shift slightly where both were reported (the ESSA
   items exclude payments to private, charter, and other school systems, so
@@ -91,8 +95,6 @@
   reporting districts). The CE-based columns remain available as
   `exp_cur_st_loc`, `exp_cur_fed`, and `exp_cur_resa`, `NA` where states did
   not report them; missing values still propagate to `NA` rather than zero.
-  Use caution comparing `rev_state_pp` across years alongside
-  `c11_spike_flag`.
 * **Behavior change: flagged zero-filled missing values are now `NA`.** F-33
   zero-fills some unreported items instead of using its `-1` missing code,
   marking them with an `FL_* = "M"` data-item flag. The cleaning pipeline now
@@ -113,6 +115,20 @@
   year(s) -- each year is a separate hosted file of roughly 3-6 MB -- so
   single-year and short-range requests transfer far less than the full panel.
   `yr = "all"` still fetches the entire history from one combined file.
+* **Download robustness.** Downloads now go to a temporary file that is
+  renamed into the session cache only on success, so an interrupted transfer
+  can no longer leave a partial file behind that later calls treat as cached.
+  The download timeout is temporarily raised to at least 600 seconds during
+  transfers (R's 60-second default cannot complete the 38-54 MB `yr = "all"`
+  files on slower connections); a higher user-set `options(timeout = )` is
+  respected. A cached file that fails to read is deleted with a clear message
+  instead of failing on every subsequent call, and download failures now
+  carry the condition class `edfinr_download_error`.
+* **Friendlier input handling.** `geo` values are whitespace-trimmed and
+  `"all"` is case-insensitive, so `geo = "KY, OH"` and `geo = "All"` work;
+  vector or `NA` arguments produce clear errors naming the argument instead
+  of raw R errors; and `list_variables()` rejects an unknown `category`
+  instead of silently returning zero rows.
 
 # edfinr 0.1.1
 

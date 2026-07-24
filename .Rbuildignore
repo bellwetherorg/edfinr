@@ -8,12 +8,8 @@
 index.md
 ^doc$
 ^Meta$
-logo.png
 ^cran-comments\.md$
 ^CRAN-SUBMISSION$
-^EDFINR_UPDATE_PLAN\.md$
-^PER_YEAR_DOWNLOADS_PLAN\.md$
 ^vignettes/articles$
-^VIGNETTE_UPDATE_PLAN\.md$
-^_to_delete$
+^RELEASE_QC_0\.2\.0\.md$
 ^\.claude$

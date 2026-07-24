@@ -26,3 +26,16 @@ test_that("cpi_adj must be 'none' or a year in range", {
   expect_error(get_finance_data(cpi_adj = "2024"), "between")
   expect_error(get_finance_data(cpi_adj = "abc"), "valid year")
 })
+
+test_that("vector or NA arguments produce clear package errors", {
+  expect_error(get_finance_data(yr = c("2020", "2021")), "single year")
+  expect_error(get_finance_data(yr = NA), "single year")
+  expect_error(get_finance_data(geo = c("KY", "OH")), "state code")
+  expect_error(get_finance_data(geo = NA), "state code")
+  expect_error(get_finance_data(dataset_type = c("skinny", "full")), "skinny")
+  expect_error(get_finance_data(cpi_adj = NA), "baseline year")
+})
+
+test_that("'all' mixed into a state list is rejected as an invalid code", {
+  expect_error(get_finance_data(geo = "all,KY"), "Invalid state")
+})
