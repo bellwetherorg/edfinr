@@ -20,7 +20,7 @@ knitr::opts_chunk$set(
 
 ## Introduction
 
-The `edfinr` package provides a simple, consistent interface for accessing school district finance data: NCES F-33 revenues and expenditures joined with enrollment, poverty, community, and labor-cost measures for U.S. school districts. This vignette will help you get started with the package's core functionality.
+The `edfinr` package provides a simple interface for accessing school district finance data with an opinionated data cleaning methodology: NCES F-33 revenues and expenditures joined with enrollment, poverty, community, and labor-cost measures for U.S. school districts. This vignette will help you get started with the package's core functionality.
 
 ```{r setup, include = FALSE, eval = TRUE}
 library(edfinr)
@@ -163,12 +163,11 @@ ky_fresh <- get_finance_data(yr = "2023", geo = "KY", refresh = TRUE, quiet = TR
 
 Once you've retrieved the data, you can use standard data manipulation tools to analyze it. Here are some common analysis patterns:
 
-### Do locally-reliant districts end up with more total revenue?
+### Do high local revenue share districts end up with more total revenue?
 
 Plotting the local *share* of revenue against total per-pupil revenue shows
 whether districts that fund themselves mostly from local sources also end up
-with more money overall. (Plotting local dollars against total dollars would
-be close to mechanical, since total revenue includes local revenue.)
+with more money overall.
 
 ```{r analysis-1, fig.alt = "Scatterplot of Connecticut districts' local share of revenue versus total revenue per-pupil for SY2022-23, with point size showing enrollment and color showing urbanicity; the most locally-reliant districts tend to have higher total revenue per-pupil."}
 # download 2023 data for connecticut
@@ -203,8 +202,7 @@ Summing dollars before dividing gives each group's true revenue mix, weighted
 by where the money actually flows. The alternative, averaging each district's
 share with `mean()`, weights a 300-student district the same as the state's
 largest system; the two can diverge substantially wherever large and small
-districts fund themselves differently, so be deliberate about which one your
-question needs.
+districts fund themselves differently, so be deliberate about the approach you use.
 
 ```{r analysis-2}
 # compare revenue mix across urbanicity groups (dollar-weighted)

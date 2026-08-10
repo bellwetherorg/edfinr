@@ -242,7 +242,7 @@ bind_rows(nominal, adjusted_2012, adjusted_2023) |>
 
 ## Best practices
 
-1. **Always use inflation adjustment for multi-year analyses**: Comparing nominal dollars across years can be misleading.
+1. **Use inflation adjustment for multi-year analyses**: Comparing nominal dollars across years can be misleading.
 
 2. **Be consistent with your base year**: Use the same `cpi_adj` value for all data in an analysis.
 
