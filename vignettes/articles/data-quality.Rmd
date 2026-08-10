@@ -13,7 +13,7 @@ knitr::opts_chunk$set(
 ## Introduction
 
 School finance data are messy in ways that summary statistics hide: districts
-skip survey items, states change how they report aid, and the set of districts
+might skip survey items, states change how they report aid, and the set of districts
 in the panel shifts over time. `edfinr` ships several diagnostic variables that
 make these issues visible, and this article shows how to use them. If you plan
 to rank districts, build a time series, or compare states, read this first.
@@ -73,10 +73,9 @@ us |>
 `exp_cur_total` is near-fully populated in every year: it is sourced from the
 F-33 summary item TCURELSC, not from the ESSA fund-type items (CE1/CE2/CE3),
 which whole states skip and which only begin in FY2016 (CE3, `exp_cur_resa`,
-in FY2018). The fund-type
-components (`exp_cur_st_loc`, `exp_cur_fed`, `exp_cur_resa`) do carry those
-coverage boundaries; the dictionary's `first_yr_avail` column records them
-(see "Variable availability by year" below). Summary items like
+in FY2018). The fund-type components (`exp_cur_st_loc`, `exp_cur_fed`, `exp_cur_resa`)
+do carry those coverage boundaries; the dictionary's `first_yr_avail` column 
+records them (see "Variable availability by year" below). Summary items like
 TCURELSC carry no data-item flags, so the flag-aware cleaning above cannot
 detect zero-filled missingness there -- another reason to treat exact zeros
 in totals with mild suspicion.
@@ -208,7 +207,7 @@ pass-through or no report.
 The set of districts is not constant across years, and treating the panel as
 balanced will bias trend analyses. The largest single discontinuity is
 California: beginning in school year 2018-19, a wave of California charter
-schools switched to independent CALPADS/CBEDS reporting and were assigned
+schools switched to independent reporting and were assigned
 their own NCES LEA IDs for the first time. Once in the NCES LEA universe,
 those new charter-LEAs automatically show up in the F-33 finance survey and in
 the Census SAIPE and ACS school-district products, which mirror NCES LEA

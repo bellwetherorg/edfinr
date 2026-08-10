@@ -55,7 +55,7 @@ FY2020 was not published (the ACS 2020 estimates were withheld), and no FY2023
 release existed at the time of processing.
 
 ```{r coverage}
-cov <- get_finance_data(yr = "all", dataset_type = "skinny") |>
+us_sy12_to_sy23 <- get_finance_data(yr = "all", dataset_type = "skinny") |>
   group_by(year) |>
   summarize(
     n = n(),
@@ -65,7 +65,7 @@ cov <- get_finance_data(yr = "all", dataset_type = "skinny") |>
     .groups = "drop"
   )
 
-cov
+us_sy12_to_sy23
 ```
 
 The imputation rules:
@@ -87,9 +87,9 @@ with urbanization, so the distribution shifts upward from rural districts to
 cities. This example uses FY2022, the most recent observed (non-imputed) year.
 
 ```{r distribution, fig.height = 4.5, fig.alt = "Boxplots of CWIFT estimates by urbanicity in FY2022 with a dashed line at the national average of 1.0; city and suburban districts sit mostly above the average and rural districts below it."}
-us_2022 <- get_finance_data(yr = "2022", geo = "all", dataset_type = "full")
+us_sy22 <- get_finance_data(yr = "2022", geo = "all", dataset_type = "full")
 
-us_2022 |>
+us_sy22 |>
   filter(!is.na(cwift_est), !is.na(urbanicity)) |>
   ggplot(aes(x = urbanicity, y = cwift_est)) +
   geom_boxplot(outlier.alpha = 0.2) +
@@ -106,17 +106,17 @@ us_2022 |>
 ## High-cost and low-cost districts
 
 ```{r high-low}
-d <- get_finance_data(yr = "2023", geo = "all", dataset_type = "full")
+us_sy23 <- get_finance_data(yr = "2023", geo = "all", dataset_type = "full")
 
 # highest-cost labor markets among larger districts
-d |>
+us_sy23 |>
   filter(!is.na(cwift_est), enroll > 10000) |>
   arrange(desc(cwift_est)) |>
   select(dist_name, state, cwift_est, cwift_se, cwift_impute_method) |>
   head(5)
 
 # lowest-cost labor markets among larger districts
-d |>
+us_sy23 |>
   filter(!is.na(cwift_est), enroll > 10000) |>
   arrange(cwift_est) |>
   select(dist_name, state, cwift_est, cwift_se, cwift_impute_method) |>
@@ -137,7 +137,7 @@ that differ in the second decimal place have intervals that overlap
 substantially, so the data cannot distinguish their labor costs:
 
 ```{r se-intervals, fig.height = 5, fig.alt = "Dot-and-interval chart of CWIFT estimates with 95 percent intervals for the 15 largest Ohio districts in FY2022; many of the intervals overlap substantially."}
-us_2022 |>
+us_sy22 |>
   filter(state == "OH", !is.na(cwift_est), !is.na(cwift_se)) |>
   slice_max(enroll, n = 15) |>
   ggplot(aes(x = cwift_est, y = reorder(dist_name, cwift_est))) +
@@ -147,7 +147,7 @@ us_2022 |>
   ) +
   geom_point() +
   labs(
-    title = "CWIFT Estimates with 95% Intervals, 15 Largest Ohio Districts, FY2022",
+    title = "CWIFT Estimates with 95% Intervals, 15 Largest Ohio Districts, SY2022",
     x = "CWIFT Estimate (±1.96 SE)",
     y = NULL
   ) +
@@ -166,7 +166,7 @@ to non-labor spending too. This is the standard convention, but it overstates
 the correction somewhat.
 
 ```{r recipe}
-d |>
+us_sy23 |>
   filter(!is.na(cwift_est), cwift_est > 0) |>
   mutate(rev_total_pp_cwift = rev_total_pp / cwift_est) |>
   arrange(desc(cwift_est)) |>

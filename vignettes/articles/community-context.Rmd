@@ -16,7 +16,7 @@ School finance rarely makes sense in isolation from the communities that fund
 and attend the schools. Alongside the F-33 finance items, `edfinr` joins each
 district to community measures from the American Community Survey (ACS) 5-Year
 Estimates and poverty estimates from the Census Bureau's Small Area Income and
-Poverty Estimates (SAIPE). This article tours those variables and shows how to
+Poverty Estimates (SAIPE). This article explores those variables and shows how to
 use them for the most common framing in the field: comparing districts' fiscal
 **capacity** (what a community can raise) with student **need**.
 
@@ -90,7 +90,7 @@ us_2023 |>
 ## Fiscal capacity: property wealth and local revenue
 
 Local revenue depends heavily on the property tax base. Plotting per-pupil
-local revenue against median property value shows the capacity gradient --
+local revenue against median property value shows the capacity gradient 
 and how it differs by urbanicity.
 
 One caution before leaning on `mpv` as a capacity measure: it is the ACS
@@ -100,7 +100,7 @@ valuation per pupil, which also counts commercial, industrial, and utility
 property and is scaled by enrollment. A district with modest homes and a
 power plant or a shopping corridor is higher-capacity than `mpv` suggests.
 Where your state publishes assessed valuation per pupil, prefer it; `mpv` is
-the nationally consistent fallback.
+a nationally consistent fallback.
 
 ```{r capacity, fig.height = 5, fig.alt = "Scatterplot of median property value versus local revenue per-pupil on log scales, colored by urbanicity, with smoothed trend lines showing local revenue rising with property wealth."}
 us_2023 |>
@@ -148,8 +148,7 @@ Resist reading the flat national line as a statement about school funding
 progressivity. It pools fifty different funding systems, and it compares
 nominal dollars: high-poverty urban districts sit disproportionately in
 high-wage labor markets, so a dollar buys less there than in a low-cost rural
-district. The progressivity literature turns on exactly these choices --
-cost-adjusted, within-state analyses can and do reach different conclusions
+district. Cost-adjusted, within-state analyses can and do reach different conclusions
 than this raw national scatter. See the "CWIFT" article for the labor-cost
 adjustment, and prefer the within-state framing below for any claim about how
 a funding system treats high-poverty districts.
