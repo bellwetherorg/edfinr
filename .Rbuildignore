@@ -8,6 +8,8 @@
 index.md
 ^doc$
 ^Meta$
-logo.png
 ^cran-comments\.md$
 ^CRAN-SUBMISSION$
+^vignettes/articles$
+^RELEASE_QC_0\.2\.0\.md$
+^\.claude$

@@ -9,12 +9,18 @@ list_variables(dataset_type = "skinny", category = "all")
 \arguments{
 \item{dataset_type}{A string specifying whether to list variables for "skinny" (default) or "full" dataset.}
 
-\item{category}{Optional. Filter variables by category: "id", "time", "geographic", 
-"demographic", "revenue", "expenditure", "economic", "governance", 
-or "all" (default).}
+\item{category}{Optional. Filter variables by category: "id", "time", "geographic",
+"demographic", "revenue", "expenditure", "economic", "governance",
+"debt", "cwift", or "all" (default).}
 }
 \value{
-A tibble with variable information
+A tibble with one row per variable and the columns `name`, `type`,
+        `category`, `source`, `f33_item`, `first_yr_avail`, and `description`.
+        `f33_item` gives the F-33 survey item(s) a variable is drawn from
+        (e.g., "F12", "TCAPOUT / V33"); it is `NA` for variables from
+        non-F-33 sources and for edfinr-adjusted measures (such as the
+        adjusted revenue variables), whose construction is described in the
+        "Data Sources and Methodology" vignette.
 }
 \description{
 This function provides information about the variables available

@@ -6,60 +6,93 @@
 #'
 #' @importFrom rlang .data
 #'
-#' @param yr A string specifying the year(s) to retrieve. Can be a single year ("2022"),
-#'           a range ("2020:2022"), or "all" for all available years. Defaults to "2022".
+#' @param yr A string specifying the year(s) to retrieve. Can be a single year ("2023"),
+#'           a range ("2020:2023"), or "all" for all available years. Defaults to "2023".
+#'           Only the requested year(s) are downloaded -- each year is a separate
+#'           hosted file of roughly 3-6 MB, so a single-year request transfers far
+#'           less than the full panel. `yr = "all"` fetches the entire history from
+#'           one combined file. When `cpi_adj` names a year outside the request, that
+#'           year's file is also downloaded to source the baseline, then dropped from
+#'           the returned data.
 #' @param geo A string specifying the geographic scope. Can be "all" for all states (default),
 #'            a single state code ("KY"), or a comma-separated list of state codes ("IN,KY,OH,TN").
 #' @param dataset_type A string specifying whether to download the "skinny" (default) or "full" dataset.
 #'                     The skinny version excludes detailed expenditure data for faster downloads.
-#' @param cpi_adj A string specifying the CPI adjustment baseline year. Can be "none" (default) 
-#'                 for no adjustment, or a year between 2012-2022 to use as the baseline year.
-#'                 When a year is specified (e.g., "2022"), revenue, expenditure, and economic 
-#'                 variables are adjusted to that school year's dollars using CPI averaged over 
-#'                 the months of the school year (e.g., "2022" uses the 2021-22 school year CPI).
-#'                 When cpi_adj is set to a value other than "none", a new column "cpi_adj_index" 
+#' @param cpi_adj A string specifying the CPI adjustment baseline year. Can be "none" (default)
+#'                 for no adjustment, or a year between 2012-2023 to use as the baseline year.
+#'                 When a year is specified (e.g., "2023"), revenue, expenditure, and economic
+#'                 variables are adjusted to that school year's dollars using CPI averaged over
+#'                 the months of the school year (e.g., "2023" uses the 2022-23 school year CPI).
+#'                 Capital outlay and debt-interest flows are adjusted; debt and fund-balance
+#'                 stocks (debt_*, fund_bal_*) and the CWIFT index are returned nominal.
+#'                 When cpi_adj is set to a value other than "none", a new column "cpi_adj_index"
 #'                 will be added to the output showing the adjustment index used for each row.
 #' @param refresh A logical value indicating whether to force a refresh of the cached data. Default is FALSE.
 #' @param quiet A logical value indicating whether to suppress download progress messages.
-#'              Default is FALSE. Note: Cache is stored in R's temporary directory and will be cleared when 
-#'              the R session ends.
+#'              Default is FALSE.
 #' @return A tibble containing the requested education finance data.
+#'
+#' @details
+#' Downloaded files are cached for the duration of the R session in a
+#' subdirectory of [tempdir()], so repeated calls in one session do not
+#' re-download; the cache is cleared when the session ends. Use
+#' `refresh = TRUE` to force a fresh download. During downloads the package
+#' temporarily raises R's download timeout to at least 600 seconds (the
+#' `yr = "all"` combined files are 38-54 MB); a higher user-set
+#' `options(timeout = )` is respected.
+#'
 #' @export
 #'
 #' @examples
 #' # Check valid parameters without downloading
 #' get_states()  # Valid state codes
-#' 
+#'
 #' \donttest{
 #' # These examples require internet access and may take time to download
-#' 
-#' # get data for Kentucky for 2022
-#' ky_data <- get_finance_data(yr = "2022", geo = "KY")
+#'
+#' # get data for Kentucky for 2023
+#' ky_data <- get_finance_data(yr = "2023", geo = "KY")
 #'
 #' # get data for multiple years
-#' ky_multi <- get_finance_data(yr = "2020:2022", geo = "KY")
+#' ky_multi <- get_finance_data(yr = "2021:2023", geo = "KY")
 #'
 #' # get full dataset with detailed expenditure data
-#' ky_full <- get_finance_data(yr = "2022", geo = "KY", dataset_type = "full")
-#'   
-#' # get data adjusted to 2022 dollars
-#' ky_adjusted <- get_finance_data(yr = "2020:2022", geo = "KY", cpi_adj = "2022")
-#' 
-#' #' # get data for multiple states for all available years
-#' regional_data <- get_finance_data(yr = "all", geo = "IN,KY,OH,TN")
+#' ky_full <- get_finance_data(yr = "2023", geo = "KY", dataset_type = "full")
+#'
+#' # get data adjusted to 2023 dollars
+#' ky_adjusted <- get_finance_data(yr = "2021:2023", geo = "KY", cpi_adj = "2023")
+#'
+#' # get data for multiple states for several years
+#' regional_data <- get_finance_data(yr = "2021:2023", geo = "IN,KY,OH,TN")
 #' }
-get_finance_data <- function(yr = "2022", geo = "all", dataset_type = "skinny", cpi_adj = "none", refresh = FALSE, quiet = FALSE) {
-  # define valid years (assuming 2012-2022 based on filename)
-  valid_years <- 2012:2022
+get_finance_data <- function(yr = "2023", geo = "all", dataset_type = "skinny", cpi_adj = "none", refresh = FALSE, quiet = FALSE) {
+  # all arguments must be length-1 and non-NA before any string operations,
+  # which would otherwise fail with raw R errors that don't name the argument
+  if (length(yr) != 1 || is.na(yr)) {
+    cli::cli_abort("{.arg yr} must be a single year (\"2023\"), a range (\"2020:2022\"), or \"all\".")
+  }
+  if (length(geo) != 1 || is.na(geo)) {
+    cli::cli_abort("{.arg geo} must be \"all\", a state code (\"KY\"), or a comma-separated list (\"IN,KY,OH\").")
+  }
+  if (length(dataset_type) != 1 || is.na(dataset_type)) {
+    cli::cli_abort("{.arg dataset_type} must be either \"skinny\" or \"full\".")
+  }
+  if (length(cpi_adj) != 1 || is.na(cpi_adj)) {
+    cli::cli_abort("{.arg cpi_adj} must be \"none\" or a single baseline year.")
+  }
 
-  # define valid state codes (all US states + DC)
-  valid_states <- c(
-    "AL", "AK", "AZ", "AR", "CA", "CO", "CT", "DE", "FL", "GA",
-    "HI", "ID", "IL", "IN", "IA", "KS", "KY", "LA", "ME", "MD",
-    "MA", "MI", "MN", "MS", "MO", "MT", "NE", "NV", "NH", "NJ",
-    "NM", "NY", "NC", "ND", "OH", "OK", "OR", "PA", "RI", "SC",
-    "SD", "TN", "TX", "UT", "VT", "VA", "WA", "WV", "WI", "WY", "DC"
-  )
+  # normalize geography: trim whitespace and accept any casing of "all", so
+  # geo = "KY, OH" and geo = "All" behave as users expect
+  geo <- trimws(as.character(geo))
+  if (tolower(geo) == "all") {
+    geo <- "all"
+  }
+
+  # define valid years
+  valid_years <- 2012:2023
+
+  # valid state codes (all US states + DC)
+  valid_states <- get_states()
 
   # validate year parameter
   if (yr != "all") {
@@ -99,7 +132,7 @@ get_finance_data <- function(yr = "2022", geo = "all", dataset_type = "skinny", 
 
   # validate geography parameter
   if (geo != "all") {
-    states <- toupper(strsplit(geo, ",")[[1]])
+    states <- trimws(toupper(strsplit(geo, ",")[[1]]))
 
     # check if all provided states are valid
     invalid_states <- states[!states %in% valid_states]
@@ -118,72 +151,82 @@ get_finance_data <- function(yr = "2022", geo = "all", dataset_type = "skinny", 
   if (cpi_adj != "none") {
     cpi_year <- suppressWarnings(as.numeric(cpi_adj))
     if (is.na(cpi_year)) {
-      cli::cli_abort("cpi_adj must be 'none' or a valid year between 2012 and 2022.")
+      cli::cli_abort("cpi_adj must be 'none' or a valid year between {min(valid_years)} and {max(valid_years)}.")
     }
-    if (!cpi_year %in% 2012:2022) {
-      cli::cli_abort("cpi_adj year must be between 2012 and 2022.")
+    if (!cpi_year %in% valid_years) {
+      cli::cli_abort("cpi_adj year must be between {min(valid_years)} and {max(valid_years)}.")
     }
   }
 
-  # url for the .rds file
-  url_full <- "https://edfinr-tidy-data.s3.us-east-2.amazonaws.com/edfinr_data_fy12_fy22_full.rds"
-  url_skinny <- "https://edfinr-tidy-data.s3.us-east-2.amazonaws.com/edfinr_data_fy12_fy22_skinny.rds"
+  # base url for the hosted parquet files
+  base <- "https://edfinr-tidy-data.s3.us-east-2.amazonaws.com/"
 
-  # select URL based on dataset_type
-  url <- if (dataset_type == "full") url_full else url_skinny
+  # build the set of files to fetch. yr = "all" pulls the full history from one
+  # combined file; any other request pulls only the per-year slice files it
+  # needs -- plus the cpi_adj baseline year's slice, which the year filter below
+  # later drops -- so a single-year request downloads ~4 MB instead of ~50 MB.
+  if (yr == "all") {
+    urls <- paste0(base, "edfinr_data_fy12_fy23_", dataset_type, ".parquet")
+  } else {
+    if (grepl(":", yr)) {
+      yr_range <- strsplit(yr, ":")[[1]]
+      requested_years <- as.numeric(yr_range[1]):as.numeric(yr_range[2])
+    } else {
+      requested_years <- as.numeric(yr)
+    }
+    # include the cpi_adj baseline year so its cpi value is present even when it
+    # falls outside the requested range (the year filter later drops it)
+    fetch_years <- sort(unique(c(
+      requested_years,
+      if (cpi_adj != "none") as.numeric(cpi_adj)
+    )))
+    urls <- paste0(base, "edfinr_data_fy", fetch_years, "_", dataset_type, ".parquet")
+  }
 
-  # cache handling - different cache files for different dataset types
-  cache_name <- paste0("edfinr_data_fy12_fy22_", dataset_type, ".rds")
-  cache_file_path <- cache_file(cache_name)
+  # report progress once for the whole set (not once per file); the set is
+  # "stale" if any of its files must be (re)downloaded
+  any_stale <- refresh ||
+    any(!vapply(urls, function(u) is_cache_current(basename(u)), logical(1)))
 
-  # check if we need to download the data
-  download_required <- refresh || !is_cache_current(cache_name)
-
-  if (download_required) {
+  if (any_stale) {
     if (!quiet) {
       cli::cli_alert_info("Downloading education finance data...")
-    }
-
-    # download the file to cache with error handling
-    download_success <- FALSE
-    max_attempts <- 3
-    attempt <- 1
-    
-    while (!download_success && attempt <= max_attempts) {
-      tryCatch({
-        utils::download.file(url, cache_file_path, mode = "wb", quiet = quiet)
-        download_success <- TRUE
-      }, error = function(e) {
-        if (attempt < max_attempts) {
-          if (!quiet) {
-            cli::cli_alert_warning("Download attempt {attempt} failed. Retrying...")
-          }
-          Sys.sleep(2^(attempt - 1))  # exponential backoff: 1s, 2s, 4s
-        } else {
-          cli::cli_abort(c(
-            "Failed to download education finance data after {max_attempts} attempts.",
-            "x" = "Error: {e$message}",
-            "i" = "Check your internet connection and try again.",
-            "i" = "If the problem persists, the data source may be temporarily unavailable."
-          ))
-        }
-      })
-      attempt <- attempt + 1
-    }
-
-    if (!quiet && download_success) {
-      cli::cli_alert_success("Download complete.")
     }
   } else if (!quiet) {
     cli::cli_alert_info("Using cached data. Use refresh = TRUE to download fresh data.")
   }
 
-  # read the .rds file from cache
-  data <- readRDS(cache_file_path)
+  # download (with retries) and read each file, then stack into one tibble.
+  # the slices share an identical schema -- column order, types, and factor
+  # levels -- so bind_rows preserves all of them without drift.
+  data <- dplyr::bind_rows(
+    lapply(urls, fetch_parquet, refresh = refresh, quiet = quiet)
+  )
+
+  if (any_stale && !quiet) {
+    cli::cli_alert_success("Download complete.")
+  }
 
   # convert to tibble
   if (!inherits(data, "tbl_df")) {
     data <- tibble::as_tibble(data)
+  }
+
+  # year is stored as character in the parquet; return it as integer
+  data <- dplyr::mutate(data, year = as.integer(.data$year))
+
+  # if cpi adjustment is requested, capture the baseline cpi from the full data
+  # before any year/geo filtering, so the baseline year need not fall within the
+  # requested year range
+  baseline_cpi <- NULL
+  if (cpi_adj != "none") {
+    cpi_year <- as.numeric(cpi_adj)
+    # cpi is national, so any row for the baseline year gives the same value
+    baseline_data <- dplyr::filter(data, .data$year == cpi_year)
+    if (nrow(baseline_data) == 0) {
+      cli::cli_abort("No data available for the specified baseline year {cpi_year}.")
+    }
+    baseline_cpi <- baseline_data$cpi_sy12[1]
   }
 
   # process year parameter
@@ -204,40 +247,27 @@ get_finance_data <- function(yr = "2022", geo = "all", dataset_type = "skinny", 
   # process geography parameter
   if (geo != "all") {
     # handle comma-separated list of states
-    states <- toupper(strsplit(geo, ",")[[1]])
+    states <- trimws(toupper(strsplit(geo, ",")[[1]]))
     data <- dplyr::filter(data, .data$state %in% states)
   }
   
-  # if cpi adjustment is requested, we need to get the baseline cpi before filtering
-  baseline_cpi <- NULL
-  if (cpi_adj != "none") {
-    cpi_year <- as.numeric(cpi_adj)
-    
-    # get the cpi value for the baseline year
-    baseline_data <- dplyr::filter(data, .data$year == cpi_year)
-    
-    if (nrow(baseline_data) == 0) {
-      cli::cli_abort("No data available for the specified baseline year {cpi_year}.")
-    }
-    # use the first cpi value as they should all be the same for a given year
-    baseline_cpi <- baseline_data$cpi_sy12[1]
-  }
-  
-  # apply cpi adjustment if requested
+  # apply cpi adjustment if requested (baseline_cpi captured before filtering)
   if (cpi_adj != "none" && !is.null(baseline_cpi)) {
     
     # define columns to adjust
     # revenue columns (both raw and adjusted versions)
     revenue_cols <- c("rev_total_pp", "rev_local_pp", "rev_state_pp", "rev_fed_pp",
                      "rev_total", "rev_local", "rev_state", "rev_fed",
-                     "rev_total_unadj", "rev_local_unadj", "rev_state_unadj", "rev_fed_unadj")
+                     "rev_total_unadj", "rev_local_unadj", "rev_state_unadj", "rev_fed_unadj",
+                     "rev_state_unadj_pp", "rev_local_unadj_pp", "rev_state_cap_debt")
     
     # expenditure columns (skinny dataset)
-    expenditure_cols <- c("exp_cur_pp", "rev_exp_pp_diff", "exp_cur_st_loc", 
-                         "exp_cur_fed", "exp_cur_resa", "exp_cur_total")
-    
+    expenditure_cols <- c("exp_cur_pp", "rev_exp_pp_diff", "exp_cur_st_loc",
+                         "exp_cur_fed", "exp_cur_resa", "exp_cur_total",
+                         "exp_cap_total", "exp_cap_total_pp")
+
     # economic columns (excluding cpi_sy12 itself)
-    economic_cols <- c("mhi", "mpv")
+    economic_cols <- c("mhi", "mpv", "mean_hhi")
     
     # additional expenditure columns for full dataset
     if (dataset_type == "full") {
@@ -255,7 +285,9 @@ get_finance_data <- function(yr = "2022", geo = "all", dataset_type = "skinny", 
         "exp_noninstr_food_sal", "exp_noninstr_food_bene", "exp_noninstr_ent_ops_total", 
         "exp_noninstr_ent_ops_bene", "exp_noninstr_other", "exp_covid_total", 
         "exp_covid_instr", "exp_covid_supp", "exp_covid_cap_out", "exp_covid_tech_supp", 
-        "exp_covid_tech_equip", "exp_covid_supp_plant", "exp_covid_food")
+        "exp_covid_tech_equip", "exp_covid_supp_plant", "exp_covid_food",
+        "exp_cap_construction", "exp_cap_land", "exp_cap_equip_instr",
+        "exp_cap_equip_other", "exp_cap_equip_nonspec", "exp_debt_interest")
       expenditure_cols <- c(expenditure_cols, full_expenditure_cols)
     }
     

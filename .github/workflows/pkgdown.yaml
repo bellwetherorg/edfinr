@@ -20,6 +20,9 @@ jobs:
       group: pkgdown-${{ github.event_name != 'pull_request' || github.run_id }}
     env:
       GITHUB_PAT: ${{ secrets.GITHUB_TOKEN }}
+      # vignette chunks that download hosted data are guarded by NOT_CRAN;
+      # set it explicitly rather than relying on setup-r's default
+      NOT_CRAN: true
     permissions:
       contents: write
     steps:
