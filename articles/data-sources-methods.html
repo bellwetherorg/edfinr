@@ -12,8 +12,8 @@
 <link rel="icon" sizes="any" href="../favicon.ico">
 <link rel="manifest" href="../site.webmanifest">
 <script src="../deps/jquery-3.6.0/jquery-3.6.0.min.js"></script><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-<link href="../deps/bootstrap-5.3.1/bootstrap.min.css" rel="stylesheet">
-<script src="../deps/bootstrap-5.3.1/bootstrap.bundle.min.js"></script><link href="../deps/font-awesome-6.5.2/css/all.min.css" rel="stylesheet">
+<link href="../deps/bootstrap-5.3.8/bootstrap.min.css" rel="stylesheet">
+<script src="../deps/bootstrap-5.3.8/bootstrap.bundle.min.js"></script><link href="../deps/font-awesome-6.5.2/css/all.min.css" rel="stylesheet">
 <link href="../deps/font-awesome-6.5.2/css/v4-shims.min.css" rel="stylesheet">
 <script src="../deps/headroom-0.11.0/headroom.min.js"></script><script src="../deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="../deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="../deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="../deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="../deps/search-1.0.0/fuse.min.js"></script><script src="../deps/search-1.0.0/mark.min.js"></script><!-- pkgdown --><script src="../pkgdown.js"></script><meta property="og:title" content="Data Sources and Methodology">
 </head>
@@ -25,7 +25,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">edfinr</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.1.1.9000</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.2.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -34,20 +34,30 @@
 
     <div id="navbar" class="collapse navbar-collapse ms-3">
       <ul class="navbar-nav me-auto">
-<li class="nav-item"><a class="nav-link" href="../index.html"><span class="fa fa-home fa-lg"></span></a></li>
+<li class="nav-item"><a class="nav-link" href="../index.html" aria-label="Home"><span class="fa fa-home fa-lg"></span></a></li>
+<li class="nav-item"><a class="nav-link" href="../articles/edfinr.html">Get started</a></li>
 <li class="nav-item"><a class="nav-link" href="../reference/index.html">Reference</a></li>
 <li class="active nav-item dropdown">
   <button class="nav-link dropdown-toggle" type="button" id="dropdown-articles" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">Articles</button>
   <ul class="dropdown-menu" aria-labelledby="dropdown-articles">
-<li><a class="dropdown-item" href="../articles/basic-usage.html">Basic Usage of edfinr</a></li>
+<li><hr class="dropdown-divider"></li>
+    <li><h6 class="dropdown-header" data-toc-skip>Working with the data</h6></li>
     <li><a class="dropdown-item" href="../articles/cpi-adjustments.html">CPI Adjustments</a></li>
+    <li><a class="dropdown-item" href="../articles/capital-facilities.html">Capital and Facilities</a></li>
+    <li><a class="dropdown-item" href="../articles/cwift.html">CWIFT</a></li>
+    <li><a class="dropdown-item" href="../articles/covid-relief.html">COVID Relief Spending</a></li>
+    <li><a class="dropdown-item" href="../articles/community-context.html">Community and Economic Context</a></li>
+    <li><a class="dropdown-item" href="../articles/mapping.html">Mapping School Finance Data</a></li>
+    <li><hr class="dropdown-divider"></li>
+    <li><h6 class="dropdown-header" data-toc-skip>Methods and data quality</h6></li>
+    <li><a class="dropdown-item" href="../articles/data-quality.html">Data Quality and Comparability</a></li>
     <li><a class="dropdown-item" href="../articles/data-sources-methods.html">Data Sources and Methodology</a></li>
   </ul>
 </li>
 <li class="nav-item"><a class="nav-link" href="../news/index.html">Changelog</a></li>
       </ul>
 <ul class="navbar-nav">
-<li class="nav-item"><a class="external-link nav-link" href="https://github.com/bellwetherorg/edfinr"><span class="fa fa-github fa-lg"></span></a></li>
+<li class="nav-item"><a class="external-link nav-link" href="https://github.com/bellwetherorg/edfinr" aria-label="GitHub"><span class="fa fa-github fa-lg"></span></a></li>
       </ul>
 </div>
 
@@ -93,8 +103,10 @@ Institute’s <code>educationdata</code> package</a>.</li>
 Bureau SAIPE Estimates</a></li>
 <li>American Community Survey 5-Year Estimates via <a href="https://walker-data.com/tidycensus/" class="external-link"><code>tidycensus</code>
 package</a>.</li>
-<li>U.S Bureau of Labor Statistics <a href="https://data.bls.gov/toppicks?survey=cu" class="external-link">Consumer Price Index for
+<li>U.S. Bureau of Labor Statistics <a href="https://data.bls.gov/toppicks?survey=cu" class="external-link">Consumer Price Index for
 All Urban Consumers (CPI-U)</a>.</li>
+<li>NCES EDGE <a href="https://nces.ed.gov/programs/edge/Economic/TeacherWage" class="external-link">Comparable
+Wage Index for Teachers (CWIFT)</a>.</li>
 </ul>
 </div>
 <div class="section level2">
@@ -105,8 +117,8 @@ All Urban Consumers (CPI-U)</a>.</li>
 which is detailed on a <a href="http://data.edbuild.org/" class="external-link">methodology
 page</a> and in their <a href="http://viz.edbuild.org/workshops/edbuildr/" class="external-link">workshop
 documentation</a>.</li>
-<li>The <a href="https://data-dictionary.ed-fund.org/?_gl=1*199anoz*_ga*MTg3MDM3NDg2LjE3MzkzNzAzOTE.*_ga_TGH6XK399M*MTc0NDIyMzY3Ni43LjEuMTc0NDIyMzY4MC4wLjAuMA.." class="external-link">EdFund
-Data Dictionary</a> informs our handling of F-33 data.</li>
+<li>The <a href="https://data-dictionary.ed-fund.org/" class="external-link">EdFund Data
+Dictionary</a> informs our handling of F-33 data.</li>
 <li>Revenue adjustments for payments to other school systems follows the
 approach used by Kristen Blagg, Emily Gutierrez, and Fanny Terrones in
 <a href="https://apps.urban.org/features/school-funding-trends/files/202204_K12_funding_technical_appendix.pdf" class="external-link">Funding
@@ -125,19 +137,502 @@ academic calendar.</li>
 <h3 id="nces-f-33-survey-data">NCES F-33 Survey Data<a class="anchor" aria-label="anchor" href="#nces-f-33-survey-data"></a>
 </h3>
 <p>Data source: NCES Common Core of Data text files of F-33 data from
-2011-12 through 2021-22.</p>
-<p>Raw variables selected:</p>
-<ul>
-<li>Basic information: state, leaid, name, yrdata, V33.</li>
-<li>Revenue data: totalrev, tlocrev, tstrev, tfedrev.</li>
-<li>Expenditure data: c11, u11, v91, v92, c24, l12, m12, d11, q11.</li>
-<li>Current expenditure data: ce1, ce2, and ce3.</li>
-<li>Detailed expenditure data: z32, z34, v93, v95, v02, k14, e13, z33,
-v10, e17, v11, v12, e07, v13, v14, e08, v15, v16, e09, v17, v18, v40,
-v21, v22, v45, v23, v24, v90, v37, v38, e11, v29, v30, v60, v32, v65,
-ae1, ae2, ae3, ae4, ae5, ae6, ae7, ae8.</li>
-</ul>
-<p>Adjustments:</p>
+2011-12 through 2022-23.</p>
+<p>A note on year conventions used throughout the package:
+<code>year</code> is the fiscal year in which the school year ends, so
+<code>year == 2023</code> is FY2023, covering SY2022-23. F-33 reports on
+state-defined fiscal years, which in most states run July through June.
+The enrollment denominator for all per-pupil measures is F-33 item V33,
+the district’s fall membership count (<code>enroll</code>).</p>
+<p>The crosswalk below maps every F-33-derived column in the full
+dataset to the F-33 survey item(s) it is drawn from. It is generated
+from the package’s data dictionary, so it cannot drift from what
+<code><a href="../reference/list_variables.html">list_variables()</a></code> reports; single codes are 1:1 mappings and
+formula strings describe simple combinations.</p>
+<div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="../reference/list_variables.html">list_variables</a></span><span class="op">(</span><span class="st">"full"</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">source</span> <span class="op">==</span> <span class="st">"NCES F-33 Survey"</span>, <span class="op">!</span><span class="fu"><a href="https://rdrr.io/r/base/NA.html" class="external-link">is.na</a></span><span class="op">(</span><span class="va">f33_item</span><span class="op">)</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html" class="external-link">select</a></span><span class="op">(</span><span class="va">name</span>, <span class="va">f33_item</span>, <span class="va">description</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu">knitr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/knitr/man/kable.html" class="external-link">kable</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
+<table class="table">
+<colgroup>
+<col width="11%">
+<col width="11%">
+<col width="77%">
+</colgroup>
+<thead><tr class="header">
+<th align="left">name</th>
+<th align="left">f33_item</th>
+<th align="left">description</th>
+</tr></thead>
+<tbody>
+<tr class="odd">
+<td align="left">ncesid</td>
+<td align="left">LEAID</td>
+<td align="left">NCES district ID</td>
+</tr>
+<tr class="even">
+<td align="left">year</td>
+<td align="left">YRDATA</td>
+<td align="left">School year (end year, e.g., 2023 = 2022-2023)</td>
+</tr>
+<tr class="odd">
+<td align="left">state</td>
+<td align="left">STATE</td>
+<td align="left">State abbreviation</td>
+</tr>
+<tr class="even">
+<td align="left">dist_name</td>
+<td align="left">NAME</td>
+<td align="left">District name</td>
+</tr>
+<tr class="odd">
+<td align="left">enroll</td>
+<td align="left">V33</td>
+<td align="left">Total district enrollment (V33)</td>
+</tr>
+<tr class="even">
+<td align="left">rev_total_unadj</td>
+<td align="left">TOTALREV</td>
+<td align="left">Total raw revenue (TOTALREV)</td>
+</tr>
+<tr class="odd">
+<td align="left">rev_local_unadj</td>
+<td align="left">TLOCREV</td>
+<td align="left">Local raw revenue (TLOCREV)</td>
+</tr>
+<tr class="even">
+<td align="left">rev_state_unadj</td>
+<td align="left">TSTREV</td>
+<td align="left">State raw revenue (TSTREV)</td>
+</tr>
+<tr class="odd">
+<td align="left">rev_fed_unadj</td>
+<td align="left">TFEDREV</td>
+<td align="left">Federal raw revenue (TFEDREV)</td>
+</tr>
+<tr class="even">
+<td align="left">rev_state_unadj_pp</td>
+<td align="left">TSTREV / V33</td>
+<td align="left">State raw (unadjusted) revenue per-pupil</td>
+</tr>
+<tr class="odd">
+<td align="left">rev_local_unadj_pp</td>
+<td align="left">TLOCREV / V33</td>
+<td align="left">Local raw (unadjusted) revenue per-pupil</td>
+</tr>
+<tr class="even">
+<td align="left">rev_state_cap_debt</td>
+<td align="left">C11</td>
+<td align="left">State revenue for capital outlay and debt service
+(C11); the amount netted out of rev_state, zero-filled (not NA) for
+non-reporting districts</td>
+</tr>
+<tr class="odd">
+<td align="left">exp_cur_pp</td>
+<td align="left">TCURELSC / V33</td>
+<td align="left">Current expenditure per-pupil (TCURELSC divided by
+V33)</td>
+</tr>
+<tr class="even">
+<td align="left">exp_cap_total_pp</td>
+<td align="left">TCAPOUT / V33</td>
+<td align="left">Total capital outlay per-pupil (TCAPOUT / enroll)</td>
+</tr>
+<tr class="odd">
+<td align="left">exp_cur_st_loc</td>
+<td align="left">CE1</td>
+<td align="left">Current expenditure from state/local sources (ESSA item
+CE1; NA where the state did not report the fund-type split)</td>
+</tr>
+<tr class="even">
+<td align="left">exp_cur_fed</td>
+<td align="left">CE2</td>
+<td align="left">Current expenditure from federal sources (ESSA item
+CE2; NA where the state did not report the fund-type split)</td>
+</tr>
+<tr class="odd">
+<td align="left">exp_cur_resa</td>
+<td align="left">CE3</td>
+<td align="left">Current expenditure by RESA on behalf of LEAs (ESSA
+item CE3; NA where the state did not report the fund-type split)</td>
+</tr>
+<tr class="even">
+<td align="left">exp_cur_total</td>
+<td align="left">TCURELSC</td>
+<td align="left">Total current expenditure for elementary/secondary
+education (TCURELSC); the CE1/CE2/CE3 fund-type split does not sum
+exactly to this total</td>
+</tr>
+<tr class="odd">
+<td align="left">exp_cap_total</td>
+<td align="left">TCAPOUT</td>
+<td align="left">Total capital outlay (TCAPOUT)</td>
+</tr>
+<tr class="even">
+<td align="left">exp_emp_salary</td>
+<td align="left">Z32</td>
+<td align="left">Total employee salaries (Z32)</td>
+</tr>
+<tr class="odd">
+<td align="left">exp_emp_bene</td>
+<td align="left">Z34</td>
+<td align="left">Total employee benefits (Z34)</td>
+</tr>
+<tr class="even">
+<td align="left">exp_textbooks</td>
+<td align="left">V93</td>
+<td align="left">Textbooks (V93)</td>
+</tr>
+<tr class="odd">
+<td align="left">exp_utilities</td>
+<td align="left">V95</td>
+<td align="left">Utilities and energy services (V95)</td>
+</tr>
+<tr class="even">
+<td align="left">exp_tech_supp</td>
+<td align="left">V02</td>
+<td align="left">Technology-related supplies and purchased services
+(V02)</td>
+</tr>
+<tr class="odd">
+<td align="left">exp_tech_equip</td>
+<td align="left">K14</td>
+<td align="left">Technology-related equipment (K14)</td>
+</tr>
+<tr class="even">
+<td align="left">exp_pay_private_sch</td>
+<td align="left">V91</td>
+<td align="left">Payments to private schools (V91)</td>
+</tr>
+<tr class="odd">
+<td align="left">exp_pay_charter_sch</td>
+<td align="left">V92</td>
+<td align="left">Payments to charter schools (V92)</td>
+</tr>
+<tr class="even">
+<td align="left">exp_pay_other_lea</td>
+<td align="left">Q11</td>
+<td align="left">Payments to other LEAs (Q11)</td>
+</tr>
+<tr class="odd">
+<td align="left">exp_other_sys_pay</td>
+<td align="left">V91 + V92 + Q11</td>
+<td align="left">Payments to other systems (V91 + V92 + Q11)</td>
+</tr>
+<tr class="even">
+<td align="left">osp_pct</td>
+<td align="left">(V91 + V92 + Q11) / TOTALREV</td>
+<td align="left">Share of unadjusted total revenue paid to other systems
+(see data-quality notes)</td>
+</tr>
+<tr class="odd">
+<td align="left">exp_instr_total</td>
+<td align="left">E13</td>
+<td align="left">Instruction - Total (E13)</td>
+</tr>
+<tr class="even">
+<td align="left">exp_instr_sal</td>
+<td align="left">Z33</td>
+<td align="left">Instruction - Salaries (Z33)</td>
+</tr>
+<tr class="odd">
+<td align="left">exp_instr_bene</td>
+<td align="left">V10</td>
+<td align="left">Instruction - Benefits (V10)</td>
+</tr>
+<tr class="even">
+<td align="left">exp_supp_stu_total</td>
+<td align="left">E17</td>
+<td align="left">Support services, students - Total (E17)</td>
+</tr>
+<tr class="odd">
+<td align="left">exp_supp_stu_sal</td>
+<td align="left">V11</td>
+<td align="left">Support services, students - Salaries (V11)</td>
+</tr>
+<tr class="even">
+<td align="left">exp_supp_stu_bene</td>
+<td align="left">V12</td>
+<td align="left">Support services, students - Benefits (V12)</td>
+</tr>
+<tr class="odd">
+<td align="left">exp_supp_instr_total</td>
+<td align="left">E07</td>
+<td align="left">Support services, instructional staff - Total
+(E07)</td>
+</tr>
+<tr class="even">
+<td align="left">exp_supp_instr_sal</td>
+<td align="left">V13</td>
+<td align="left">Support services, instructional staff - Salaries
+(V13)</td>
+</tr>
+<tr class="odd">
+<td align="left">exp_supp_instr_bene</td>
+<td align="left">V14</td>
+<td align="left">Support services, instructional staff - Benefits
+(V14)</td>
+</tr>
+<tr class="even">
+<td align="left">exp_supp_gen_admin_total</td>
+<td align="left">E08</td>
+<td align="left">Support services, general administration - Total
+(E08)</td>
+</tr>
+<tr class="odd">
+<td align="left">exp_supp_gen_admin_sal</td>
+<td align="left">V15</td>
+<td align="left">Support services, general administration - Salaries
+(V15)</td>
+</tr>
+<tr class="even">
+<td align="left">exp_supp_gen_admin_bene</td>
+<td align="left">V16</td>
+<td align="left">Support services, general administration - Benefits
+(V16)</td>
+</tr>
+<tr class="odd">
+<td align="left">exp_supp_sch_admin_total</td>
+<td align="left">E09</td>
+<td align="left">Support services, school administration - Total
+(E09)</td>
+</tr>
+<tr class="even">
+<td align="left">exp_supp_sch_admin_sal</td>
+<td align="left">V17</td>
+<td align="left">Support services, school administration - Salaries
+(V17)</td>
+</tr>
+<tr class="odd">
+<td align="left">exp_supp_sch_admin_bene</td>
+<td align="left">V18</td>
+<td align="left">Support services, school administration - Benefits
+(V18)</td>
+</tr>
+<tr class="even">
+<td align="left">exp_supp_ops_total</td>
+<td align="left">V40</td>
+<td align="left">Support services, operation and maintenance of plant -
+Total (V40)</td>
+</tr>
+<tr class="odd">
+<td align="left">exp_supp_ops_sal</td>
+<td align="left">V21</td>
+<td align="left">Support services, operation and maintenance of plant -
+Salaries (V21)</td>
+</tr>
+<tr class="even">
+<td align="left">exp_supp_ops_bene</td>
+<td align="left">V22</td>
+<td align="left">Support services, operation and maintenance of plant -
+Benefits (V22)</td>
+</tr>
+<tr class="odd">
+<td align="left">exp_supp_trans_total</td>
+<td align="left">V45</td>
+<td align="left">Support services, student transportation - Total
+(V45)</td>
+</tr>
+<tr class="even">
+<td align="left">exp_supp_trans_sal</td>
+<td align="left">V23</td>
+<td align="left">Support services, student transportation - Salaries
+(V23)</td>
+</tr>
+<tr class="odd">
+<td align="left">exp_supp_trans_bene</td>
+<td align="left">V24</td>
+<td align="left">Support services, student transportation - Benefits
+(V24)</td>
+</tr>
+<tr class="even">
+<td align="left">exp_central_serv_total</td>
+<td align="left">V90</td>
+<td align="left">Business/central/other support services - Total
+(V90)</td>
+</tr>
+<tr class="odd">
+<td align="left">exp_central_serv_sal</td>
+<td align="left">V37</td>
+<td align="left">Business/central/other support services - Salaries
+(V37)</td>
+</tr>
+<tr class="even">
+<td align="left">exp_central_serv_bene</td>
+<td align="left">V38</td>
+<td align="left">Business/central/other support services - Benefits
+(V38)</td>
+</tr>
+<tr class="odd">
+<td align="left">exp_noninstr_food_total</td>
+<td align="left">E11</td>
+<td align="left">Food services - Total (E11)</td>
+</tr>
+<tr class="even">
+<td align="left">exp_noninstr_food_sal</td>
+<td align="left">V29</td>
+<td align="left">Food services - Salaries (V29)</td>
+</tr>
+<tr class="odd">
+<td align="left">exp_noninstr_food_bene</td>
+<td align="left">V30</td>
+<td align="left">Food services - Benefits (V30)</td>
+</tr>
+<tr class="even">
+<td align="left">exp_noninstr_ent_ops_total</td>
+<td align="left">V60</td>
+<td align="left">Enterprise operations - Total (V60)</td>
+</tr>
+<tr class="odd">
+<td align="left">exp_noninstr_ent_ops_bene</td>
+<td align="left">V32</td>
+<td align="left">Enterprise operations - Benefits (V32)</td>
+</tr>
+<tr class="even">
+<td align="left">exp_noninstr_other</td>
+<td align="left">V65</td>
+<td align="left">Other non-instructional services (V65)</td>
+</tr>
+<tr class="odd">
+<td align="left">exp_covid_total</td>
+<td align="left">AE1</td>
+<td align="left">COVID-19 Federal Assistance Funds - Total expenditures
+(AE1); NA where districts did not report the COVID items (all of NY in
+every year; roughly a third to half of CA districts from FY21)</td>
+</tr>
+<tr class="even">
+<td align="left">exp_covid_instr</td>
+<td align="left">AE2</td>
+<td align="left">COVID-19 Federal Assistance Funds - Instructional
+expenditures (AE2)</td>
+</tr>
+<tr class="odd">
+<td align="left">exp_covid_supp</td>
+<td align="left">AE3</td>
+<td align="left">COVID-19 Federal Assistance Funds - Support services
+expenditures (AE3)</td>
+</tr>
+<tr class="even">
+<td align="left">exp_covid_cap_out</td>
+<td align="left">AE4</td>
+<td align="left">COVID-19 Federal Assistance Funds - Capital outlay
+expenditures (AE4)</td>
+</tr>
+<tr class="odd">
+<td align="left">exp_covid_tech_supp</td>
+<td align="left">AE5</td>
+<td align="left">COVID-19 Federal Assistance Funds - Technology-related
+supplies and purchased services expenditures (AE5)</td>
+</tr>
+<tr class="even">
+<td align="left">exp_covid_tech_equip</td>
+<td align="left">AE6</td>
+<td align="left">COVID-19 Federal Assistance Funds - Technology-related
+equipment expenditures (AE6)</td>
+</tr>
+<tr class="odd">
+<td align="left">exp_covid_supp_plant</td>
+<td align="left">AE7</td>
+<td align="left">COVID-19 Federal Assistance Funds - Support services
+operation and maintenance of plant expenditures (AE7)</td>
+</tr>
+<tr class="even">
+<td align="left">exp_covid_food</td>
+<td align="left">AE8</td>
+<td align="left">COVID-19 Federal Assistance Funds - Food services
+operations (AE8)</td>
+</tr>
+<tr class="odd">
+<td align="left">exp_cap_construction</td>
+<td align="left">F12</td>
+<td align="left">Construction (F12)</td>
+</tr>
+<tr class="even">
+<td align="left">exp_cap_land</td>
+<td align="left">G15</td>
+<td align="left">Land and existing structures (G15)</td>
+</tr>
+<tr class="odd">
+<td align="left">exp_cap_equip_instr</td>
+<td align="left">K09</td>
+<td align="left">Instructional equipment (K09)</td>
+</tr>
+<tr class="even">
+<td align="left">exp_cap_equip_other</td>
+<td align="left">K10</td>
+<td align="left">Other equipment (K10)</td>
+</tr>
+<tr class="odd">
+<td align="left">exp_cap_equip_nonspec</td>
+<td align="left">K11</td>
+<td align="left">Nonspecified equipment (K11)</td>
+</tr>
+<tr class="even">
+<td align="left">exp_debt_interest</td>
+<td align="left">I86</td>
+<td align="left">Interest on school-system debt (I86)</td>
+</tr>
+<tr class="odd">
+<td align="left">debt_lt_begin</td>
+<td align="left">_19H</td>
+<td align="left">Long-term debt outstanding, start of FY (_19H)</td>
+</tr>
+<tr class="even">
+<td align="left">debt_lt_issued</td>
+<td align="left">_21F</td>
+<td align="left">Long-term debt issued during FY (_21F)</td>
+</tr>
+<tr class="odd">
+<td align="left">debt_lt_retired</td>
+<td align="left">_31F</td>
+<td align="left">Long-term debt retired during FY (_31F)</td>
+</tr>
+<tr class="even">
+<td align="left">debt_lt_end</td>
+<td align="left">_41F</td>
+<td align="left">Long-term debt outstanding, end of FY (_41F)</td>
+</tr>
+<tr class="odd">
+<td align="left">debt_st_begin</td>
+<td align="left">_61V</td>
+<td align="left">Short-term debt outstanding, start of FY (_61V)</td>
+</tr>
+<tr class="even">
+<td align="left">debt_st_end</td>
+<td align="left">_66V</td>
+<td align="left">Short-term debt outstanding, end of FY (_66V)</td>
+</tr>
+<tr class="odd">
+<td align="left">fund_bal_debt_svc</td>
+<td align="left">W01</td>
+<td align="left">Debt service fund cash and investments, FYE (W01); NA
+where flagged unreported</td>
+</tr>
+<tr class="even">
+<td align="left">fund_bal_bond</td>
+<td align="left">W31</td>
+<td align="left">Bond fund cash and investments, FYE (W31); NA where
+flagged unreported</td>
+</tr>
+<tr class="odd">
+<td align="left">fund_bal_other</td>
+<td align="left">W61</td>
+<td align="left">Other funds cash and investments, FYE (W61); NA where
+flagged unreported</td>
+</tr>
+</tbody>
+</table>
+<p>In addition to the items above, the cleaning scripts read F-33
+variables U11, C24, L12, M12, and D11 to construct the revenue
+adjustments described under “Revenue Adjustments” below. C11 (state
+revenue for capital outlay and debt service) both feeds those
+adjustments and ships directly as <code>rev_state_cap_debt</code>, so it
+appears in the crosswalk. Variables with an <code>NA</code>
+<code>f33_item</code> in <code><a href="../reference/list_variables.html">list_variables()</a></code> are either drawn
+from non-F-33 sources or are edfinr-adjusted measures whose construction
+is documented in that section.</p>
+<p>Adjustments applied during cleaning:</p>
 <ul>
 <li>Rename variables.</li>
 <li>Convert district names to title case.</li>
@@ -157,10 +652,17 @@ package.</p>
 dist_name, state_leaid.</li>
 <li>Institutional details: lea_type, lea_type_id, urbanicity,
 congressional_dist.</li>
+<li>Two related CCD-derived classifications, <code>cbsa</code> (core
+based statistical area) and <code>schlev</code> (LEA school level),
+arrive on the F-33 files rather than through the directory pull.</li>
 </ul>
 <p>Adjustments:</p>
 <ul>
 <li>Rename variables to more intuitive names.</li>
+<li>Directory attributes come from the directory vintage for the same
+school year as the fiscal year they describe. (Releases before 0.2.0
+joined the following school year’s vintage; see “Changes from 0.1.x”
+below.)</li>
 </ul>
 </div>
 <div class="section level3">
@@ -190,8 +692,13 @@ the <a href="https://walker-data.com/tidycensus/" class="external-link"><code>ti
 package.</p>
 <p>Raw variables selected:</p>
 <ul>
-<li>Economic indicators: Median household income (B19013_001) and median
-property value (B25077_001).</li>
+<li>Economic indicators: Median household income (B19013_001), mean
+household income (aggregate household income divided by households),
+median property value (B25077_001), and the Gini index of income
+inequality (B19083_001).</li>
+<li>Household and labor characteristics: owner-occupied share of
+occupied housing (B25003), share of households receiving SNAP (B22003),
+and the unemployment rate among the civilian labor force (B23025).</li>
 <li>Educational attainment: Total population 25 years or older
 (B15003_001) and subsets of that population holding bachelor’s degrees
 (B15003_022), master’s degrees (B15003_023), professional degrees
@@ -199,6 +706,11 @@ property value (B25077_001).</li>
 <li>Data are pulled for different geographic breakdowns (unified,
 elementary, and secondary school districts).</li>
 </ul>
+<p>Each fiscal year is joined to the ACS 5-year release ending in the
+same calendar year: FY2023 carries the 2019-2023 5-year estimates,
+FY2012 the 2008-2012 estimates. The 5-year window smooths across years,
+and its endpoint (December) extends a few months past the June close of
+the fiscal year.</p>
 <p>Adjustments:</p>
 <ul>
 <li>Reshape data from long to wide format.</li>
@@ -226,16 +738,46 @@ calendar, with the 2011-12 school year as the baseline year.</li>
 scripts.</li>
 </ul>
 </div>
+<div class="section level3">
+<h3 id="cwift-comparable-wage-index-for-teachers">CWIFT (Comparable Wage Index for Teachers)<a class="anchor" aria-label="anchor" href="#cwift-comparable-wage-index-for-teachers"></a>
+</h3>
+<p>Data source: NCES EDGE <a href="https://nces.ed.gov/programs/edge/Economic/TeacherWage" class="external-link">Comparable
+Wage Index for Teachers (CWIFT)</a>, LEA-level releases.</p>
+<p>Raw variables selected:</p>
+<ul>
+<li>District identifier (<code>LEAID</code>), the CWIFT estimate
+(<code>LEA_CWIFTEST</code>), and its standard error
+(<code>LEA_CWIFTSE</code>).</li>
+</ul>
+<p>Adjustments and coverage:</p>
+<ul>
+<li>Each <code>CWIFT&lt;yyyy&gt;</code> release maps to edfinr fiscal
+year <code>yyyy</code>.</li>
+<li>FY2012-FY2014 have no CWIFT release and are returned as
+<code>NA</code>.</li>
+<li>FY2020 (no NCES release, owing to withheld ACS 2020 estimates) is
+interpolated as the mean of the FY2019 and FY2021 values for LEAs
+present in both years; the interpolated standard error is an
+approximation, not an NCES-published value.</li>
+<li>FY2023 is carried forward from FY2022 (no CWIFT2023 release as of
+the 2026-07-20 check).</li>
+<li>
+<code>cwift_imputed</code> flags interpolated or carried-forward
+values and <code>cwift_impute_method</code> records how each value was
+produced.</li>
+</ul>
+</div>
 </div>
 <div class="section level2">
 <h2 id="joining-data">Joining Data<a class="anchor" aria-label="anchor" href="#joining-data"></a>
 </h2>
 <ul>
 <li>The joining process is implemented in the
-<code>07_edfinr_join_and_exclude.R</code> script.</li>
+<code>08_edfinr_join_and_exclude.R</code> script (CWIFT is prepared in
+<code>07_cwift_clean.R</code> and joined there).</li>
 <li>Data from the F-33 survey, CCD Directory, ACS (unified, elementary,
-and secondary), and SAIPE sources are merged using left joins on shared
-district identifiers (ncesid) and fiscal year.</li>
+and secondary), SAIPE, and CWIFT sources are merged using left joins on
+shared district identifiers (ncesid) and fiscal year.</li>
 <li>The procedure ensures that each district record is enriched with
 revenue, expenditure, demographic, and economic data.</li>
 </ul>
@@ -243,22 +785,41 @@ revenue, expenditure, demographic, and economic data.</li>
 <div class="section level2">
 <h2 id="revenue-adjustments">Revenue Adjustments<a class="anchor" aria-label="anchor" href="#revenue-adjustments"></a>
 </h2>
-<p>Additional transformations are applied after the join: - Capital
-expenditures and debt service (C11) are subtrated from state revenues. -
-Property sales (U11) are subtracted from local revenues. - For Texas
-local education agencies (LEAs) in school year 2012-13 and earlier,
-payments to state governments (L12) are subtracted from local revenues.
-- Payments to other school systems (V91, V92, and Q11) are
-proportionally subracted from local, state, and federal revenues.</p>
+<p>Additional transformations are applied after the join:</p>
+<ul>
+<li>State revenue for capital outlay and debt service (C11) is
+subtracted from state revenues. The subtracted amount ships as
+<code>rev_state_cap_debt</code> in both datasets (zero-filled, not
+<code>NA</code>, for non-reporting districts, because it feeds the
+adjustment arithmetic). The unadjusted state revenue is preserved in
+<code>rev_state_unadj</code> / <code>rev_state_unadj_pp</code>, and
+<code>c11_spike_flag</code> marks district-years where this adjustment
+produces an anomalous spike.</li>
+<li>Property sales (U11) are subtracted from local revenues.</li>
+<li>For Texas local education agencies (LEAs) in school year 2012-13 and
+earlier, payments to state governments (L12) are subtracted from local
+revenues.</li>
+<li>Payments to other school systems (V91, V92, and Q11) are
+proportionally subtracted from local, state, and federal revenues.</li>
+</ul>
 </div>
 <div class="section level2">
 <h2 id="exclusions">Exclusions<a class="anchor" aria-label="anchor" href="#exclusions"></a>
 </h2>
 <ul>
-<li>Districts with enrollment less than 0 are removed.</li>
-<li>Districts with total revenue less than 0 are removed.</li>
+<li>Districts with enrollment of zero or below are removed.</li>
+<li>Districts with total revenue of zero or below are removed.</li>
 <li>Districts with an invalid LEA type (i.e. where lea_type_id is not
-one of 1, 2, 3, or 7) are excluded.</li>
+one of 1, 2, 3, or 7) are excluded. Since 0.2.0 this screen tolerates
+single-vintage miscodes: a district-year is excluded only if the
+following directory vintage agrees the district is not a regular
+district, supervisory union, or charter. Massachusetts regional
+districts, which CCD coded as service agencies (lea_type_id 4) in the
+SY2011-12 through SY2015-16 directory vintages, are retained for
+FY2012-FY2015 via an explicit vetted list (FY2016 is recovered by the
+single-vintage tolerance). Their <code>lea_type_id</code> reports what
+the source vintage said, so filtering Massachusetts years 2012-2016 on
+<code>lea_type_id</code> will drop real regional districts.</li>
 <li>Districts with invalid LEA/school level type (i.e. where schlev is
 not one of “01”, “02”, or “03”, except for specified CA exceptions) are
 excluded.</li>
@@ -271,29 +832,108 @@ year 2011-12 dollars are excluded.</li>
 </ul>
 </div>
 <div class="section level2">
+<h2 id="changes-from-0-1-x">Changes from 0.1.x<a class="anchor" aria-label="anchor" href="#changes-from-0-1-x"></a>
+</h2>
+<p>Users comparing results against edfinr 0.1.x should be aware of these
+methodology-relevant changes in 0.2.0:</p>
+<ul>
+<li>
+<strong><code>exp_cur_total</code> is sourced from
+TCURELSC.</strong> In 0.1.x the total was the sum of the ESSA fund-type
+items (CE1 + CE2 + CE3), which several states skip entirely (all of
+Illinois and Minnesota through FY23; New York – including New York City
+– New Jersey, Massachusetts, Oregon, and others in earlier years) and
+which did not exist before FY16. Sourcing the total directly from the
+F-33 TCURELSC item makes <code>exp_cur_total</code>,
+<code>exp_cur_pp</code>, and <code>rev_exp_pp_diff</code> available for
+nearly all districts in every year 2012-2023. Where states did report
+the fund-type items, values shift slightly: the ESSA items exclude
+payments to private, charter, and other school systems, so the CE-sum
+differs from TCURELSC by more than 2% for roughly 40% of reporting
+districts. The fund-type split remains available as
+<code>exp_cur_st_loc</code>, <code>exp_cur_fed</code>, and
+<code>exp_cur_resa</code> (<code>NA</code> where unreported); those
+components should not be expected to sum exactly to
+<code>exp_cur_total</code>. Missing values still propagate to
+<code>NA</code> rather than being treated as zero.</li>
+<li>
+<strong>CCD directory attributes match the labeled fiscal
+year.</strong> 0.1.x joined directory data one school year forward, so
+fiscal year Y rows carried attributes (<code>dist_name</code>,
+<code>county</code>, <code>state_leaid</code>, <code>cong_dist</code>,
+<code>urbanicity</code> and its raw variants, <code>lea_type</code>,
+<code>lea_type_id</code>) from SY Y to Y+1 instead of SY Y-1 to Y. These
+now come from the same school year’s directory vintage, so values differ
+from 0.1.x wherever an attribute changed between adjacent years. The fix
+also restores the final operating year of districts that closed, which
+previously had no directory match and were silently dropped.</li>
+<li>
+<strong>Massachusetts regional districts restored for
+FY2012-FY2015.</strong> CCD miscoded every MA regional school district
+as a service agency for five consecutive directory vintages, so earlier
+releases had no data for these districts before FY2016. This release
+restores them via a vetted list of 60 NCES LEA IDs, roughly
+107,000-110,000 students per year. Their <code>lea_type_id</code> still
+carries the miscoded value 4 through FY2016; see “Exclusions” above
+before filtering on it. MA regional vocational-technical districts
+remain excluded in every year (F-33 codes their school level outside the
+panel’s elementary/secondary/unified scope).</li>
+<li>
+<strong>Flagged zero-filled values are <code>NA</code>.</strong>
+F-33 zero-fills some unreported items instead of using its
+<code>-1</code> missing code, marking them with an
+<code>FL_* = "M"</code> data-item flag. The cleaning pipeline now
+converts those flagged zero-fills to <code>NA</code> for the COVID
+(<code>exp_covid_*</code>), capital-detail, debt, fund-balance, CE
+fund-type, and expenditure-detail columns. Most visibly, COVID relief
+spending is <code>NA</code> rather than $0 for all New York districts in
+every year and for roughly a third to half of California districts from
+FY2021 onward. Genuine reported zeros are unchanged. The
+revenue-adjustment inputs are deliberately excluded so adjusted revenue
+coverage is unchanged; <code>osp_pct</code> and the
+<code>exp_pay_*</code> columns retain zero-filled values where states
+did not report.</li>
+<li>
+<strong><code>year</code> is returned as an integer</strong> rather
+than a character column.</li>
+<li>
+<strong>Hosted data format.</strong> The hosted datasets are
+gzip-compressed Parquet files read with <code>nanoparquet</code>
+(previously <code>.rds</code>), and each year is hosted as a separate
+file so only the requested years are downloaded. This is transparent to
+callers.</li>
+</ul>
+</div>
+<div class="section level2">
 <h2 id="data-notes-and-cautions">Data Notes and Cautions<a class="anchor" aria-label="anchor" href="#data-notes-and-cautions"></a>
 </h2>
 <p>Users should note the following when working with the
-<code>edfinr</code> datasets:</p>
+<code>edfinr</code> datasets. For worked examples of the diagnostic
+flags and comparability issues summarized here, see the “Data Quality
+and Comparability” article on the package website.</p>
 <ul>
 <li>Some variables were originally coded with <code>-1</code> to
 indicate missing values; these have been replaced with <code>NA</code>
-during processing.</li>
-<li>During data processing, we identified a sharp rise in the number of
-California districts appearing only from 2019 onward in the data. This
-reflects the fact that many charter schools became separate LEAs in
-those years. Beginning in school year 2018–19, a wave of California
-charter schools switched to independent CALPADS/CBEDS reporting and thus
-were assigned their own NCES LEA IDs for the first time. Once in the
-NCES LEA universe, those new charter‐LEAs automatically show up in the
-F-33 finance survey (with blanks or flags if they report no finance
-data), and Census’s SAIPE and ACS school‐district products (which mirror
-NCES LEA boundaries).</li>
+during processing. An <code>NA</code> value means the item was not
+reported, not that it is zero.</li>
+<li>A wave of California charter schools became separate LEAs beginning
+in school year 2018-19, which sharply increases the number of California
+districts in the panel from 2019 onward. See the “Data Quality and
+Comparability” article for the full explanation and its implications for
+longitudinal analysis.</li>
 <li>The joined dataset represents a synthesis of data from multiple
 sources; discrepancies in source data formats may lead to minor
 variations.</li>
 <li>Inflation and adjustment factors (e.g., CPI adjustments) are based
 on averages and may not perfectly reflect local cost variations.</li>
+<li>Capital outlay is reported separately from current spending and is
+excluded from <code>exp_cur_total</code>. It is lumpy from year to year,
+so multi-year averages are recommended for cross-district comparison
+(see the “Capital and Facilities” article). Debt and fund-balance stocks
+(<code>debt_*</code>, <code>fund_bal_*</code>) are point-in-time
+balance-sheet levels and are never CPI-adjusted.</li>
+<li>CWIFT is a relative labor-cost index, not a price deflator, and has
+gaps that are imputed for some years (see the “CWIFT” article).</li>
 <li><strong>Caution is advised when comparing data across fiscal years
 due to potential differences in data collection and processing
 methods.</strong></li>
@@ -310,7 +950,7 @@ methods.</strong></li>
 </div>
 
 <div class="pkgdown-footer-right">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.1.3.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.2.1.</p>
 </div>
 
     </footer>

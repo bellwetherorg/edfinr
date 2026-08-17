@@ -1,0 +1,75 @@
+# `edfinr`
+
+[![R-CMD-check](https://github.com/bellwetherorg/edfinr/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/bellwetherorg/edfinr/actions/workflows/R-CMD-check.yaml)
+![CRAN Badge](https://www.r-pkg.org/badges/version/edfinr)![CRAN
+downloads](https://cranlogs.r-pkg.org/badges/grand-total/edfinr)
+
+**edfinr** is a [Bellwether](https://bellwether.org/) R package for
+downloading and analyzing education finance data. It includes cleaned
+data from the U.S. Census Bureau’s Annual Survey of School System
+Finances along with data from other surveys administered by the National
+Center for Education Statistics (NCES) and U.S Census Bureau.
+
+You can install **edfinr** from CRAN with:
+
+``` r
+
+install.packages("edfinr")
+```
+
+You can install the development version of **edfinr** from GitHub with:
+
+``` r
+
+pak::pkg_install("bellwetherorg/edfinr") 
+```
+
+To learn more about how to use **edfinr** to analyze school system
+revenues and expenditures, please refer to the following articles:
+
+- [Get started: basic
+  usage](https://bellwetherorg.github.io/edfinr/articles/edfinr.md)
+- [CPI
+  adjustments](https://bellwetherorg.github.io/edfinr/articles/cpi-adjustments.md)
+- [Capital and
+  facilities](https://bellwetherorg.github.io/edfinr/articles/capital-facilities.md)
+- [CWIFT](https://bellwetherorg.github.io/edfinr/articles/cwift.md)
+- [COVID relief
+  spending](https://bellwetherorg.github.io/edfinr/articles/covid-relief.md)
+- [Community and economic
+  context](https://bellwetherorg.github.io/edfinr/articles/community-context.md)
+- [Mapping school finance
+  data](https://bellwetherorg.github.io/edfinr/articles/mapping.md)
+- [Data quality and
+  comparability](https://bellwetherorg.github.io/edfinr/articles/data-quality.md)
+- [Data sources and
+  methodology](https://bellwetherorg.github.io/edfinr/articles/data-sources-methods.md)
+
+## Data Notes and Cautions
+
+Users should note the following when working with the **edfinr**
+datasets:
+
+- Some variables were originally coded with `-1` to indicate missing
+  values; these have been replaced with `NA` during processing. An `NA`
+  means an item was not reported, not that it is zero.
+- The number of California districts jumps from 2019 onward because a
+  wave of charter schools became separate local education agencies
+  (LEAs); see the [data quality and
+  comparability](https://bellwetherorg.github.io/edfinr/articles/data-quality.md)
+  article for the full explanation and its implications for longitudinal
+  analysis.
+- The joined dataset represents a synthesis of data from multiple
+  sources; discrepancies in source data formats may lead to minor
+  variations.
+- Inflation and adjustment factors (e.g., CPI adjustments) are based on
+  averages and may not perfectly reflect local cost variations.
+- **Caution is advised when comparing data across fiscal years due to
+  potential differences in data collection and processing methods.**
+
+## Authors
+
+- **Alex Spurrier** (<alex.spurrier@bellwether.org>) - lead developer
+  and package maintainer
+- **Krista Kaput** - core development and feature implementation
+- **Michael Chrzan** - data processing functions and testing

@@ -1,15 +1,22 @@
 <urlset xmlns = 'http://www.sitemaps.org/schemas/sitemap/0.9'>
 <url><loc>https://bellwetherorg.github.io/edfinr/404.html</loc></url>
 <url><loc>https://bellwetherorg.github.io/edfinr/LICENSE.html</loc></url>
-<url><loc>https://bellwetherorg.github.io/edfinr/articles/basic-usage.html</loc></url>
+<url><loc>https://bellwetherorg.github.io/edfinr/articles/capital-facilities.html</loc></url>
+<url><loc>https://bellwetherorg.github.io/edfinr/articles/community-context.html</loc></url>
+<url><loc>https://bellwetherorg.github.io/edfinr/articles/covid-relief.html</loc></url>
 <url><loc>https://bellwetherorg.github.io/edfinr/articles/cpi-adjustments.html</loc></url>
+<url><loc>https://bellwetherorg.github.io/edfinr/articles/cwift.html</loc></url>
+<url><loc>https://bellwetherorg.github.io/edfinr/articles/data-quality.html</loc></url>
 <url><loc>https://bellwetherorg.github.io/edfinr/articles/data-sources-methods.html</loc></url>
+<url><loc>https://bellwetherorg.github.io/edfinr/articles/edfinr.html</loc></url>
 <url><loc>https://bellwetherorg.github.io/edfinr/articles/index.html</loc></url>
+<url><loc>https://bellwetherorg.github.io/edfinr/articles/mapping.html</loc></url>
 <url><loc>https://bellwetherorg.github.io/edfinr/authors.html</loc></url>
 <url><loc>https://bellwetherorg.github.io/edfinr/index.html</loc></url>
 <url><loc>https://bellwetherorg.github.io/edfinr/news/index.html</loc></url>
 <url><loc>https://bellwetherorg.github.io/edfinr/reference/cache_file.html</loc></url>
 <url><loc>https://bellwetherorg.github.io/edfinr/reference/cache_path.html</loc></url>
+<url><loc>https://bellwetherorg.github.io/edfinr/reference/fetch_parquet.html</loc></url>
 <url><loc>https://bellwetherorg.github.io/edfinr/reference/get_finance_data.html</loc></url>
 <url><loc>https://bellwetherorg.github.io/edfinr/reference/get_states.html</loc></url>
 <url><loc>https://bellwetherorg.github.io/edfinr/reference/index.html</loc></url>
