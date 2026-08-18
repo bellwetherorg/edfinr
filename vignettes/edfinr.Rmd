@@ -36,20 +36,16 @@ library(ggplot2)
 
 ## What's new in 0.2.0
 
-If you are returning to `edfinr` after using 0.1.x, three changes matter most.
-Coverage now extends through the 2022-23 school year, and `get_finance_data()`
-defaults to `yr = "2023"`. The datasets add capital outlay detail, debt stocks,
-fund balances, and the NCES Comparable Wage Index for Teachers (CWIFT), each
-covered by a dedicated article on the package website. And downloads are now
-per-year files, so small requests transfer only the years they need. See the
-changelog (NEWS) for the full list, including a behavior change in
-`exp_cur_total`: it is now sourced from the F-33 total current expenditure
-item (TCURELSC), so it is available for nearly all districts in all years
-rather than only where states reported the ESSA fund-type breakdown.
+If you used `edfinr` 0.1.x, you'll notice three significant changes:
+
+- **Added FY23 data**: Coverage now extends through the 2022-23 school year, and `get_finance_data()` defaults to `yr = "2023"`. - **More variables across years**: The datasets add capital outlay detail, debt stocks, fund balances, and the NCES Comparable Wage Index for Teachers (CWIFT), each covered by a dedicated article on the package website. 
+- **Faster downloads**: Downloads are now per-year files, so small requests transfer only the years they need. 
+
+Refer to the NEWS.md file for the full list of updates.
 
 ## Core function: get_finance_data()
 
-The primary function in `edfinr` is `get_finance_data()`, which provides access to school finance data from school years 2011-12 through 2022-23. F-33 data are released roughly two years after a fiscal year closes, so FY2023 (SY2022-23) is the most recent federal release; the package is as current as the survey allows. The function combines data from multiple sources:
+The primary function in `edfinr` is `get_finance_data()`, which provides access to school finance data from school years 2011-12 through 2022-23. NCES F-33 data are released roughly two years after a fiscal year closes, so FY2023 (SY2022-23) is the most recent federal release. The function combines data from multiple sources:
 
 - **Financial data**: Revenue and expenditure data (including capital outlay, debt, and fund balances) from the National Center for Education Statistics (NCES) version of the F-33 survey.
 - **Enrollment**: Fall membership counts (F-33 item V33), the denominator for all per-pupil measures.
@@ -97,9 +93,7 @@ setdiff(names(ky_full_sy23), names(ky_sy23))
 
 ## Finding variables
 
-With 122 variables in the full dataset, the data dictionary is the fastest way
-to find what you need. `list_variables()` returns it as a tibble, so you can
-filter and search it like any other data.
+With 122 variables in the full dataset, the data dictionary is the fastest way to find what you need. `list_variables()` returns it as a tibble, so you can filter and search it like any other data.
 
 ```{r finding-variables, eval = TRUE}
 # the full dictionary: name, type, category, source, f33_item,
@@ -110,21 +104,6 @@ vars
 # filter by category; 0.2.0 adds "debt" and "cwift" categories
 list_variables("full", category = "debt")
 ```
-
-Two dictionary columns deserve special attention. `first_yr_avail` records the
-first fiscal year each variable is available, because not every variable spans
-the whole 2012-2023 panel:
-
-```{r first-yr-avail, eval = TRUE}
-vars |>
-  filter(first_yr_avail != "2012") |>
-  count(first_yr_avail, category)
-```
-
-And `f33_item` records the F-33 survey item(s) each F-33-sourced variable is
-drawn from (for example, `exp_cap_construction` comes from item F12), which is
-useful when comparing edfinr output against raw NCES files. See the "Data
-Sources and Methodology" vignette for the full crosswalk.
 
 ## Multiple years and states
 
@@ -143,16 +122,9 @@ us_sy23 <- get_finance_data(yr = "2023", geo = "all")
 
 ## Downloads and caching
 
-Only the requested year(s) are downloaded: each year is hosted as its own file
-(roughly 3-6 MB), so a single-year or short-range request is lightweight even
-though the full panel spans 2012-2023. Requesting `yr = "all"` downloads the
-entire history from one combined file.
+Only the requested year(s) are downloaded: each year is hosted as its own file (roughly 3-6 MB), so a single-year or short-range request is lightweight even though the full panel spans 2012-2023. Requesting `yr = "all"` downloads the entire history from one combined file.
 
-Downloaded files are cached in R's temporary directory for the length of your
-R session, so repeated calls with the same years re-read the cache instead of
-re-downloading. Two arguments control this behavior: `refresh = TRUE` forces a
-fresh download (for example, after a data update is announced), and
-`quiet = TRUE` suppresses the download progress messages.
+Downloaded files are cached in R's temporary directory for the length of your R session, so repeated calls with the same years re-read the cache instead of re-downloading. Two arguments control this behavior: `refresh = TRUE` forces a fresh download (for example, after a data update is announced), and `quiet = TRUE` suppresses the download progress messages.
 
 ```{r caching, eval = FALSE}
 # re-download even if a cached copy exists, without progress messages
@@ -164,10 +136,6 @@ ky_fresh <- get_finance_data(yr = "2023", geo = "KY", refresh = TRUE, quiet = TR
 Once you've retrieved the data, you can use standard data manipulation tools to analyze it. Here are some common analysis patterns:
 
 ### Do high local revenue share districts end up with more total revenue?
-
-Plotting the local *share* of revenue against total per-pupil revenue shows
-whether districts that fund themselves mostly from local sources also end up
-with more money overall.
 
 ```{r analysis-1, fig.alt = "Scatterplot of Connecticut districts' local share of revenue versus total revenue per-pupil for SY2022-23, with point size showing enrollment and color showing urbanicity; the most locally-reliant districts tend to have higher total revenue per-pupil."}
 # download 2023 data for connecticut
@@ -198,12 +166,6 @@ ggplot(ct_sy23) +
 
 ### How do revenue sources differ by urbanicity?
 
-Summing dollars before dividing gives each group's true revenue mix, weighted
-by where the money actually flows. The alternative, averaging each district's
-share with `mean()`, weights a 300-student district the same as the state's
-largest system; the two can diverge substantially wherever large and small
-districts fund themselves differently, so be deliberate about the approach you use.
-
 ```{r analysis-2}
 # compare revenue mix across urbanicity groups (dollar-weighted)
 revenue_analysis <- ct_sy23 |>
@@ -221,7 +183,6 @@ print(revenue_analysis)
 
 ## See also
 
-- Use `list_variables()` to see all available variables and their descriptions, and `get_states()` to see valid state codes.
 - The "CPI Adjustments" vignette for inflation adjustment across years.
 - The "Data Sources and Methodology" vignette for detailed methodology and the F-33 crosswalk.
 - On the package website: articles on capital and facilities, CWIFT, COVID relief spending, community and economic context, data quality and comparability, and mapping school finance data.

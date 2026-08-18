@@ -2,7 +2,6 @@
 
 [![R-CMD-check](https://github.com/bellwetherorg/edfinr/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/bellwetherorg/edfinr/actions/workflows/R-CMD-check.yaml) ![CRAN Badge](https://www.r-pkg.org/badges/version/edfinr) ![CRAN downloads](https://cranlogs.r-pkg.org/badges/grand-total/edfinr)
 
-
 An R package for downloading and analyzing education finance data from multiple sources.
 
 ## Installation
@@ -32,7 +31,7 @@ This package provides access to education finance data from:
 ## Data Processing Methods
 
 - Methodology based on process used by [`edbuildr`](https://github.com/EdBuild/edbuildr), which is detailed on a [methodology page](http://data.edbuild.org/) and in their [workshop documentation](http://viz.edbuild.org/workshops/edbuildr/).
-- The [EdFund Data Dictionary](https://data-dictionary.ed-fund.org/?_gl=1*199anoz*_ga*MTg3MDM3NDg2LjE3MzkzNzAzOTE.*_ga_TGH6XK399M*MTc0NDIyMzY3Ni43LjEuMTc0NDIyMzY4MC4wLjAuMA..) informs our handling of F-33 data.
+- The [EdFund Data Dictionary](https://data-dictionary.ed-fund.org/) informs our handling of F-33 data.
 - Revenue adjustments for payments to other school systems follows the approach used by Kristen Blagg, Emily Gutierrez, and Fanny Terrones in [Funding Flows: Which Students Receive a Greater Share of School Funding?](https://apps.urban.org/features/school-funding-trends/files/202204_K12_funding_technical_appendix.pdf).
 - Inflation adjustments use an average of second half CPI-U of one year and first half CPI-U of the following year to align with the academic calendar.
 

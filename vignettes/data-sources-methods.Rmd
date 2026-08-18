@@ -51,16 +51,9 @@ This package provides access to education finance data from:
 
 Data source: NCES Common Core of Data text files of F-33 data from 2011-12 through 2022-23.
 
-A note on year conventions used throughout the package: `year` is the fiscal
-year in which the school year ends, so `year == 2023` is FY2023, covering
-SY2022-23. F-33 reports on state-defined fiscal years, which in most states
-run July through June. The enrollment denominator for all per-pupil measures
-is F-33 item V33, the district's fall membership count (`enroll`).
+A note on year conventions used throughout the package: `year` is the fiscal year in which the school year ends, so `year == 2023` is FY2023, covering SY2022-23. F-33 reports on state-defined fiscal years, which in most states run July through June. The enrollment denominator for all per-pupil measures is F-33 item V33, the district's fall membership count (`enroll`).
 
-The crosswalk below maps every F-33-derived column in the full dataset to the
-F-33 survey item(s) it is drawn from. It is generated from the package's data
-dictionary, so it cannot drift from what `list_variables()` reports; single
-codes are 1:1 mappings and formula strings describe simple combinations.
+The crosswalk below maps every F-33-derived column in the full dataset to the F-33 survey item(s) it is drawn from. It is generated from the package's data dictionary, so it cannot drift from what `list_variables()` reports; single codes are 1:1 mappings and formula strings describe simple combinations.
 
 ```{r f33-crosswalk}
 list_variables("full") |>
@@ -69,14 +62,7 @@ list_variables("full") |>
   knitr::kable()
 ```
 
-In addition to the items above, the cleaning scripts read F-33 variables U11, 
-C24, L12, M12, and D11 to construct the revenue adjustments described
-under "Revenue Adjustments" below. C11 (state revenue for capital outlay and
-debt service) both feeds those adjustments and ships directly as
-`rev_state_cap_debt`, so it appears in the crosswalk. Variables
-with an `NA` `f33_item` in `list_variables()` are either drawn from non-F-33
-sources or are edfinr-adjusted measures whose construction is documented in
-that section.
+In addition to the items above, the cleaning scripts read F-33 variables U11, C24, L12, M12, and D11 to construct the revenue adjustments described under "Revenue Adjustments" below. C11 (state revenue for capital outlay anddebt service) both feeds those adjustments and ships directly as`rev_state_cap_debt`, so it appears in the crosswalk. Variables with an `NA` `f33_item` in `list_variables()` are either drawn from non-F-33 sources or are edfinr-adjusted measures.
 
 Adjustments applied during cleaning:
 
@@ -87,9 +73,7 @@ Adjustments applied during cleaning:
 
 ### CCD Directory Data
 
-Data source: NCES CCD Directory data obtained via the
-[educationdata](https://educationdata.urban.org/documentation/#r)
-package.
+Data source: NCES CCD Directory data obtained via the [educationdata](https://educationdata.urban.org/documentation/#r) package.
 
 Raw variables selected:
 
@@ -128,10 +112,7 @@ Raw variables selected:
 - Educational attainment: Total population 25 years or older (B15003_001) and subsets of that population holding bachelor's degrees (B15003_022), master's degrees (B15003_023), professional degrees (B15003_024), and doctoral degrees (B15003_025).
 - Data are pulled for different geographic breakdowns (unified, elementary, and secondary school districts).
 
-Each fiscal year is joined to the ACS 5-year release ending in the same
-calendar year: FY2023 carries the 2019-2023 5-year estimates, FY2012 the
-2008-2012 estimates. The 5-year window smooths across years, and its endpoint
-(December) extends a few months past the June close of the fiscal year.
+Each fiscal year is joined to the ACS 5-year release ending in the same calendar year: FY2023 carries the 2019-2023 5-year estimates, FY2012 the 2008-2012 estimates. The 5-year window smooths across years, and its endpoint (December) extends a few months past the June close of the fiscal year.
 
 Adjustments:
 
@@ -193,65 +174,9 @@ Additional transformations are applied after the join:
 - Districts where total revenue per pupil is less than $500 in school year 2011-12 dollars are excluded.
 - Connecticut LEAs consisting of semi-private high schools are removed (NCES IDs "0905371", "0905372", and "0905373").
 
-## Changes from 0.1.x
-
-Users comparing results against edfinr 0.1.x should be aware of these
-methodology-relevant changes in 0.2.0:
-
-- **`exp_cur_total` is sourced from TCURELSC.** In 0.1.x the total was the sum
-  of the ESSA fund-type items (CE1 + CE2 + CE3), which several states skip
-  entirely (all of Illinois and Minnesota through FY23; New York -- including
-  New York City -- New Jersey, Massachusetts, Oregon, and others in earlier
-  years) and which did not exist before FY16. Sourcing the total directly from
-  the F-33 TCURELSC item makes `exp_cur_total`, `exp_cur_pp`, and
-  `rev_exp_pp_diff` available for nearly all districts in every year 2012-2023.
-  Where states did report the fund-type items, values shift slightly: the ESSA
-  items exclude payments to private, charter, and other school systems, so the
-  CE-sum differs from TCURELSC by more than 2% for roughly 40% of reporting
-  districts. The fund-type split remains available as `exp_cur_st_loc`,
-  `exp_cur_fed`, and `exp_cur_resa` (`NA` where unreported); those components
-  should not be expected to sum exactly to `exp_cur_total`. Missing values
-  still propagate to `NA` rather than being treated as zero.
-- **CCD directory attributes match the labeled fiscal year.** 0.1.x joined
-  directory data one school year forward, so fiscal year Y rows carried
-  attributes (`dist_name`, `county`, `state_leaid`, `cong_dist`,
-  `urbanicity` and its raw variants, `lea_type`, `lea_type_id`) from
-  SY Y to Y+1 instead of SY Y-1 to Y. These now come from the same school
-  year's directory vintage, so values differ from 0.1.x wherever an attribute
-  changed between adjacent years. The fix also restores the final operating
-  year of districts that closed, which previously had no directory match and
-  were silently dropped.
-- **Massachusetts regional districts restored for FY2012-FY2015.** CCD
-  miscoded every MA regional school district as a service agency for five
-  consecutive directory vintages, so earlier releases had no data for these
-  districts before FY2016. This release restores them via a vetted list of 60
-  NCES LEA IDs, roughly 107,000-110,000 students per year. Their
-  `lea_type_id` still carries the miscoded value 4 through FY2016; see
-  "Exclusions" above before filtering on it. MA regional
-  vocational-technical districts remain excluded in every year (F-33 codes
-  their school level outside the panel's elementary/secondary/unified scope).
-- **Flagged zero-filled values are `NA`.** F-33 zero-fills some unreported
-  items instead of using its `-1` missing code, marking them with an
-  `FL_* = "M"` data-item flag. The cleaning pipeline now converts those
-  flagged zero-fills to `NA` for the COVID (`exp_covid_*`), capital-detail,
-  debt, fund-balance, CE fund-type, and expenditure-detail columns. Most
-  visibly, COVID relief spending is `NA` rather than $0 for all New York
-  districts in every year and for roughly a third to half of California
-  districts from FY2021 onward. Genuine reported zeros are unchanged. The
-  revenue-adjustment inputs are deliberately excluded so adjusted revenue
-  coverage is unchanged; `osp_pct` and the `exp_pay_*` columns retain
-  zero-filled values where states did not report.
-- **`year` is returned as an integer** rather than a character column.
-- **Hosted data format.** The hosted datasets are gzip-compressed Parquet
-  files read with `nanoparquet` (previously `.rds`), and each year is hosted
-  as a separate file so only the requested years are downloaded. This is
-  transparent to callers.
-
 ## Data Notes and Cautions
 
-Users should note the following when working with the `edfinr` datasets. For
-worked examples of the diagnostic flags and comparability issues summarized
-here, see the "Data Quality and Comparability" article on the package website.
+Users should note the following when working with the `edfinr` datasets. For examples of the diagnostic flags and comparability issues summarized here, see the "Data Quality and Comparability" article on the package website.
 
 - Some variables were originally coded with `-1` to indicate missing values; these have been replaced with `NA` during processing. An `NA` value means the item was not reported, not that it is zero.
 - A wave of California charter schools became separate LEAs beginning in school year 2018-19, which sharply increases the number of California districts in the panel from 2019 onward. See the "Data Quality and Comparability" article for the full explanation and its implications for longitudinal analysis.
