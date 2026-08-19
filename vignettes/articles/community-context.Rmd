@@ -68,23 +68,23 @@ us_2023 |>
 
 ## Fiscal capacity: property wealth and local revenue
 
-Local revenue depends heavily on the property tax base. Plotting per-pupil local revenue against median property value shows the releationship betwen the proxy for local fiscal capacity (MPV) and actual local revenue.
+Local revenue depends heavily on the property tax base. Plotting per-pupil local revenue against median property value shows the relationship between the proxy for local fiscal capacity (MPV) and actual local revenue.
 
 One caution before leaning on `mpv` as a capacity measure: it is the ACS median value of owner-occupied homes, a proxy for *residential* property wealth only. Formal fiscal-capacity measures use assessed (or equalized) valuation per pupil, which also counts commercial, industrial, and utility property and is scaled by enrollment. If your state publishes assessed valuation per pupil, use it; `mpv` is a nationally consistent fallback.
 
-```{r capacity, fig.height = 5, fig.alt = "Scatterplot of median property value versus local revenue per-pupil on log scales, colored by urbanicity, with smoothed trend lines showing local revenue rising with property wealth."}
+```{r capacity, fig.height = 5, fig.alt = "Scatterplot of median property value on a log scale versus local revenue per-pupil, colored by urbanicity, with smoothed trend lines showing local revenue rising with property wealth."}
 us_2023 |>
   filter(!is.na(mpv), !is.na(rev_local_pp), mpv > 0, rev_local_pp > 0,
          !is.na(urbanicity)) |>
   ggplot(aes(x = mpv, y = rev_local_pp, size = enroll, color = urbanicity)) +
-  geom_point(alpha = 0.2, size = 0.8) +
+  geom_point(alpha = 0.2) +
   geom_smooth(se = FALSE) +
   scale_x_log10(labels = scales::label_dollar()) +
-  scale_y_continuious(labels = scales::label_dollar()) +
+  scale_y_continuous(labels = scales::label_dollar()) +
   scale_size_area(max_size = 10) +
   labs(
     title = "Local Revenue Tracks Property Wealth, SY2022-23",
-    subtitle = "Each point is a district; log scales",
+    subtitle = "Each point is a district; log 10 scale x-axis",
     x = "Median Property Value (Log 10 scale)",
     y = "Local Revenue Per-Pupil",
     color = "Urbanicity",
