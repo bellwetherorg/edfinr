@@ -3,11 +3,10 @@
 ## Introduction
 
 School finance data are messy in ways that summary statistics hide:
-districts might skip survey items, states change how they report aid,
-and the set of districts in the panel shifts over time. `edfinr` ships
-several diagnostic variables that make these issues visible, and this
-article shows how to use them. If you plan to rank districts, build a
-time series, or compare states, read this first.
+districts and states might change how they report revenues and
+expenditures. Meanwhile, the set of districts in the panel shifts over
+time. `edfinr` ships several diagnostic variables that make these issues
+visible, and this article shows how to use them.
 
 ``` r
 
@@ -34,57 +33,18 @@ spent or received nothing. Dropping `NA`s silently (for example, with
 your analysis with partial values, which can be worse than excluding
 them; decide explicitly.
 
-Since 0.2.0, `edfinr` also detects a second F-33 missingness convention:
-some items are **zero-filled** when missing, with a companion data-item
-flag (`FL_* = "M"`) marking them unreported. The cleaning step converts
-these flagged zero-fills to `NA` for the COVID (`exp_covid_*`),
-capital-detail, debt, fund-balance, CE fund-type, and expenditure-detail
-items. The largest effect is on the COVID columns: all of New York
-(including NYC) in every year and roughly a third to half of California
-districts from FY2021 onward never reported them, and those districts
-previously appeared as spending exactly \$0. Genuine reported zeros are
-preserved. Missingness also **propagates** through derived measures
-rather than being treated as zero. The share of district-years affected
-varies by column:
-
-``` r
-
-us |>
-  group_by(year) |>
-  summarize(
-    n = n(),
-    pct_na_exp_cur = round(100 * mean(is.na(exp_cur_total)), 1),
-    pct_na_cap = round(100 * mean(is.na(exp_cap_total)), 1),
-    .groups = "drop"
-  )
-```
-
-    ## # A tibble: 12 × 4
-    ##     year     n pct_na_exp_cur pct_na_cap
-    ##    <int> <int>          <dbl>      <dbl>
-    ##  1  2012 15484              0          0
-    ##  2  2013 15523              0          0
-    ##  3  2014 15596              0          0
-    ##  4  2015 15675              0          0
-    ##  5  2016 15699              0          0
-    ##  6  2017 15746              0          0
-    ##  7  2018 15741              0          0
-    ##  8  2019 16628              0          0
-    ##  9  2020 16605              0          0
-    ## 10  2021 16638              0          0
-    ## 11  2022 16652              0          0
-    ## 12  2023 16613              0          0
-
-`exp_cur_total` is near-fully populated in every year: it is sourced
-from the F-33 summary item TCURELSC, not from the ESSA fund-type items
-(CE1/CE2/CE3), which whole states skip and which only begin in FY2016
-(CE3, `exp_cur_resa`, in FY2018). The fund-type components
-(`exp_cur_st_loc`, `exp_cur_fed`, `exp_cur_resa`) do carry those
-coverage boundaries; the dictionary’s `first_yr_avail` column records
-them (see “Variable availability by year” below). Summary items like
-TCURELSC carry no data-item flags, so the flag-aware cleaning above
-cannot detect zero-filled missingness there – another reason to treat
-exact zeros in totals with mild suspicion.
+Under version 0.2.0 (and beyond), `edfinr` also detects a second F-33
+missingness convention: some items are **zero-filled** when missing,
+with a companion data-item flag (`FL_* = "M"`) marking them unreported.
+The data processing proceture converts these flagged zero-fills to `NA`
+for the COVID (`exp_covid_*`), capital-detail, debt, fund-balance, CE
+fund-type, and expenditure-detail items. The largest effect is on the
+COVID columns: all of New York (including NYC) in every year and roughly
+a third to half of California districts from FY2021 onward never
+reported them, and those districts previously appeared as spending
+exactly \$0. Genuine reported zeros are preserved. Missingness also
+**propagates** through derived measures rather than being treated as
+zero.
 
 ## The state-revenue adjustment and `c11_spike_flag`
 
@@ -98,28 +58,6 @@ datasets), so the adjustment can be reconstructed directly:
 share of the other-system-payment adjustment. Because
 `rev_state_cap_debt` feeds the adjustment arithmetic, it is zero-filled,
 not `NA`, where districts did not report.
-
-The identity is easiest to see in districts where the adjustment is
-large. Here are the three Ohio districts with the most state capital and
-debt aid in FY2023; the residual after subtracting `rev_state_cap_debt`
-and `rev_state` from the unadjusted total is the state share of the
-other-system-payment adjustment:
-
-``` r
-
-us |>
-  filter(year == 2023, state == "OH") |>
-  slice_max(rev_state_cap_debt, n = 3) |>
-  select(dist_name, rev_state_unadj, rev_state_cap_debt, rev_state) |>
-  mutate(state_share_osp = rev_state_unadj - rev_state_cap_debt - rev_state)
-```
-
-    ## # A tibble: 3 × 5
-    ##   dist_name         rev_state_unadj rev_state_cap_debt rev_state state_share_osp
-    ##   <chr>                       <dbl>              <dbl>     <dbl>           <dbl>
-    ## 1 Chesapeake Union…        10732000             235000 10427315.          69685.
-    ## 2 Painesville City…        31551000             230000 31200269.         120731.
-    ## 3 Wauseon Exempted…        12696000             216000 12474912.           5088.
 
 In a small number of district-years, the C11 adjustment produces an
 anomalous spike – typically when a large one-time capital grant flows
@@ -214,11 +152,10 @@ for one district from 2012 to 2023, with triangle markers on the years
 flagged by c11_spike_flag where the two series diverge
 sharply.](data-quality_files/figure-html/spike-example-1.png)
 
-Practical guidance: when analyzing state revenue over time, check
-`c11_spike_flag` for your districts of interest, inspect
-`rev_state_cap_debt` to see how large the adjustment actually is, and
-consider using `rev_state_unadj_pp` (or excluding flagged years) where
-the adjustment dominates the series.
+When analyzing state revenue over time, check `c11_spike_flag` for your
+districts of interest, inspect `rev_state_cap_debt` to see how large the
+adjustment actually is, and consider using `rev_state_unadj_pp` (or
+excluding flagged years) where the adjustment dominates the series.
 
 ## Pass-through districts and `osp_pct`
 
@@ -273,25 +210,17 @@ us_2023 |>
 
 For high-`osp_pct` districts, per-pupil figures describe the students
 the district serves directly, after the pass-through dollars are
-removed. When your question concerns all dollars a district handles, use
-the `rev_*_unadj` variables instead.
-
-One caution: unlike the flag-cleaned expenditure items above, `osp_pct`
-and the underlying `exp_pay_*` columns deliberately retain zero-filled
-values where states did not report, because they feed the
-revenue-adjustment arithmetic. An `osp_pct` of exactly zero can
-therefore mean either no pass-through or no report.
+removed. If you are more interested in every dollars a district handles,
+use the `rev_*_unadj` variables instead.
 
 ## Panel composition: districts enter and exit
 
-The set of districts is not constant across years, and treating the
-panel as balanced will bias trend analyses. The largest single
-discontinuity is California: beginning in school year 2018-19, a wave of
-California charter schools switched to independent reporting and were
-assigned their own NCES LEA IDs for the first time. Once in the NCES LEA
-universe, those new charter-LEAs automatically show up in the F-33
-finance survey and in the Census SAIPE and ACS school-district products,
-which mirror NCES LEA boundaries. The result is a jump in California
+The universe of districts in `edfinr` is not constant across years. The
+largest single discontinuity is in California: beginning in school year
+2018-19, a wave of California charter schools switched to independent
+reporting and were assigned their own NCES LEA IDs for the first time.
+Once in the NCES LEA universe, those new charter-LEAs automatically show
+up in the F-33 finance survey. The result is a jump in California
 district counts from 2019 onward that reflects reporting structure, not
 new schools:
 
@@ -321,44 +250,11 @@ LEAs.](data-quality_files/figure-html/panel-plot-1.png)
 For longitudinal work, consider a **consistent sample**: keep only
 districts present in every year of your window.
 
-``` r
-
-window <- us |> filter(year >= 2019)
-
-consistent_ids <- window |>
-  count(ncesid) |>
-  filter(n == n_distinct(window$year)) |>
-  pull(ncesid)
-
-length(consistent_ids)
-```
-
-    ## [1] 16104
-
-Two 0.2.0 changes also altered the panel’s composition relative to
-earlier releases. First, directory attributes (name, county, LEA type,
-urbanicity) now come from the same school year as the fiscal year they
-describe rather than the following year’s vintage; among other effects,
-this restored the final operating year of districts that closed, which
-earlier releases silently dropped. Second, Massachusetts regional school
-districts, which CCD miscoded as service agencies for the SY2011-12
-through SY2015-16 directory vintages, are restored for FY2012-FY2015 via
-a vetted list of 60 districts covering roughly 107,000-110,000 students
-per year. One trap comes with the restoration: those rows (and the
-FY2016 rows) carry `lea_type_id` 4 (“Service agency”) because the
-package reports what the source vintage said, so filtering Massachusetts
-years 2012-2016 on `lea_type_id` will drop real regional districts. Row
-counts rise slightly in every year relative to 0.1.x.
-
-Also remember that `edfinr` excludes some districts by construction
-(invalid LEA types, extreme per-pupil revenue, zero or negative
-enrollment or revenue); the “Data Sources and Methodology” vignette
-documents the exclusion rules.
-
 ## Variable availability by year
 
-Not every variable spans the full 2012-2023 panel. The dictionary’s
-`first_yr_avail` column records when each variable enters:
+Not every variable spans the full 2012-2023 panel. The data dictionary’s
+`first_yr_avail` column records when each variable enters the `edfinr`
+dataset:
 
 ``` r
 
@@ -391,9 +287,23 @@ list_variables("full") |>
 | exp_covid_supp_plant | 2021 | COVID-19 Federal Assistance Funds - Support services operation and maintenance of plant expenditures (AE7) |
 
 A multi-year average or trend that crosses one of these boundaries will
-mix real change with a coverage change. CWIFT adds a further wrinkle:
-FY2020 and FY2023 values are imputed rather than observed (see the
-“CWIFT” article).
+mix real change with a coverage change.
+
+`first_yr_avail` marks when a variable *enters* the panel, but it does
+not capture *partial* coverage within years where the variable is
+otherwise available. The Census Gazetteer fields are a good example:
+`land_area_sq_mi` and `s_per_sq_mi` both show
+`first_yr_avail == "2012"`, since they are populated from the first year
+of the panel onward, but coverage is not uniform. Districts without a
+Census boundary – charters, education service agencies, and
+state-operated agencies – are always `NA` for these fields, in every
+year, by design rather than by omission. And Vermont’s FY2016-FY2021 Act
+46 district consolidation left many post-consolidation LEAs without a
+matching Gazetteer boundary, dropping match rates there to roughly 7-12%
+for those years versus 97%+ elsewhere; restrict Vermont trend analyses
+using these fields to FY2012-FY2015 or FY2022 onward. Nothing in
+`first_yr_avail` flags this gap, so check a variable’s actual
+non-missing rate by year and geography before assuming uniform coverage.
 
 ## Urbanicity: condensed vs. raw locale codes
 
@@ -426,7 +336,7 @@ us_2023 |>
     ## 12 Rural, Remote      Rural       2296
 
 The condensed categories are right for most summaries, but the raw codes
-matter when the distinction *within* a category is the point – for
+can be helpful when the distinction *within* a category matters. For
 example, “Rural: Fringe” districts sit at metro edges and often look
 more like suburbs than like “Rural: Remote” districts.
 
@@ -438,7 +348,8 @@ Before publishing numbers built on `edfinr` data:
     explicitly how to treat `NA` district-years rather than relying on
     `na.rm = TRUE`.
 2.  **Check `first_yr_avail`** for every variable in a multi-year
-    analysis.
+    analysis, and remember it does not capture partial coverage (e.g.,
+    Vermont’s Gazetteer gap, FY2016-FY2021).
 3.  **Check `c11_spike_flag`** (and compare against
     `rev_state_unadj_pp`) when state revenue is central to the analysis.
 4.  **Check `osp_pct`** when high-pass-through districts could distort

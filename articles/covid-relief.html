@@ -86,19 +86,15 @@
 expenditures of temporary federal COVID-19 assistance funds (ESSER and
 related programs). <code>edfinr</code>’s <strong>full</strong> dataset
 carries these as the <code>exp_covid_*</code> variables, which let you
-see how much pandemic aid districts spent, on what, and how spending
-ramped up and began to decline within the FY2020-FY2023 window. The
-window is right-censored: FY2023 ends in June 2023, more than a year
-before the ESSER III obligation deadline of September 30, 2024, so the
-final spend-down (and the fiscal cliff that followed it) lies beyond
-this panel.</p>
+see how much pandemic aid districts reported spending, on what, and how
+spending ramped up and began to decline from FY20-FY23.</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/bellwetherorg/edfinr" class="external-link">edfinr</a></span><span class="op">)</span></span>
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://dplyr.tidyverse.org" class="external-link">dplyr</a></span><span class="op">)</span></span>
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://tidyr.tidyverse.org" class="external-link">tidyr</a></span><span class="op">)</span></span>
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://ggplot2.tidyverse.org" class="external-link">ggplot2</a></span><span class="op">)</span></span></code></pre></div>
-<p>The eight variables map to F-33 items AE1-AE8 (see
-<code>list_variables("full")</code>):</p>
+<p>The eight <code>edfinr</code> COVID expenditure variables map to F-33
+items AE1-AE8 (see <code>list_variables("full")</code>):</p>
 <ul>
 <li>
 <code>exp_covid_total</code> (AE1) – total expenditures from
@@ -136,30 +132,24 @@ variables are not in the skinny dataset; request
 <code>dataset_type = "full"</code>.</li>
 <li>
 <strong>Availability.</strong> AE1-AE6 begin in FY2020; AE7 and AE8
-begin in FY2021 (<code>first_yr_avail</code> in the dictionary records
+begin in FY21 (<code>first_yr_avail</code> in the dictionary records
 this).</li>
-<li>
-<strong>A lens, not an addition.</strong> The AE items report
-spending <em>from</em> federal COVID assistance funds. That spending
-also appears in the regular expenditure items, so do not add
-<code>exp_covid_*</code> to the standard expenditure variables – that
-double counts.</li>
 <li>
 <strong><code>NA</code> is not zero.</strong> Districts that did not
 report an item show <code>NA</code>, including districts whose raw F-33
 values are zero-filled but flagged missing (<code>FL_AE1 = "M"</code>);
-edfinr converts those to <code>NA</code> during cleaning. New York never
-reported these items, so its districts are <code>NA</code> in every year
-FY2020-FY2023, and roughly a third to half of California districts are
-<code>NA</code> from FY2021 onward. A <code>0</code> that survives
+edfinr converts those to <code>NA</code> during cleaning. New York did
+not report these items, so its districts are <code>NA</code> in every
+year FY2020-FY2023, and roughly a third to half of California districts
+are <code>NA</code> from FY2021 onward. A <code>0</code> that survives
 cleaning is a genuine reported zero, which is common in FY2020 when most
 ESSER funds were not yet spent. Treat state-level comparisons with
 care.</li>
 <li>
 <strong>CPI adjustment applies.</strong> Like other expenditure
 flows, the <code>exp_covid_*</code> variables are scaled when you pass
-<code>cpi_adj</code>. The examples below stay nominal to match how
-federal awards are usually described.</li>
+<code>cpi_adj</code>. The examples below use nominal dollars to match
+how federal awards are usually described.</li>
 </ol>
 </div>
 <div class="section level2">
@@ -203,12 +193,6 @@ expenditure among districts reporting both items.</p>
 <div class="section level2">
 <h2 id="what-did-districts-spend-relief-funds-on">What did districts spend relief funds on?<a class="anchor" aria-label="anchor" href="#what-did-districts-spend-relief-funds-on"></a>
 </h2>
-<p>The component items break spending into instruction, support
-services, capital outlay, technology, plant operations, and food
-service. Components do not mechanically sum to
-<code>exp_covid_total</code> – districts report each item separately and
-some spending falls outside the listed categories – so shares below are
-of the summed components, by year.</p>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">component_labels</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span></span>
 <span>  exp_covid_instr <span class="op">=</span> <span class="st">"Instruction"</span>,</span>
@@ -243,9 +227,6 @@ of the summed components, by year.</p>
 <div class="section level2">
 <h2 id="how-did-relief-spending-vary-across-districts">How did relief spending vary across districts?<a class="anchor" aria-label="anchor" href="#how-did-relief-spending-vary-across-districts"></a>
 </h2>
-<p>Per-pupil relief spending in FY2023 varied widely across districts,
-reflecting both the poverty-weighted allocation formulas and differences
-in spend-down pacing:</p>
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">covid</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">year</span> <span class="op">==</span> <span class="fl">2023</span>, <span class="op">!</span><span class="fu"><a href="https://rdrr.io/r/base/NA.html" class="external-link">is.na</a></span><span class="op">(</span><span class="va">exp_covid_total</span><span class="op">)</span>, <span class="va">enroll</span> <span class="op">&gt;=</span> <span class="fl">200</span>,</span>
@@ -266,21 +247,12 @@ in spend-down pacing:</p>
 <div class="section level2">
 <h2 id="tracking-the-wind-down-in-large-districts">Tracking the wind-down in large districts<a class="anchor" aria-label="anchor" href="#tracking-the-wind-down-in-large-districts"></a>
 </h2>
-<p>For any given district, the FY2020-FY2023 series shows the ramp-up
-and, in districts that moved quickly, the start of the spend-down. Keep
-the right-censoring in mind: FY2023 predates the ESSER III obligation
-deadline (September 30, 2024), so a series that is still high or rising
-in FY2023 is not evidence a district failed to spend its funds.</p>
 <div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">largest_ids</span> <span class="op">&lt;-</span> <span class="va">covid</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">year</span> <span class="op">==</span> <span class="fl">2023</span><span class="op">)</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/slice.html" class="external-link">slice_max</a></span><span class="op">(</span><span class="va">enroll</span>, n <span class="op">=</span> <span class="fl">6</span><span class="op">)</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/pull.html" class="external-link">pull</a></span><span class="op">(</span><span class="va">ncesid</span><span class="op">)</span></span>
 <span></span>
-<span><span class="co"># label each district by its most recent name: dist_name changes across years</span></span>
-<span><span class="co"># for some districts (Chicago, Clark County), and faceting on the raw names</span></span>
-<span><span class="co"># would split one district into two panels; NA rows are kept so districts</span></span>
-<span><span class="co"># that never reported (New York City) still render as an empty panel</span></span>
 <span><span class="va">covid</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">ncesid</span> <span class="op"><a href="https://rdrr.io/r/base/match.html" class="external-link">%in%</a></span> <span class="va">largest_ids</span><span class="op">)</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span></span>
@@ -301,13 +273,13 @@ in FY2023 is not evidence a district failed to spend its funds.</p>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggtheme.html" class="external-link">theme_minimal</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
 <p><img src="covid-relief_files/figure-html/wind-down-1.png" class="r-plt" alt="Small-multiple line charts of per-pupil COVID-fund spending from FY2020 to FY2023 for the six largest districts; most rise to a peak and then decline by FY2023, while New York City's panel is empty because the state never reported these items." width="768"></p>
 <p>The empty New York City panel is the sharpest illustration of caveat
-4’s reporting warning: the nation’s largest district shows
-<code>NA</code> on every AE item in all four years. The raw F-33 files
-carry those items as zeros, but the accompanying data-item flags mark
-them missing (<code>FL_AE1 = "M"</code>) – New York State never reported
-the COVID items for any of its districts – so edfinr surfaces them as
+3’s warning: the nation’s largest district shows <code>NA</code> on
+every AE item in all four years. The raw F-33 files carry those items as
+zeros, but the accompanying data-item flags mark them missing
+(<code>FL_AE1 = "M"</code>) – New York State never reported the COVID
+items for any of its districts – so <code>edfinr</code> labels them as
 <code>NA</code> rather than letting billions of dollars in allocated
-relief funds masquerade as zero spending. Before reading any single
+relief funds appear as zero spending. Before reading any single
 district’s series, confirm the state actually reported these items in
 the years you are comparing.</p>
 </div>
@@ -319,9 +291,6 @@ the years you are comparing.</p>
 reporting caveats that apply doubly to these items.</li>
 <li>The “CPI Adjustments” vignette if you need relief spending in
 constant dollars.</li>
-<li>
-<code>list_variables("full", category = "expenditure")</code> for
-the full expenditure dictionary.</li>
 </ul>
 </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>

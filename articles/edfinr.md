@@ -18,28 +18,28 @@ library(ggplot2)
 
 ## What’s new in 0.2.0
 
-If you are returning to `edfinr` after using 0.1.x, three changes matter
-most. Coverage now extends through the 2022-23 school year, and
-[`get_finance_data()`](https://bellwetherorg.github.io/edfinr/reference/get_finance_data.md)
-defaults to `yr = "2023"`. The datasets add capital outlay detail, debt
-stocks, fund balances, and the NCES Comparable Wage Index for Teachers
-(CWIFT), each covered by a dedicated article on the package website. And
-downloads are now per-year files, so small requests transfer only the
-years they need. See the changelog (NEWS) for the full list, including a
-behavior change in `exp_cur_total`: it is now sourced from the F-33
-total current expenditure item (TCURELSC), so it is available for nearly
-all districts in all years rather than only where states reported the
-ESSA fund-type breakdown.
+If you used `edfinr` 0.1.x, you’ll notice three significant changes:
+
+- **Added FY23 data**: Coverage now extends through the 2022-23 school
+  year, and
+  [`get_finance_data()`](https://bellwetherorg.github.io/edfinr/reference/get_finance_data.md)
+  defaults to `yr = "2023"`. - **More variables across years**: The
+  datasets add capital outlay detail, debt stocks, fund balances, and
+  the NCES Comparable Wage Index for Teachers (CWIFT), each covered by a
+  dedicated article on the package website.
+- **Faster downloads**: Downloads are now per-year files, so small
+  requests transfer only the years they need.
+
+Refer to the NEWS.md file for the full list of updates.
 
 ## Core function: get_finance_data()
 
 The primary function in `edfinr` is
 [`get_finance_data()`](https://bellwetherorg.github.io/edfinr/reference/get_finance_data.md),
 which provides access to school finance data from school years 2011-12
-through 2022-23. F-33 data are released roughly two years after a fiscal
-year closes, so FY2023 (SY2022-23) is the most recent federal release;
-the package is as current as the survey allows. The function combines
-data from multiple sources:
+through 2022-23. NCES F-33 data are released roughly two years after a
+fiscal year closes, so FY2023 (SY2022-23) is the most recent federal
+release. The function combines data from multiple sources:
 
 - **Financial data**: Revenue and expenditure data (including capital
   outlay, debt, and fund balances) from the National Center for
@@ -72,7 +72,7 @@ glimpse(ky_sy23)
 ```
 
     ## Rows: 171
-    ## Columns: 57
+    ## Columns: 59
     ## $ ncesid             <chr> "2100030", "2100070", "2100081", "2100090", "210012…
     ## $ year               <int> 2023, 2023, 2023, 2023, 2023, 2023, 2023, 2023, 202…
     ## $ state              <chr> "KY", "KY", "KY", "KY", "KY", "KY", "KY", "KY", "KY…
@@ -123,6 +123,8 @@ glimpse(ky_sy23)
     ## $ urbanicity_raw     <int> 33, 41, 41, 21, 32, 13, 42, 43, 33, 32, 41, 42, 21,…
     ## $ urbanicity_raw_cat <fct> "Town, Remote", "Rural, Fringe", "Rural, Fringe", "…
     ## $ urbanicity         <fct> Town, Rural, Rural, Suburb, Town, City, Rural, Rura…
+    ## $ land_area_sq_mi    <dbl> 405.292, 343.724, 467.280, 2.991, 202.260, 13.437, …
+    ## $ s_per_sq_mi        <dbl> 6.469410, 9.161420, 9.600240, 135.406219, 18.550381…
     ## $ schlev             <chr> "03", "03", "03", "01", "03", "03", "03", "03", "03…
     ## $ lea_type           <fct> Regular public school district that is not a compon…
     ## $ lea_type_id        <int> 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, …
@@ -135,7 +137,7 @@ glimpse(ky_sy23)
 
 By default,
 [`get_finance_data()`](https://bellwetherorg.github.io/edfinr/reference/get_finance_data.md)
-returns a “skinny” dataset with 57 essential variables covering:
+returns a “skinny” dataset with 59 essential variables covering:
 
 - District identifiers and characteristics.
 - Total revenues by source (local, state, federal).
@@ -143,8 +145,10 @@ returns a “skinny” dataset with 57 essential variables covering:
   `exp_cap_total_pp`).
 - Key demographic and economic indicators (including the CWIFT
   teacher-wage index).
+- District land area and student density (`land_area_sq_mi`,
+  `s_per_sq_mi`).
 
-For more detailed analysis, you can request the “full” dataset with 122
+For more detailed analysis, you can request the “full” dataset with 124
 variables that includes:
 
 - All skinny dataset variables.
@@ -200,7 +204,7 @@ setdiff(names(ky_full_sy23), names(ky_sy23))
 
 ## Finding variables
 
-With 122 variables in the full dataset, the data dictionary is the
+With 124 variables in the full dataset, the data dictionary is the
 fastest way to find what you need.
 [`list_variables()`](https://bellwetherorg.github.io/edfinr/reference/list_variables.md)
 returns it as a tibble, so you can filter and search it like any other
@@ -214,7 +218,7 @@ vars <- list_variables("full")
 vars
 ```
 
-    ## # A tibble: 122 × 7
+    ## # A tibble: 124 × 7
     ##    name         type      category    source f33_item first_yr_avail description
     ##    <chr>        <chr>     <chr>       <chr>  <chr>    <chr>          <chr>      
     ##  1 ncesid       character id          NCES … LEAID    2012           NCES distr…
@@ -227,7 +231,7 @@ vars
     ##  8 rev_state_pp numeric   revenue     NCES … NA       2012           State adju…
     ##  9 rev_fed_pp   numeric   revenue     NCES … NA       2012           Federal ad…
     ## 10 rev_total    numeric   revenue     NCES … NA       2012           Total adju…
-    ## # ℹ 112 more rows
+    ## # ℹ 114 more rows
 
 ``` r
 
@@ -247,33 +251,6 @@ list_variables("full", category = "debt")
     ## 7 fund_bal_debt_svc numeric debt     NCES F… W01      2012           Debt servi…
     ## 8 fund_bal_bond     numeric debt     NCES F… W31      2012           Bond fund …
     ## 9 fund_bal_other    numeric debt     NCES F… W61      2012           Other fund…
-
-Two dictionary columns deserve special attention. `first_yr_avail`
-records the first fiscal year each variable is available, because not
-every variable spans the whole 2012-2023 panel:
-
-``` r
-
-vars |>
-  filter(first_yr_avail != "2012") |>
-  count(first_yr_avail, category)
-```
-
-    ## # A tibble: 6 × 3
-    ##   first_yr_avail category        n
-    ##   <chr>          <chr>       <int>
-    ## 1 2015           cwift           4
-    ## 2 2015           expenditure     3
-    ## 3 2016           expenditure     2
-    ## 4 2018           expenditure     1
-    ## 5 2020           expenditure     6
-    ## 6 2021           expenditure     2
-
-And `f33_item` records the F-33 survey item(s) each F-33-sourced
-variable is drawn from (for example, `exp_cap_construction` comes from
-item F12), which is useful when comparing edfinr output against raw NCES
-files. See the “Data Sources and Methodology” vignette for the full
-crosswalk.
 
 ## Multiple years and states
 
@@ -320,10 +297,6 @@ tools to analyze it. Here are some common analysis patterns:
 
 ### Do high local revenue share districts end up with more total revenue?
 
-Plotting the local *share* of revenue against total per-pupil revenue
-shows whether districts that fund themselves mostly from local sources
-also end up with more money overall.
-
 ``` r
 
 # download 2023 data for connecticut
@@ -360,14 +333,6 @@ per-pupil.](edfinr_files/figure-html/analysis-1-1.png)
 
 ### How do revenue sources differ by urbanicity?
 
-Summing dollars before dividing gives each group’s true revenue mix,
-weighted by where the money actually flows. The alternative, averaging
-each district’s share with [`mean()`](https://rdrr.io/r/base/mean.html),
-weights a 300-student district the same as the state’s largest system;
-the two can diverge substantially wherever large and small districts
-fund themselves differently, so be deliberate about the approach you
-use.
-
 ``` r
 
 # compare revenue mix across urbanicity groups (dollar-weighted)
@@ -394,11 +359,6 @@ print(revenue_analysis)
 
 ## See also
 
-- Use
-  [`list_variables()`](https://bellwetherorg.github.io/edfinr/reference/list_variables.md)
-  to see all available variables and their descriptions, and
-  [`get_states()`](https://bellwetherorg.github.io/edfinr/reference/get_states.md)
-  to see valid state codes.
 - The “CPI Adjustments” vignette for inflation adjustment across years.
 - The “Data Sources and Methodology” vignette for detailed methodology
   and the F-33 crosswalk.

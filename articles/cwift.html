@@ -83,11 +83,11 @@
 <h2 id="what-cwift-is">What CWIFT is<a class="anchor" aria-label="anchor" href="#what-cwift-is"></a>
 </h2>
 <p>The <strong>Comparable Wage Index for Teachers (CWIFT)</strong> is a
-National Center for Education Statistics (NCES) EDGE index of how much
-it costs to employ college-educated workers in a given labor market,
-relative to the national average. It lets you account for the fact that
-a dollar buys less teacher labor in a high-wage metro than in a low-cost
-rural area.</p>
+National Center for Education Statistics (NCES) index of how much it
+costs to employ college-educated workers in a given labor market,
+relative to the national average. It allows you account for how much
+teacher labor a dollar buys in a high-wage metro area compared to a
+lower-cost rural area.</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/bellwetherorg/edfinr" class="external-link">edfinr</a></span><span class="op">)</span></span>
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://dplyr.tidyverse.org" class="external-link">dplyr</a></span><span class="op">)</span></span>
@@ -96,18 +96,17 @@ rural area.</p>
 <ul>
 <li>
 <code>cwift_est</code> – the index value (roughly centered on 1.0;
-above 1.0 means higher-than-average labor costs). In the skinny
-dataset.</li>
+above 1.0 means higher-than-average labor costs).</li>
 <li>
 <code>cwift_imputed</code> – <code>TRUE</code> if the value was
-imputed rather than observed. In the skinny dataset.</li>
+imputed rather than observed.</li>
 <li>
 <code>cwift_se</code> – the standard error of the estimate (full
-dataset).</li>
+dataset only).</li>
 <li>
 <code>cwift_impute_method</code> – how the value was produced:
 <code>"observed"</code>, <code>"interpolated_2019_2021"</code>, or
-<code>"carried_forward_2022"</code> (full dataset).</li>
+<code>"carried_forward_2022"</code> (full dataset only).</li>
 </ul>
 </div>
 <div class="section level2">
@@ -117,15 +116,14 @@ dataset).</li>
 deflator.</strong> Use <code>cpi_adj</code> (see the “CPI Adjustments”
 vignette) to convert dollars across <em>time</em>; use CWIFT to compare
 labor costs across <em>places</em> in the same year. It does not deflate
-construction costs or non-labor inputs, and combining it with CPI is a
-two-step adjustment, not a single one (see below).</p>
+construction costs or non-labor inputs.</p>
 </div>
 <div class="section level2">
 <h2 id="coverage-and-imputation">Coverage and imputation<a class="anchor" aria-label="anchor" href="#coverage-and-imputation"></a>
 </h2>
 <p>CWIFT is not available for every edfinr year. FY2012-FY2014 predate
-the series, FY2020 was not published (the ACS 2020 estimates were
-withheld), and no FY2023 release existed at the time of processing.</p>
+the series, FY20 was not published (the ACS 2020 estimates were
+withheld), and FY22 was the most release at the time of processing.</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">us_sy12_to_sy23</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/get_finance_data.html">get_finance_data</a></span><span class="op">(</span>yr <span class="op">=</span> <span class="st">"all"</span>, dataset_type <span class="op">=</span> <span class="st">"skinny"</span><span class="op">)</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/group_by.html" class="external-link">group_by</a></span><span class="op">(</span><span class="va">year</span><span class="op">)</span> <span class="op">|&gt;</span></span>
@@ -153,7 +151,7 @@ withheld), and no FY2023 release existed at the time of processing.</p>
 <span><span class="co">## <span style="color: #BCBCBC;">10</span>  <span style="text-decoration: underline;">2</span>021 <span style="text-decoration: underline;">16</span>638    <span style="text-decoration: underline;">12</span>862       0    <span style="text-decoration: underline;">3</span>776</span></span>
 <span><span class="co">## <span style="color: #BCBCBC;">11</span>  <span style="text-decoration: underline;">2</span>022 <span style="text-decoration: underline;">16</span>652    <span style="text-decoration: underline;">12</span>873       0    <span style="text-decoration: underline;">3</span>779</span></span>
 <span><span class="co">## <span style="color: #BCBCBC;">12</span>  <span style="text-decoration: underline;">2</span>023 <span style="text-decoration: underline;">16</span>613        0   <span style="text-decoration: underline;">12</span>860    <span style="text-decoration: underline;">3</span>753</span></span></code></pre>
-<p>The imputation rules:</p>
+<p>The imputation rules are straightforward:</p>
 <ul>
 <li>
 <strong>FY2012-FY2014:</strong> no release; all four columns are
@@ -174,10 +172,9 @@ NCES-published value.</li>
 <div class="section level2">
 <h2 id="how-is-cwift-distributed">How is CWIFT distributed?<a class="anchor" aria-label="anchor" href="#how-is-cwift-distributed"></a>
 </h2>
-<p>Before ranking districts, it helps to see the index’s spread. Labor
-costs rise with urbanization, so the distribution shifts upward from
-rural districts to cities. This example uses FY2022, the most recent
-observed (non-imputed) year.</p>
+<p>Labor costs rise with urbanization, so the distribution shifts upward
+from rural districts to cities. This example uses FY22, the most recent
+year of CWIFT data.</p>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">us_sy22</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/get_finance_data.html">get_finance_data</a></span><span class="op">(</span>yr <span class="op">=</span> <span class="st">"2022"</span>, geo <span class="op">=</span> <span class="st">"all"</span>, dataset_type <span class="op">=</span> <span class="st">"full"</span><span class="op">)</span></span>
 <span></span>
@@ -237,14 +234,12 @@ observed (non-imputed) year.</p>
 <p><code>cwift_se</code> is the standard error of
 <code>cwift_est</code>; smaller values mean a more precise estimate. It
 is most useful when comparing two districts whose point estimates are
-close – if their intervals overlap heavily, treat them as similar.
-Remember that the standard error for interpolated FY2020 values is an
-approximation.</p>
+close – if their intervals overlap heavily, treat them as similar.</p>
 <p>Plotting estimates with intervals of plus or minus 1.96 standard
 errors makes the overlap visible. Among Ohio’s largest districts,
 several point estimates that differ in the second decimal place have
-intervals that overlap substantially, so the data cannot distinguish
-their labor costs:</p>
+intervals that overlap substantially – their labor costs should be
+considered to be similar:</p>
 <div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">us_sy22</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">state</span> <span class="op">==</span> <span class="st">"OH"</span>, <span class="op">!</span><span class="fu"><a href="https://rdrr.io/r/base/NA.html" class="external-link">is.na</a></span><span class="op">(</span><span class="va">cwift_est</span><span class="op">)</span>, <span class="op">!</span><span class="fu"><a href="https://rdrr.io/r/base/NA.html" class="external-link">is.na</a></span><span class="op">(</span><span class="va">cwift_se</span><span class="op">)</span><span class="op">)</span> <span class="op">|&gt;</span></span>
@@ -266,15 +261,16 @@ their labor costs:</p>
 <div class="section level2">
 <h2 id="recipe-labor-cost-adjusted-per-pupil-dollars">Recipe: labor-cost-adjusted per-pupil dollars<a class="anchor" aria-label="anchor" href="#recipe-labor-cost-adjusted-per-pupil-dollars"></a>
 </h2>
-<p><code>edfinr</code> ships the raw index rather than precomputed
-adjusted columns, so you can divide any per-pupil dollar figure by
-<code>cwift_est</code> to express it in labor-cost-adjusted terms.
-Districts in expensive labor markets look relatively lower after
-adjustment. One known simplification: only the labor share of spending
-(roughly 80 percent of current expenditure) actually varies with wages,
-so dividing all dollars by the index applies the labor-cost correction
-to non-labor spending too. This is the standard convention, but it
-overstates the correction somewhat.</p>
+<p><code>edfinr</code> ships the raw CWIFT index rather than precomputed
+adjusted columns. To adjust funding by the CWIFT index, simply divide a
+F-33 dollar figure by <code>cwift_est</code> to express it in
+labor-cost-adjusted terms. Revenued and expenditures for districts in
+expensive labor markets look relatively lower after adjustment. A note
+of caution: only the labor share of spending (roughly 80 percent of
+current expenditure) actually varies with wages, so dividing all dollars
+by the index applies the labor-cost correction to non-labor spending
+too. This is the standard convention, but be aware that it may overstate
+the correction.</p>
 <div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">us_sy23</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="op">!</span><span class="fu"><a href="https://rdrr.io/r/base/NA.html" class="external-link">is.na</a></span><span class="op">(</span><span class="va">cwift_est</span><span class="op">)</span>, <span class="va">cwift_est</span> <span class="op">&gt;</span> <span class="fl">0</span><span class="op">)</span> <span class="op">|&gt;</span></span>
@@ -340,9 +336,6 @@ adjustment.</li>
 balances.</li>
 <li>The “Mapping School Finance Data” article to put
 <code>cwift_est</code> on a map.</li>
-<li>
-<code>list_variables("full", category = "cwift")</code> for the
-CWIFT dictionary entries.</li>
 </ul>
 </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>

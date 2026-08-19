@@ -2,14 +2,15 @@
 
 ## Introduction
 
-School finance rarely makes sense in isolation from the communities that
-fund and attend the schools. Alongside the F-33 finance items, `edfinr`
-joins each district to community measures from the American Community
-Survey (ACS) 5-Year Estimates and poverty estimates from the Census
-Bureau’s Small Area Income and Poverty Estimates (SAIPE). This article
-explores those variables and shows how to use them for the most common
-framing in the field: comparing districts’ fiscal **capacity** (what a
-community can raise) with student **need**.
+The communities that fund and attend public schools are deeply connected
+to school finance. Alongside the F-33 finance items, `edfinr` joins each
+district to community measures from the American Community Survey (ACS)
+5-Year Estimates, poverty estimates from the Census Bureau’s Small Area
+Income and Poverty Estimates (SAIPE), and district land area from the
+Census Bureau’s Gazetteer Files. This article explores those variables
+and shows how to use them for a typical analysis task: comparing
+districts’ fiscal **capacity** (what a community can raise) with student
+**need**.
 
 ``` r
 
@@ -27,7 +28,7 @@ their source table codes:
 ``` r
 
 list_variables("skinny") |>
-  filter(source %in% c("5-Year ACS Survey", "Census Bureau SAIPE")) |>
+  filter(source %in% c("5-Year ACS Survey", "Census Bureau SAIPE", "Census Bureau Gazetteer")) |>
   select(name, source, description) |>
   knitr::kable()
 ```
@@ -48,6 +49,8 @@ list_variables("skinny") |>
 | student_pop | Census Bureau SAIPE | Student-aged population (5-17) |
 | stpov_pop | Census Bureau SAIPE | Student-aged population in poverty |
 | stpov_pct | Census Bureau SAIPE | Percent of students in poverty |
+| land_area_sq_mi | Census Bureau Gazetteer | District land area in square miles (Gazetteer ALAND_SQMI; land only); NA for LEAs without a Census boundary (charters, ESAs, state-operated agencies) |
+| s_per_sq_mi | Census Bureau Gazetteer | Students per square mile (enroll / land_area_sq_mi); NA, never Inf, where land area is zero or unavailable |
 
 Two timing caveats before using them:
 
@@ -75,11 +78,11 @@ us_2023 <- get_finance_data(yr = "2023", geo = "all")
 
 ## Median vs. mean household income
 
-`mhi` (median) and `mean_hhi` (mean) answer different questions. The
-mean is pulled upward by high-income households, so the mean-to-median
-ratio is a quick screen for skewed income distributions – useful for
-spotting communities where a small wealthy population coexists with a
-much less affluent majority:
+`mhi` (median) and `mean_hhi` (mean) are different measures of community
+income. The mean is pulled upward by high-income households, so the
+mean-to-median ratio is a quick screen for skewed income distributions.
+This can be useful for identifying communities where a small wealthy
+population skews the mean income above the median income:
 
 ``` r
 
@@ -109,41 +112,43 @@ us_2023 |>
 ## Fiscal capacity: property wealth and local revenue
 
 Local revenue depends heavily on the property tax base. Plotting
-per-pupil local revenue against median property value shows the capacity
-gradient and how it differs by urbanicity.
+per-pupil local revenue against median property value shows the
+relationship between the proxy for local fiscal capacity (MPV) and
+actual local revenue.
 
 One caution before leaning on `mpv` as a capacity measure: it is the ACS
 median value of owner-occupied homes, a proxy for *residential* property
 wealth only. Formal fiscal-capacity measures use assessed (or equalized)
 valuation per pupil, which also counts commercial, industrial, and
-utility property and is scaled by enrollment. A district with modest
-homes and a power plant or a shopping corridor is higher-capacity than
-`mpv` suggests. Where your state publishes assessed valuation per pupil,
-prefer it; `mpv` is a nationally consistent fallback.
+utility property and is scaled by enrollment. If your state publishes
+assessed valuation per pupil, use it; `mpv` is a nationally consistent
+fallback.
 
 ``` r
 
 us_2023 |>
   filter(!is.na(mpv), !is.na(rev_local_pp), mpv > 0, rev_local_pp > 0,
          !is.na(urbanicity)) |>
-  ggplot(aes(x = mpv, y = rev_local_pp, color = urbanicity)) +
-  geom_point(alpha = 0.2, size = 0.8) +
+  ggplot(aes(x = mpv, y = rev_local_pp, size = enroll, color = urbanicity)) +
+  geom_point(alpha = 0.2) +
   geom_smooth(se = FALSE) +
   scale_x_log10(labels = scales::label_dollar()) +
-  scale_y_log10(labels = scales::label_dollar()) +
+  scale_y_continuous(labels = scales::label_dollar()) +
+  scale_size_area(max_size = 10) +
   labs(
     title = "Local Revenue Tracks Property Wealth, SY2022-23",
-    subtitle = "Each point is a district; log scales",
-    x = "Median Property Value",
+    subtitle = "Each point is a district; log 10 scale x-axis",
+    x = "Median Property Value (Log 10 scale)",
     y = "Local Revenue Per-Pupil",
-    color = "Urbanicity"
+    color = "Urbanicity",
+    size = "Enrollment"
   ) +
   theme_minimal()
 ```
 
-![Scatterplot of median property value versus local revenue per-pupil on
-log scales, colored by urbanicity, with smoothed trend lines showing
-local revenue rising with property
+![Scatterplot of median property value on a log scale versus local
+revenue per-pupil, colored by urbanicity, with smoothed trend lines
+showing local revenue rising with property
 wealth.](community-context_files/figure-html/capacity-1.png)
 
 ## Student need: poverty and total revenue
@@ -157,15 +162,17 @@ sharply by state. Here is the national picture:
 
 us_2023 |>
   filter(!is.na(stpov_pct), !is.na(rev_total_pp)) |>
-  ggplot(aes(x = stpov_pct, y = rev_total_pp)) +
+  ggplot(aes(x = stpov_pct, y = rev_total_pp, size = enroll)) +
   geom_point(alpha = 0.15, size = 0.8) +
   geom_smooth(se = FALSE) +
   scale_x_continuous(labels = scales::label_percent()) +
-  scale_y_log10(labels = scales::label_dollar()) +
+  scale_y_continuous(labels = scales::label_dollar()) +
+  scale_size_area(max_size = 10) +
   labs(
     title = "Student Poverty and Total Revenue Per-Pupil, SY2022-23",
     x = "Students in Poverty",
-    y = "Total Revenue Per-Pupil (log scale)"
+    y = "Total Revenue Per-Pupil",
+    size = "Enrollment"
   ) +
   theme_minimal()
 ```
@@ -174,81 +181,14 @@ us_2023 |>
 a log scale for all districts in SY2022-23, with a nearly flat smoothed
 trend line.](community-context_files/figure-html/need-1.png)
 
-Resist reading the flat national line as a statement about school
-funding progressivity. It pools fifty different funding systems, and it
-compares nominal dollars: high-poverty urban districts sit
+The national trend masks significant variation at the state level. It
+also compares nominal dollars: high-poverty urban districts sit
 disproportionately in high-wage labor markets, so a dollar buys less
 there than in a low-cost rural district. Cost-adjusted, within-state
 analyses can and do reach different conclusions than this raw national
-scatter. See the “CWIFT” article for the labor-cost adjustment, and
-prefer the within-state framing below for any claim about how a funding
-system treats high-poverty districts.
+scatter. See the “CWIFT” article for the labor-cost adjustment.
 
-## Need vs. capacity within a state
-
-Cross-state comparisons mix different funding systems, so the
-need-capacity framing is sharpest within one state. Classifying
-districts against their state’s median poverty and median property value
-yields four quadrants; the high-need, low-capacity quadrant is where
-funding systems are tested:
-
-``` r
-
-oh_2023 <- us_2023 |>
-  filter(state == "OH", !is.na(stpov_pct), !is.na(mpv))
-
-oh_quad <- oh_2023 |>
-  mutate(
-    need = ifelse(stpov_pct > median(stpov_pct), "Higher need", "Lower need"),
-    capacity = ifelse(mpv > median(mpv), "Higher capacity", "Lower capacity"),
-    quadrant = paste(need, capacity, sep = ", ")
-  )
-
-# how does total revenue differ across the quadrants?
-oh_quad |>
-  group_by(quadrant) |>
-  summarize(
-    n_districts = n(),
-    med_rev_total_pp = median(rev_total_pp, na.rm = TRUE),
-    med_rev_local_pp = median(rev_local_pp, na.rm = TRUE),
-    med_rev_state_pp = median(rev_state_pp, na.rm = TRUE),
-    .groups = "drop"
-  )
-```
-
-    ## # A tibble: 4 × 5
-    ##   quadrant        n_districts med_rev_total_pp med_rev_local_pp med_rev_state_pp
-    ##   <chr>                 <int>            <dbl>            <dbl>            <dbl>
-    ## 1 Higher need, H…          64           17217.            8552.            6020.
-    ## 2 Higher need, L…         240           18001.            6449.            8611.
-    ## 3 Lower need, Hi…         238           16503.            9884.            4946.
-    ## 4 Lower need, Lo…          66           16851.            8188.            7039.
-
-``` r
-
-ggplot(oh_quad, aes(x = mpv, y = stpov_pct, color = rev_total_pp)) +
-  geom_point(alpha = 0.7) +
-  geom_vline(xintercept = median(oh_2023$mpv), linetype = "dashed") +
-  geom_hline(yintercept = median(oh_2023$stpov_pct), linetype = "dashed") +
-  scale_x_log10(labels = scales::label_dollar()) +
-  scale_y_continuous(labels = scales::label_percent()) +
-  scale_color_viridis_c(labels = scales::label_dollar()) +
-  labs(
-    title = "Need vs. Capacity in Ohio Districts, SY2022-23",
-    subtitle = "Dashed lines mark state medians",
-    x = "Median Home Value (capacity proxy)",
-    y = "Students in Poverty (need)",
-    color = "Total Revenue\nPer-Pupil"
-  ) +
-  theme_minimal()
-```
-
-![Scatterplot of Ohio districts' median property value versus student
-poverty rate, colored by total revenue per-pupil, with dashed lines at
-the state medians dividing districts into four need-capacity
-quadrants.](community-context_files/figure-html/quadrants-1.png)
-
-## The other indicators
+## Other indicators
 
 `gini` (income inequality), `owner_pct` (owner-occupied housing),
 `snap_pct` (SNAP receipt), and `unemp_rate` (unemployment) round out the
@@ -278,12 +218,55 @@ rate, and unemployment rate by urbanicity, showing the distributions
 differ across city, suburban, town, and rural
 districts.](community-context_files/figure-html/indicators-1.png)
 
+## Geographic sparsity: land area and student density
+
+`urbanicity` classifies districts into four categories, but districts
+within the same category still span a wide range of physical sparsity.
+`s_per_sq_mi` (students per square mile, derived from `land_area_sq_mi`)
+offers a continuous counterpart: a rural district serving a compact town
+looks different from one spread across a sparsely populated county, even
+though both are labeled “Rural.”
+
+Three caveats before using it:
+
+1.  **`NA` by design, not missingness.** Districts without a Census
+    boundary – such as charter schools – have no Gazetteer file match,
+    so `land_area_sq_mi` and `s_per_sq_mi` are `NA` for them in every
+    year.
+2.  **`NA`, never `Inf`.** Where `land_area_sq_mi` is zero or
+    unavailable, `s_per_sq_mi` is `NA` rather than an infinite or
+    undefined ratio.
+3.  **Vermont coverage gap.** Vermont’s Act 46 district consolidation
+    left many post-consolidation LEAs without a matching Gazetteer
+    boundary; match rates there run roughly 7-12% for those years,
+    versus 97%+ elsewhere. Restrict Vermont density analyses to
+    FY2012-FY2015 or FY2022 onward.
+
+Density varies by orders of magnitude across urbanicity categories, so a
+log scale can be useful:
+
+``` r
+
+us_2023 |>
+  filter(!is.na(urbanicity), !is.na(s_per_sq_mi)) |>
+  ggplot(aes(x = urbanicity, y = s_per_sq_mi)) +
+  geom_boxplot(outlier.alpha = 0.1) +
+  scale_y_log10(labels = scales::label_comma()) +
+  labs(
+    title = "Student Density by Urbanicity, SY2022-23",
+    x = "Urbanicity", y = "Students per Square Mile (Log 10 scale)"
+  ) +
+  theme_minimal()
+```
+
+![Boxplots of students per square mile by urbanicity on a log scale,
+showing City districts are far denser than Suburb, Town, and Rural
+districts, each successively less
+dense.](community-context_files/figure-html/density-1.png)
+
 ## See also
 
 - The “Data Quality and Comparability” article, including its notes on
   ACS timing and panel composition.
 - The “Mapping School Finance Data” article to see these measures on a
   map.
-- The “Basic usage of edfinr” vignette for
-  [`list_variables()`](https://bellwetherorg.github.io/edfinr/reference/list_variables.md)
-  and the data dictionary.

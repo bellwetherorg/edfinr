@@ -25,6 +25,8 @@ This package provides access to education finance data from:
   Consumers (CPI-U)](https://data.bls.gov/toppicks?survey=cu).
 - NCES EDGE [Comparable Wage Index for Teachers
   (CWIFT)](https://nces.ed.gov/programs/edge/Economic/TeacherWage).
+- U.S. Census Bureau [Gazetteer
+  Files](https://www.census.gov/geographies/reference-files/time-series/geo/gazetteer-files.html).
 
 ## Data Processing Methods
 
@@ -160,12 +162,11 @@ list_variables("full") |>
 In addition to the items above, the cleaning scripts read F-33 variables
 U11, C24, L12, M12, and D11 to construct the revenue adjustments
 described under “Revenue Adjustments” below. C11 (state revenue for
-capital outlay and debt service) both feeds those adjustments and ships
-directly as `rev_state_cap_debt`, so it appears in the crosswalk.
+capital outlay anddebt service) both feeds those adjustments and ships
+directly as`rev_state_cap_debt`, so it appears in the crosswalk.
 Variables with an `NA` `f33_item` in
 [`list_variables()`](https://bellwetherorg.github.io/edfinr/reference/list_variables.md)
-are either drawn from non-F-33 sources or are edfinr-adjusted measures
-whose construction is documented in that section.
+are either drawn from non-F-33 sources or are edfinr-adjusted measures.
 
 Adjustments applied during cleaning:
 
@@ -291,14 +292,43 @@ Adjustments and coverage:
 - `cwift_imputed` flags interpolated or carried-forward values and
   `cwift_impute_method` records how each value was produced.
 
+### Census Gazetteer Files (District Land Area)
+
+Data source: U.S. Census Bureau [Gazetteer
+Files](https://www.census.gov/geographies/reference-files/time-series/geo/gazetteer-files.html),
+school district vintages.
+
+Raw variables selected:
+
+- District identifier (`GEOID`) and land area (`ALAND_SQMI`, land only,
+  excludes water area).
+
+Adjustments and coverage:
+
+- `GEOID` is renamed to `ncesid` and `ALAND_SQMI` to `land_area_sq_mi`;
+  each Gazetteer vintage is joined to the edfinr fiscal year covering
+  the same school year.
+- `s_per_sq_mi` (`enroll / land_area_sq_mi`) is derived after the join,
+  and is `NA`, never `Inf`, where land area is zero or unavailable.
+- LEAs without a Census boundary – charters, education service agencies,
+  and state-operated agencies – have no Gazetteer match, so both fields
+  are `NA` for those districts in every year.
+- Vermont’s FY2016-FY2021 Act 46 district consolidation left many
+  post-consolidation LEAs without a matching Gazetteer boundary for
+  those years; match rates there run roughly 7-12%, versus 97%+
+  elsewhere and in other Vermont years. Restrict Vermont trend analyses
+  that depend on `land_area_sq_mi` or `s_per_sq_mi` to FY2012-FY2015 and
+  FY2022 onward.
+
 ## Joining Data
 
 - The joining process is implemented in the
   `08_edfinr_join_and_exclude.R` script (CWIFT is prepared in
   `07_cwift_clean.R` and joined there).
 - Data from the F-33 survey, CCD Directory, ACS (unified, elementary,
-  and secondary), SAIPE, and CWIFT sources are merged using left joins
-  on shared district identifiers (ncesid) and fiscal year.
+  and secondary), SAIPE, CWIFT, and Census Gazetteer sources are merged
+  using left joins on shared district identifiers (ncesid) and fiscal
+  year.
 - The procedure ensures that each district record is enriched with
   revenue, expenditure, demographic, and economic data.
 
@@ -345,70 +375,12 @@ Additional transformations are applied after the join:
 - Connecticut LEAs consisting of semi-private high schools are removed
   (NCES IDs “0905371”, “0905372”, and “0905373”).
 
-## Changes from 0.1.x
-
-Users comparing results against edfinr 0.1.x should be aware of these
-methodology-relevant changes in 0.2.0:
-
-- **`exp_cur_total` is sourced from TCURELSC.** In 0.1.x the total was
-  the sum of the ESSA fund-type items (CE1 + CE2 + CE3), which several
-  states skip entirely (all of Illinois and Minnesota through FY23; New
-  York – including New York City – New Jersey, Massachusetts, Oregon,
-  and others in earlier years) and which did not exist before FY16.
-  Sourcing the total directly from the F-33 TCURELSC item makes
-  `exp_cur_total`, `exp_cur_pp`, and `rev_exp_pp_diff` available for
-  nearly all districts in every year 2012-2023. Where states did report
-  the fund-type items, values shift slightly: the ESSA items exclude
-  payments to private, charter, and other school systems, so the CE-sum
-  differs from TCURELSC by more than 2% for roughly 40% of reporting
-  districts. The fund-type split remains available as `exp_cur_st_loc`,
-  `exp_cur_fed`, and `exp_cur_resa` (`NA` where unreported); those
-  components should not be expected to sum exactly to `exp_cur_total`.
-  Missing values still propagate to `NA` rather than being treated as
-  zero.
-- **CCD directory attributes match the labeled fiscal year.** 0.1.x
-  joined directory data one school year forward, so fiscal year Y rows
-  carried attributes (`dist_name`, `county`, `state_leaid`, `cong_dist`,
-  `urbanicity` and its raw variants, `lea_type`, `lea_type_id`) from SY
-  Y to Y+1 instead of SY Y-1 to Y. These now come from the same school
-  year’s directory vintage, so values differ from 0.1.x wherever an
-  attribute changed between adjacent years. The fix also restores the
-  final operating year of districts that closed, which previously had no
-  directory match and were silently dropped.
-- **Massachusetts regional districts restored for FY2012-FY2015.** CCD
-  miscoded every MA regional school district as a service agency for
-  five consecutive directory vintages, so earlier releases had no data
-  for these districts before FY2016. This release restores them via a
-  vetted list of 60 NCES LEA IDs, roughly 107,000-110,000 students per
-  year. Their `lea_type_id` still carries the miscoded value 4 through
-  FY2016; see “Exclusions” above before filtering on it. MA regional
-  vocational-technical districts remain excluded in every year (F-33
-  codes their school level outside the panel’s
-  elementary/secondary/unified scope).
-- **Flagged zero-filled values are `NA`.** F-33 zero-fills some
-  unreported items instead of using its `-1` missing code, marking them
-  with an `FL_* = "M"` data-item flag. The cleaning pipeline now
-  converts those flagged zero-fills to `NA` for the COVID
-  (`exp_covid_*`), capital-detail, debt, fund-balance, CE fund-type, and
-  expenditure-detail columns. Most visibly, COVID relief spending is
-  `NA` rather than \$0 for all New York districts in every year and for
-  roughly a third to half of California districts from FY2021 onward.
-  Genuine reported zeros are unchanged. The revenue-adjustment inputs
-  are deliberately excluded so adjusted revenue coverage is unchanged;
-  `osp_pct` and the `exp_pay_*` columns retain zero-filled values where
-  states did not report.
-- **`year` is returned as an integer** rather than a character column.
-- **Hosted data format.** The hosted datasets are gzip-compressed
-  Parquet files read with `nanoparquet` (previously `.rds`), and each
-  year is hosted as a separate file so only the requested years are
-  downloaded. This is transparent to callers.
-
 ## Data Notes and Cautions
 
 Users should note the following when working with the `edfinr` datasets.
-For worked examples of the diagnostic flags and comparability issues
-summarized here, see the “Data Quality and Comparability” article on the
-package website.
+For examples of the diagnostic flags and comparability issues summarized
+here, see the “Data Quality and Comparability” article on the package
+website.
 
 - Some variables were originally coded with `-1` to indicate missing
   values; these have been replaced with `NA` during processing. An `NA`
@@ -431,5 +403,11 @@ package website.
   are never CPI-adjusted.
 - CWIFT is a relative labor-cost index, not a price deflator, and has
   gaps that are imputed for some years (see the “CWIFT” article).
+- `land_area_sq_mi` and `s_per_sq_mi` are `NA` by design for LEAs
+  without a Census boundary (charters, education service agencies,
+  state-operated agencies), and `s_per_sq_mi` is `NA` – never `Inf` –
+  wherever land area is zero or unavailable. Vermont has a coverage gap
+  from FY2016-FY2021 (see “Census Gazetteer Files” above). Log scales
+  are recommended when plotting `s_per_sq_mi`.
 - **Caution is advised when comparing data across fiscal years due to
   potential differences in data collection and processing methods.**

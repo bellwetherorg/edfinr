@@ -83,12 +83,10 @@
 <h2 id="introduction">Introduction<a class="anchor" aria-label="anchor" href="#introduction"></a>
 </h2>
 <p>School finance data are messy in ways that summary statistics hide:
-districts might skip survey items, states change how they report aid,
-and the set of districts in the panel shifts over time.
-<code>edfinr</code> ships several diagnostic variables that make these
-issues visible, and this article shows how to use them. If you plan to
-rank districts, build a time series, or compare states, read this
-first.</p>
+districts and states might change how they report revenues and
+expenditures. Meanwhile, the set of districts in the panel shifts over
+time. <code>edfinr</code> ships several diagnostic variables that make
+these issues visible, and this article shows how to use them.</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/bellwetherorg/edfinr" class="external-link">edfinr</a></span><span class="op">)</span></span>
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://dplyr.tidyverse.org" class="external-link">dplyr</a></span><span class="op">)</span></span>
@@ -110,54 +108,19 @@ spent or received nothing. Dropping <code>NA</code>s silently (for
 example, with <code>na.rm = TRUE</code> in a ranking) keeps
 incompletely-reporting districts in your analysis with partial values,
 which can be worse than excluding them; decide explicitly.</p>
-<p>Since 0.2.0, <code>edfinr</code> also detects a second F-33
-missingness convention: some items are <strong>zero-filled</strong> when
-missing, with a companion data-item flag (<code>FL_* = "M"</code>)
-marking them unreported. The cleaning step converts these flagged
-zero-fills to <code>NA</code> for the COVID (<code>exp_covid_*</code>),
+<p>Under version 0.2.0 (and beyond), <code>edfinr</code> also detects a
+second F-33 missingness convention: some items are
+<strong>zero-filled</strong> when missing, with a companion data-item
+flag (<code>FL_* = "M"</code>) marking them unreported. The data
+processing proceture converts these flagged zero-fills to
+<code>NA</code> for the COVID (<code>exp_covid_*</code>),
 capital-detail, debt, fund-balance, CE fund-type, and expenditure-detail
 items. The largest effect is on the COVID columns: all of New York
 (including NYC) in every year and roughly a third to half of California
 districts from FY2021 onward never reported them, and those districts
 previously appeared as spending exactly $0. Genuine reported zeros are
 preserved. Missingness also <strong>propagates</strong> through derived
-measures rather than being treated as zero. The share of district-years
-affected varies by column:</p>
-<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">us</span> <span class="op">|&gt;</span></span>
-<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/group_by.html" class="external-link">group_by</a></span><span class="op">(</span><span class="va">year</span><span class="op">)</span> <span class="op">|&gt;</span></span>
-<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/summarise.html" class="external-link">summarize</a></span><span class="op">(</span></span>
-<span>    n <span class="op">=</span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/context.html" class="external-link">n</a></span><span class="op">(</span><span class="op">)</span>,</span>
-<span>    pct_na_exp_cur <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/Round.html" class="external-link">round</a></span><span class="op">(</span><span class="fl">100</span> <span class="op">*</span> <span class="fu"><a href="https://rdrr.io/r/base/mean.html" class="external-link">mean</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/NA.html" class="external-link">is.na</a></span><span class="op">(</span><span class="va">exp_cur_total</span><span class="op">)</span><span class="op">)</span>, <span class="fl">1</span><span class="op">)</span>,</span>
-<span>    pct_na_cap <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/Round.html" class="external-link">round</a></span><span class="op">(</span><span class="fl">100</span> <span class="op">*</span> <span class="fu"><a href="https://rdrr.io/r/base/mean.html" class="external-link">mean</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/NA.html" class="external-link">is.na</a></span><span class="op">(</span><span class="va">exp_cap_total</span><span class="op">)</span><span class="op">)</span>, <span class="fl">1</span><span class="op">)</span>,</span>
-<span>    .groups <span class="op">=</span> <span class="st">"drop"</span></span>
-<span>  <span class="op">)</span></span></code></pre></div>
-<pre><code><span><span class="co">## <span style="color: #949494;"># A tibble: 12 × 4</span></span></span>
-<span><span class="co">##     year     n pct_na_exp_cur pct_na_cap</span></span>
-<span><span class="co">##    <span style="color: #949494; font-style: italic;">&lt;int&gt;</span> <span style="color: #949494; font-style: italic;">&lt;int&gt;</span>          <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>      <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span></span></span>
-<span><span class="co">## <span style="color: #BCBCBC;"> 1</span>  <span style="text-decoration: underline;">2</span>012 <span style="text-decoration: underline;">15</span>484              0          0</span></span>
-<span><span class="co">## <span style="color: #BCBCBC;"> 2</span>  <span style="text-decoration: underline;">2</span>013 <span style="text-decoration: underline;">15</span>523              0          0</span></span>
-<span><span class="co">## <span style="color: #BCBCBC;"> 3</span>  <span style="text-decoration: underline;">2</span>014 <span style="text-decoration: underline;">15</span>596              0          0</span></span>
-<span><span class="co">## <span style="color: #BCBCBC;"> 4</span>  <span style="text-decoration: underline;">2</span>015 <span style="text-decoration: underline;">15</span>675              0          0</span></span>
-<span><span class="co">## <span style="color: #BCBCBC;"> 5</span>  <span style="text-decoration: underline;">2</span>016 <span style="text-decoration: underline;">15</span>699              0          0</span></span>
-<span><span class="co">## <span style="color: #BCBCBC;"> 6</span>  <span style="text-decoration: underline;">2</span>017 <span style="text-decoration: underline;">15</span>746              0          0</span></span>
-<span><span class="co">## <span style="color: #BCBCBC;"> 7</span>  <span style="text-decoration: underline;">2</span>018 <span style="text-decoration: underline;">15</span>741              0          0</span></span>
-<span><span class="co">## <span style="color: #BCBCBC;"> 8</span>  <span style="text-decoration: underline;">2</span>019 <span style="text-decoration: underline;">16</span>628              0          0</span></span>
-<span><span class="co">## <span style="color: #BCBCBC;"> 9</span>  <span style="text-decoration: underline;">2</span>020 <span style="text-decoration: underline;">16</span>605              0          0</span></span>
-<span><span class="co">## <span style="color: #BCBCBC;">10</span>  <span style="text-decoration: underline;">2</span>021 <span style="text-decoration: underline;">16</span>638              0          0</span></span>
-<span><span class="co">## <span style="color: #BCBCBC;">11</span>  <span style="text-decoration: underline;">2</span>022 <span style="text-decoration: underline;">16</span>652              0          0</span></span>
-<span><span class="co">## <span style="color: #BCBCBC;">12</span>  <span style="text-decoration: underline;">2</span>023 <span style="text-decoration: underline;">16</span>613              0          0</span></span></code></pre>
-<p><code>exp_cur_total</code> is near-fully populated in every year: it
-is sourced from the F-33 summary item TCURELSC, not from the ESSA
-fund-type items (CE1/CE2/CE3), which whole states skip and which only
-begin in FY2016 (CE3, <code>exp_cur_resa</code>, in FY2018). The
-fund-type components (<code>exp_cur_st_loc</code>,
-<code>exp_cur_fed</code>, <code>exp_cur_resa</code>) do carry those
-coverage boundaries; the dictionary’s <code>first_yr_avail</code> column
-records them (see “Variable availability by year” below). Summary items
-like TCURELSC carry no data-item flags, so the flag-aware cleaning above
-cannot detect zero-filled missingness there – another reason to treat
-exact zeros in totals with mild suspicion.</p>
+measures rather than being treated as zero.</p>
 </div>
 <div class="section level2">
 <h2 id="the-state-revenue-adjustment-and-c11_spike_flag">The state-revenue adjustment and <code>c11_spike_flag</code><a class="anchor" aria-label="anchor" href="#the-state-revenue-adjustment-and-c11_spike_flag"></a>
@@ -174,28 +137,10 @@ can be reconstructed directly:
 state share of the other-system-payment adjustment. Because
 <code>rev_state_cap_debt</code> feeds the adjustment arithmetic, it is
 zero-filled, not <code>NA</code>, where districts did not report.</p>
-<p>The identity is easiest to see in districts where the adjustment is
-large. Here are the three Ohio districts with the most state capital and
-debt aid in FY2023; the residual after subtracting
-<code>rev_state_cap_debt</code> and <code>rev_state</code> from the
-unadjusted total is the state share of the other-system-payment
-adjustment:</p>
-<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">us</span> <span class="op">|&gt;</span></span>
-<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">year</span> <span class="op">==</span> <span class="fl">2023</span>, <span class="va">state</span> <span class="op">==</span> <span class="st">"OH"</span><span class="op">)</span> <span class="op">|&gt;</span></span>
-<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/slice.html" class="external-link">slice_max</a></span><span class="op">(</span><span class="va">rev_state_cap_debt</span>, n <span class="op">=</span> <span class="fl">3</span><span class="op">)</span> <span class="op">|&gt;</span></span>
-<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html" class="external-link">select</a></span><span class="op">(</span><span class="va">dist_name</span>, <span class="va">rev_state_unadj</span>, <span class="va">rev_state_cap_debt</span>, <span class="va">rev_state</span><span class="op">)</span> <span class="op">|&gt;</span></span>
-<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span>state_share_osp <span class="op">=</span> <span class="va">rev_state_unadj</span> <span class="op">-</span> <span class="va">rev_state_cap_debt</span> <span class="op">-</span> <span class="va">rev_state</span><span class="op">)</span></span></code></pre></div>
-<pre><code><span><span class="co">## <span style="color: #949494;"># A tibble: 3 × 5</span></span></span>
-<span><span class="co">##   dist_name         rev_state_unadj rev_state_cap_debt rev_state state_share_osp</span></span>
-<span><span class="co">##   <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>                       <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>              <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>     <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>           <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span></span></span>
-<span><span class="co">## <span style="color: #BCBCBC;">1</span> Chesapeake Union…        10<span style="text-decoration: underline;">732</span>000             <span style="text-decoration: underline;">235</span>000 10<span style="text-decoration: underline;">427</span>315.          <span style="text-decoration: underline;">69</span>685.</span></span>
-<span><span class="co">## <span style="color: #BCBCBC;">2</span> Painesville City…        31<span style="text-decoration: underline;">551</span>000             <span style="text-decoration: underline;">230</span>000 31<span style="text-decoration: underline;">200</span>269.         <span style="text-decoration: underline;">120</span>731.</span></span>
-<span><span class="co">## <span style="color: #BCBCBC;">3</span> Wauseon Exempted…        12<span style="text-decoration: underline;">696</span>000             <span style="text-decoration: underline;">216</span>000 12<span style="text-decoration: underline;">474</span>912.           <span style="text-decoration: underline;">5</span>088.</span></span></code></pre>
 <p>In a small number of district-years, the C11 adjustment produces an
 anomalous spike – typically when a large one-time capital grant flows
 through – and <code>c11_spike_flag</code> marks them:</p>
-<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">us</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/group_by.html" class="external-link">group_by</a></span><span class="op">(</span><span class="va">year</span><span class="op">)</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/summarise.html" class="external-link">summarize</a></span><span class="op">(</span>flagged <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/sum.html" class="external-link">sum</a></span><span class="op">(</span><span class="va">c11_spike_flag</span>, na.rm <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span>, .groups <span class="op">=</span> <span class="st">"drop"</span><span class="op">)</span></span></code></pre></div>
@@ -214,7 +159,7 @@ through – and <code>c11_spike_flag</code> marks them:</p>
 <span><span class="co">## <span style="color: #BCBCBC;">10</span>  <span style="text-decoration: underline;">2</span>021      44</span></span>
 <span><span class="co">## <span style="color: #BCBCBC;">11</span>  <span style="text-decoration: underline;">2</span>022      23</span></span>
 <span><span class="co">## <span style="color: #BCBCBC;">12</span>  <span style="text-decoration: underline;">2</span>023      36</span></span></code></pre>
-<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># which states account for the most flagged district-years?</span></span>
 <span><span class="va">us</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">c11_spike_flag</span><span class="op">)</span> <span class="op">|&gt;</span></span>
@@ -237,7 +182,7 @@ through – and <code>c11_spike_flag</code> marks them:</p>
 jump in ways the unadjusted series does not. Comparing the two makes the
 artifact obvious. Here we pick the largest district with multiple
 flagged years:</p>
-<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">example_id</span> <span class="op">&lt;-</span> <span class="va">us</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">c11_spike_flag</span><span class="op">)</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/count.html" class="external-link">count</a></span><span class="op">(</span><span class="va">ncesid</span>, wt <span class="op">=</span> <span class="va">enroll</span>, sort <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span> <span class="op">|&gt;</span></span>
@@ -268,7 +213,7 @@ flagged years:</p>
 <span>  <span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggtheme.html" class="external-link">theme_minimal</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
 <p><img src="data-quality_files/figure-html/spike-example-1.png" class="r-plt" alt="Line chart comparing adjusted and unadjusted state revenue per-pupil for one district from 2012 to 2023, with triangle markers on the years flagged by c11_spike_flag where the two series diverge sharply." width="768"></p>
-<p>Practical guidance: when analyzing state revenue over time, check
+<p>When analyzing state revenue over time, check
 <code>c11_spike_flag</code> for your districts of interest, inspect
 <code>rev_state_cap_debt</code> to see how large the adjustment actually
 is, and consider using <code>rev_state_unadj_pp</code> (or excluding
@@ -283,7 +228,7 @@ other school systems (charter schools, other LEAs, private placements).
 revenues, and <code>osp_pct</code> reports the share of unadjusted total
 revenue paid to other systems, so you can see how much the adjustment
 matters for any district:</p>
-<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">us_2023</span> <span class="op">&lt;-</span> <span class="va">us</span> <span class="op">|&gt;</span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">year</span> <span class="op">==</span> <span class="fl">2023</span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># how common are large pass-through shares?</span></span>
@@ -297,7 +242,7 @@ matters for any district:</p>
 <span><span class="co">##       n over_10_pct over_25_pct</span></span>
 <span><span class="co">##   <span style="color: #949494; font-style: italic;">&lt;int&gt;</span>       <span style="color: #949494; font-style: italic;">&lt;int&gt;</span>       <span style="color: #949494; font-style: italic;">&lt;int&gt;</span></span></span>
 <span><span class="co">## <span style="color: #BCBCBC;">1</span> <span style="text-decoration: underline;">16</span>613        <span style="text-decoration: underline;">1</span>028         230</span></span></code></pre>
-<div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># the largest pass-through districts, among districts with 1,000+ students</span></span>
 <span><span class="va">us_2023</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">enroll</span> <span class="op">&gt;=</span> <span class="fl">1000</span><span class="op">)</span> <span class="op">|&gt;</span></span>
@@ -319,29 +264,22 @@ matters for any district:</p>
 <span><span class="co">## <span style="color: #BCBCBC;">10</span> Sturgeon R-V                                MO      <span style="text-decoration: underline;">1</span>445   0.483        <span style="text-decoration: underline;">5</span>108.</span></span></code></pre>
 <p>For high-<code>osp_pct</code> districts, per-pupil figures describe
 the students the district serves directly, after the pass-through
-dollars are removed. When your question concerns all dollars a district
-handles, use the <code>rev_*_unadj</code> variables instead.</p>
-<p>One caution: unlike the flag-cleaned expenditure items above,
-<code>osp_pct</code> and the underlying <code>exp_pay_*</code> columns
-deliberately retain zero-filled values where states did not report,
-because they feed the revenue-adjustment arithmetic. An
-<code>osp_pct</code> of exactly zero can therefore mean either no
-pass-through or no report.</p>
+dollars are removed. If you are more interested in every dollars a
+district handles, use the <code>rev_*_unadj</code> variables
+instead.</p>
 </div>
 <div class="section level2">
 <h2 id="panel-composition-districts-enter-and-exit">Panel composition: districts enter and exit<a class="anchor" aria-label="anchor" href="#panel-composition-districts-enter-and-exit"></a>
 </h2>
-<p>The set of districts is not constant across years, and treating the
-panel as balanced will bias trend analyses. The largest single
-discontinuity is California: beginning in school year 2018-19, a wave of
-California charter schools switched to independent reporting and were
-assigned their own NCES LEA IDs for the first time. Once in the NCES LEA
-universe, those new charter-LEAs automatically show up in the F-33
-finance survey and in the Census SAIPE and ACS school-district products,
-which mirror NCES LEA boundaries. The result is a jump in California
-district counts from 2019 onward that reflects reporting structure, not
-new schools:</p>
-<div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
+<p>The universe of districts in <code>edfinr</code> is not constant
+across years. The largest single discontinuity is in California:
+beginning in school year 2018-19, a wave of California charter schools
+switched to independent reporting and were assigned their own NCES LEA
+IDs for the first time. Once in the NCES LEA universe, those new
+charter-LEAs automatically show up in the F-33 finance survey. The
+result is a jump in California district counts from 2019 onward that
+reflects reporting structure, not new schools:</p>
+<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">us</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span>group <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/ifelse.html" class="external-link">ifelse</a></span><span class="op">(</span><span class="va">state</span> <span class="op">==</span> <span class="st">"CA"</span>, <span class="st">"California"</span>, <span class="st">"All other states"</span><span class="op">)</span><span class="op">)</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/count.html" class="external-link">count</a></span><span class="op">(</span><span class="va">group</span>, <span class="va">year</span><span class="op">)</span> <span class="op">|&gt;</span></span>
@@ -359,43 +297,14 @@ new schools:</p>
 <p><img src="data-quality_files/figure-html/panel-plot-1.png" class="r-plt" alt="Two-panel line chart of district counts by year for California and all other states; the California count jumps sharply in 2019 when charter schools became separately reported LEAs." width="768"></p>
 <p>For longitudinal work, consider a <strong>consistent sample</strong>:
 keep only districts present in every year of your window.</p>
-<div class="sourceCode" id="cb17"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">window</span> <span class="op">&lt;-</span> <span class="va">us</span> <span class="op">|&gt;</span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">year</span> <span class="op">&gt;=</span> <span class="fl">2019</span><span class="op">)</span></span>
-<span></span>
-<span><span class="va">consistent_ids</span> <span class="op">&lt;-</span> <span class="va">window</span> <span class="op">|&gt;</span></span>
-<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/count.html" class="external-link">count</a></span><span class="op">(</span><span class="va">ncesid</span><span class="op">)</span> <span class="op">|&gt;</span></span>
-<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">n</span> <span class="op">==</span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/n_distinct.html" class="external-link">n_distinct</a></span><span class="op">(</span><span class="va">window</span><span class="op">$</span><span class="va">year</span><span class="op">)</span><span class="op">)</span> <span class="op">|&gt;</span></span>
-<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/pull.html" class="external-link">pull</a></span><span class="op">(</span><span class="va">ncesid</span><span class="op">)</span></span>
-<span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/base/length.html" class="external-link">length</a></span><span class="op">(</span><span class="va">consistent_ids</span><span class="op">)</span></span></code></pre></div>
-<pre><code><span><span class="co">## [1] 16104</span></span></code></pre>
-<p>Two 0.2.0 changes also altered the panel’s composition relative to
-earlier releases. First, directory attributes (name, county, LEA type,
-urbanicity) now come from the same school year as the fiscal year they
-describe rather than the following year’s vintage; among other effects,
-this restored the final operating year of districts that closed, which
-earlier releases silently dropped. Second, Massachusetts regional school
-districts, which CCD miscoded as service agencies for the SY2011-12
-through SY2015-16 directory vintages, are restored for FY2012-FY2015 via
-a vetted list of 60 districts covering roughly 107,000-110,000 students
-per year. One trap comes with the restoration: those rows (and the
-FY2016 rows) carry <code>lea_type_id</code> 4 (“Service agency”) because
-the package reports what the source vintage said, so filtering
-Massachusetts years 2012-2016 on <code>lea_type_id</code> will drop real
-regional districts. Row counts rise slightly in every year relative to
-0.1.x.</p>
-<p>Also remember that <code>edfinr</code> excludes some districts by
-construction (invalid LEA types, extreme per-pupil revenue, zero or
-negative enrollment or revenue); the “Data Sources and Methodology”
-vignette documents the exclusion rules.</p>
 </div>
 <div class="section level2">
 <h2 id="variable-availability-by-year">Variable availability by year<a class="anchor" aria-label="anchor" href="#variable-availability-by-year"></a>
 </h2>
-<p>Not every variable spans the full 2012-2023 panel. The dictionary’s
-<code>first_yr_avail</code> column records when each variable
-enters:</p>
-<div class="sourceCode" id="cb19"><pre class="downlit sourceCode r">
+<p>Not every variable spans the full 2012-2023 panel. The data
+dictionary’s <code>first_yr_avail</code> column records when each
+variable enters the <code>edfinr</code> dataset:</p>
+<div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/list_variables.html">list_variables</a></span><span class="op">(</span><span class="st">"full"</span><span class="op">)</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">first_yr_avail</span> <span class="op">!=</span> <span class="st">"2012"</span><span class="op">)</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html" class="external-link">select</a></span><span class="op">(</span><span class="va">name</span>, <span class="va">first_yr_avail</span>, <span class="va">description</span><span class="op">)</span> <span class="op">|&gt;</span></span>
@@ -523,9 +432,24 @@ operation and maintenance of plant expenditures (AE7)</td>
 </tbody>
 </table>
 <p>A multi-year average or trend that crosses one of these boundaries
-will mix real change with a coverage change. CWIFT adds a further
-wrinkle: FY2020 and FY2023 values are imputed rather than observed (see
-the “CWIFT” article).</p>
+will mix real change with a coverage change.</p>
+<p><code>first_yr_avail</code> marks when a variable <em>enters</em> the
+panel, but it does not capture <em>partial</em> coverage within years
+where the variable is otherwise available. The Census Gazetteer fields
+are a good example: <code>land_area_sq_mi</code> and
+<code>s_per_sq_mi</code> both show
+<code>first_yr_avail == "2012"</code>, since they are populated from the
+first year of the panel onward, but coverage is not uniform. Districts
+without a Census boundary – charters, education service agencies, and
+state-operated agencies – are always <code>NA</code> for these fields,
+in every year, by design rather than by omission. And Vermont’s
+FY2016-FY2021 Act 46 district consolidation left many post-consolidation
+LEAs without a matching Gazetteer boundary, dropping match rates there
+to roughly 7-12% for those years versus 97%+ elsewhere; restrict Vermont
+trend analyses using these fields to FY2012-FY2015 or FY2022 onward.
+Nothing in <code>first_yr_avail</code> flags this gap, so check a
+variable’s actual non-missing rate by year and geography before assuming
+uniform coverage.</p>
 </div>
 <div class="section level2">
 <h2 id="urbanicity-condensed-vs--raw-locale-codes">Urbanicity: condensed vs. raw locale codes<a class="anchor" aria-label="anchor" href="#urbanicity-condensed-vs--raw-locale-codes"></a>
@@ -534,7 +458,7 @@ the “CWIFT” article).</p>
 locale codes into four categories (City, Suburb, Town, Rural). The raw
 12-category codes are also available as <code>urbanicity_raw</code>
 (numeric) and <code>urbanicity_raw_cat</code> (labeled factor):</p>
-<div class="sourceCode" id="cb20"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">us_2023</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/count.html" class="external-link">count</a></span><span class="op">(</span><span class="va">urbanicity_raw_cat</span>, <span class="va">urbanicity</span><span class="op">)</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/arrange.html" class="external-link">arrange</a></span><span class="op">(</span><span class="va">urbanicity</span>, <span class="va">urbanicity_raw_cat</span><span class="op">)</span></span></code></pre></div>
@@ -554,8 +478,8 @@ locale codes into four categories (City, Suburb, Town, Rural). The raw
 <span><span class="co">## <span style="color: #BCBCBC;">11</span> Rural, Distant     Rural       <span style="text-decoration: underline;">3</span>078</span></span>
 <span><span class="co">## <span style="color: #BCBCBC;">12</span> Rural, Remote      Rural       <span style="text-decoration: underline;">2</span>296</span></span></code></pre>
 <p>The condensed categories are right for most summaries, but the raw
-codes matter when the distinction <em>within</em> a category is the
-point – for example, “Rural: Fringe” districts sit at metro edges and
+codes can be helpful when the distinction <em>within</em> a category
+matters. For example, “Rural: Fringe” districts sit at metro edges and
 often look more like suburbs than like “Rural: Remote” districts.</p>
 </div>
 <div class="section level2">
@@ -569,7 +493,8 @@ decide explicitly how to treat <code>NA</code> district-years rather
 than relying on <code>na.rm = TRUE</code>.</li>
 <li>
 <strong>Check <code>first_yr_avail</code></strong> for every
-variable in a multi-year analysis.</li>
+variable in a multi-year analysis, and remember it does not capture
+partial coverage (e.g., Vermont’s Gazetteer gap, FY2016-FY2021).</li>
 <li>
 <strong>Check <code>c11_spike_flag</code></strong> (and compare
 against <code>rev_state_unadj_pp</code>) when state revenue is central

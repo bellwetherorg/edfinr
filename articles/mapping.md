@@ -8,7 +8,8 @@ gradients all have strong spatial structure. `edfinr` does not ship
 geometries, but its `ncesid` matches the GEOID used by Census Bureau
 school district boundary files – the same identifier the package itself
 uses to join ACS data – so joining finance data to shapes from the
-[tigris](https://github.com/walkerke/tigris) package is a one-liner.
+[tigris](https://github.com/walkerke/tigris) package is a
+straightforward process.
 
 ``` r
 
@@ -50,8 +51,9 @@ options(tigris_use_cache = TRUE)
 
 ## Joining finance data to boundaries
 
-Ohio’s districts are all unified, which keeps the example simple. Pull
-the finance data and the boundaries, then join on `GEOID = ncesid`:
+Ohio features unified school districts, which keeps the example simple
+and avoids overlapping geometries. First, pull the finance data and the
+boundaries, then join on `GEOID = ncesid`:
 
 ``` r
 
@@ -60,7 +62,7 @@ oh_2023 <- get_finance_data(yr = "2023", geo = "OH")
 oh_shapes <- school_districts(state = "OH", year = 2023, cb = TRUE)
 ```
 
-    ##   |                                                                              |                                                                      |   0%  |                                                                              |=======                                                               |  10%  |                                                                              |==========                                                            |  14%  |                                                                              |==============                                                        |  20%  |                                                                              |===============                                                       |  22%  |                                                                              |====================                                                  |  29%  |                                                                              |=========================                                             |  35%  |                                                                              |============================                                          |  39%  |                                                                              |=================================                                     |  48%  |                                                                              |=========================================                             |  58%  |                                                                              |===========================================                           |  62%  |                                                                              |================================================                      |  68%  |                                                                              |=================================================                     |  70%  |                                                                              |======================================================                |  77%  |                                                                              |===========================================================           |  85%  |                                                                              |======================================================================| 100%
+    ##   |                                                                              |                                                                      |   0%  |                                                                              |==========                                                            |  14%  |                                                                              |============                                                          |  17%  |                                                                              |==================                                                    |  26%  |                                                                              |======================                                                |  31%  |                                                                              |==============================                                        |  43%  |                                                                              |===================================                                   |  50%  |                                                                              |=========================================                             |  58%  |                                                                              |================================================                      |  68%  |                                                                              |====================================================                  |  75%  |                                                                              |======================================================                |  77%  |                                                                              |===========================================================           |  85%  |                                                                              |================================================================      |  91%  |                                                                              |======================================================================| 100%
 
 ``` r
 
@@ -84,9 +86,9 @@ nrow(anti_join(oh_2023, sf::st_drop_geometry(oh_shapes), by = c("ncesid" = "GEOI
 
 With an `sf` object,
 [`ggplot2::geom_sf()`](https://ggplot2.tidyverse.org/reference/ggsf.html)
-handles the rest. Binned scales usually communicate funding levels
-better than continuous gradients, because readers can attach a dollar
-range to each color:
+handles the rest. Binned scale usually communicate funding levels better
+than continuous gradients (which can be skewed by outliers), because
+readers can attach a dollar range to each color:
 
 ``` r
 

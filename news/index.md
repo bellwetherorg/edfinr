@@ -2,7 +2,12 @@
 
 ## edfinr 0.2.0
 
-- **[`list_variables()`](https://bellwetherorg.github.io/edfinr/reference/list_variables.md)
+- **FY2023 data.** Coverage now extends through the 2022-23 school year
+  (fiscal year 2023).
+  [`get_finance_data()`](https://bellwetherorg.github.io/edfinr/reference/get_finance_data.md)
+  defaults to `yr = "2023"` and accepts years 2012-2023 (including
+  `cpi_adj` base years). \*
+  **[`list_variables()`](https://bellwetherorg.github.io/edfinr/reference/list_variables.md)
   gains an `f33_item` column** recording the F-33 survey item(s) each
   F-33-sourced variable is drawn from (e.g., `"F12"`,
   `"TCAPOUT / V33"`); `NA` for non-F-33 sources and edfinr-adjusted
@@ -16,11 +21,6 @@
   Comparability”, “COVID Relief Spending”, “Community and Economic
   Context”, and “Mapping School Finance Data”. The CRAN vignettes that
   download hosted data now skip evaluation on CRAN machines.
-- **FY2023 data.** Coverage now extends through the 2022-23 school year
-  (fiscal year 2023).
-  [`get_finance_data()`](https://bellwetherorg.github.io/edfinr/reference/get_finance_data.md)
-  defaults to `yr = "2023"` and accepts years 2012-2023 (including
-  `cpi_adj` base years).
 - **Capital, debt, and fund-balance variables (F-33).** Added 17
   columns: total capital outlay (`exp_cap_total`, `exp_cap_total_pp`)
   and its components (`exp_cap_construction`, `exp_cap_land`,
@@ -36,6 +36,13 @@
   `cwift_est`, `cwift_se`, `cwift_imputed`, and `cwift_impute_method`
   (`cwift_est` and `cwift_imputed` are in the skinny dataset). See the
   new “CWIFT” vignette.
+- **District land area and student density (Census Gazetteer).** Added
+  `land_area_sq_mi` and `s_per_sq_mi`, both in the skinny dataset for
+  all years 2012-2023. `land_area_sq_mi` is `NA` (never `Inf`) where
+  land area is zero or the LEA has no Gazetteer boundary (charters,
+  ESAs, state-operated agencies); the Vermont FY2016-FY2021 Act 46
+  coverage gap leaves match rates in the 7-12% range there versus 97%+
+  elsewhere. Log scales are recommended when plotting `s_per_sq_mi`.
 - **Additional ACS and anomaly fields (skinny).** `mean_hhi`, `gini`,
   `owner_pct`, `snap_pct`, `unemp_rate`, unadjusted per-pupil revenue
   (`rev_state_unadj_pp`, `rev_local_unadj_pp`), raw NCES locale codes
@@ -55,8 +62,8 @@
   index** are returned nominal (never CPI-adjusted).
 - **New dictionary categories.**
   [`list_variables()`](https://bellwetherorg.github.io/edfinr/reference/list_variables.md)
-  now includes `"debt"` and `"cwift"` categories and lists all 122
-  variables (57 in the skinny dataset).
+  now includes `"debt"` and `"cwift"` categories and lists all 124
+  variables (59 in the skinny dataset).
 - **Behavior change: CCD directory attributes now match the labeled
   fiscal year.** Previous releases joined CCD directory data one school
   year forward: fiscal year Y rows carried directory attributes
@@ -76,7 +83,7 @@
   FY2016, several newly formed AL city districts – from dropping out of
   single years.
 - **Coverage change: MA regional districts restored for FY2012-FY2015.**
-  CCD miscoded every Massachusetts regional school district as a service
+  CCD coded every Massachusetts regional school district as a service
   agency (`agency_type` 4) for five consecutive directory vintages, SY
   2011-12 through SY 2015-16, with a correction from SY 2016-17 onward.
   Because the miscode spans adjacent vintages, the single-vintage
@@ -97,18 +104,14 @@
   and by an additional 57-60 rows in FY2012-FY2015.
 - **Behavior change: `exp_cur_total` is now sourced from TCURELSC.** In
   0.1.x the total was the sum of the ESSA fund-type items (CE1 + CE2 +
-  CE3), which whole states skip (all of Illinois, Minnesota,
-  Massachusetts, and Oregon through FY23; New York – including NYC –
-  through FY22; New Jersey in FY22; and others in scattered years) and
-  which did not exist before FY16 (CE3 before FY18). `exp_cur_total`,
-  `exp_cur_pp`, and `rev_exp_pp_diff` are now available for nearly all
-  districts in all years 2012-2023. Values shift slightly where both
-  were reported (the ESSA items exclude payments to private, charter,
-  and other school systems, so the CE-sum differs from TCURELSC by more
-  than 2% for roughly 40% of reporting districts). The CE-based columns
-  remain available as `exp_cur_st_loc`, `exp_cur_fed`, and
-  `exp_cur_resa`, `NA` where states did not report them; missing values
-  still propagate to `NA` rather than zero.
+  CE3). `exp_cur_total`, `exp_cur_pp`, and `rev_exp_pp_diff` are now
+  available for nearly all districts in all years 2012-2023. Values
+  shift slightly where both were reported (the ESSA items exclude
+  payments to private, charter, and other school systems, so the CE-sum
+  differs from TCURELSC by more than 2% for roughly 40% of reporting
+  districts). The CE-based columns remain available as `exp_cur_st_loc`,
+  `exp_cur_fed`, and `exp_cur_resa`, `NA` where states did not report
+  them; missing values still propagate to `NA` rather than zero.
 - **Behavior change: flagged zero-filled missing values are now `NA`.**
   F-33 zero-fills some unreported items instead of using its `-1`
   missing code, marking them with an `FL_* = "M"` data-item flag. The

@@ -96,28 +96,31 @@ functionality.</p>
 <div class="section level2">
 <h2 id="whats-new-in-0-2-0">What’s new in 0.2.0<a class="anchor" aria-label="anchor" href="#whats-new-in-0-2-0"></a>
 </h2>
-<p>If you are returning to <code>edfinr</code> after using 0.1.x, three
-changes matter most. Coverage now extends through the 2022-23 school
-year, and <code><a href="../reference/get_finance_data.html">get_finance_data()</a></code> defaults to
-<code>yr = "2023"</code>. The datasets add capital outlay detail, debt
-stocks, fund balances, and the NCES Comparable Wage Index for Teachers
-(CWIFT), each covered by a dedicated article on the package website. And
-downloads are now per-year files, so small requests transfer only the
-years they need. See the changelog (NEWS) for the full list, including a
-behavior change in <code>exp_cur_total</code>: it is now sourced from
-the F-33 total current expenditure item (TCURELSC), so it is available
-for nearly all districts in all years rather than only where states
-reported the ESSA fund-type breakdown.</p>
+<p>If you used <code>edfinr</code> 0.1.x, you’ll notice three
+significant changes:</p>
+<ul>
+<li>
+<strong>Added FY23 data</strong>: Coverage now extends through the
+2022-23 school year, and <code><a href="../reference/get_finance_data.html">get_finance_data()</a></code> defaults to
+<code>yr = "2023"</code>. - <strong>More variables across
+years</strong>: The datasets add capital outlay detail, debt stocks,
+fund balances, and the NCES Comparable Wage Index for Teachers (CWIFT),
+each covered by a dedicated article on the package website.</li>
+<li>
+<strong>Faster downloads</strong>: Downloads are now per-year files,
+so small requests transfer only the years they need.</li>
+</ul>
+<p>Refer to the NEWS.md file for the full list of updates.</p>
 </div>
 <div class="section level2">
 <h2 id="core-function-get_finance_data">Core function: get_finance_data()<a class="anchor" aria-label="anchor" href="#core-function-get_finance_data"></a>
 </h2>
 <p>The primary function in <code>edfinr</code> is
 <code><a href="../reference/get_finance_data.html">get_finance_data()</a></code>, which provides access to school finance
-data from school years 2011-12 through 2022-23. F-33 data are released
-roughly two years after a fiscal year closes, so FY2023 (SY2022-23) is
-the most recent federal release; the package is as current as the survey
-allows. The function combines data from multiple sources:</p>
+data from school years 2011-12 through 2022-23. NCES F-33 data are
+released roughly two years after a fiscal year closes, so FY2023
+(SY2022-23) is the most recent federal release. The function combines
+data from multiple sources:</p>
 <ul>
 <li>
 <strong>Financial data</strong>: Revenue and expenditure data
@@ -153,7 +156,7 @@ districts from the 2022-23 school year:</p>
 <span><span class="co"># view the structure of the returned data</span></span>
 <span><span class="fu"><a href="https://pillar.r-lib.org/reference/glimpse.html" class="external-link">glimpse</a></span><span class="op">(</span><span class="va">ky_sy23</span><span class="op">)</span></span></code></pre></div>
 <pre><code><span><span class="co">## Rows: 171</span></span>
-<span><span class="co">## Columns: 57</span></span>
+<span><span class="co">## Columns: 59</span></span>
 <span><span class="co">## $ ncesid             <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span> "2100030"<span style="color: #949494;">, </span>"2100070"<span style="color: #949494;">, </span>"2100081"<span style="color: #949494;">, </span>"2100090"<span style="color: #949494;">, </span>"210012…</span></span>
 <span><span class="co">## $ year               <span style="color: #949494; font-style: italic;">&lt;int&gt;</span> 2023<span style="color: #949494;">, </span>2023<span style="color: #949494;">, </span>2023<span style="color: #949494;">, </span>2023<span style="color: #949494;">, </span>2023<span style="color: #949494;">, </span>2023<span style="color: #949494;">, </span>2023<span style="color: #949494;">, </span>2023<span style="color: #949494;">, </span>202…</span></span>
 <span><span class="co">## $ state              <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span> "KY"<span style="color: #949494;">, </span>"KY"<span style="color: #949494;">, </span>"KY"<span style="color: #949494;">, </span>"KY"<span style="color: #949494;">, </span>"KY"<span style="color: #949494;">, </span>"KY"<span style="color: #949494;">, </span>"KY"<span style="color: #949494;">, </span>"KY"<span style="color: #949494;">, </span>"KY…</span></span>
@@ -204,6 +207,8 @@ districts from the 2022-23 school year:</p>
 <span><span class="co">## $ urbanicity_raw     <span style="color: #949494; font-style: italic;">&lt;int&gt;</span> 33<span style="color: #949494;">, </span>41<span style="color: #949494;">, </span>41<span style="color: #949494;">, </span>21<span style="color: #949494;">, </span>32<span style="color: #949494;">, </span>13<span style="color: #949494;">, </span>42<span style="color: #949494;">, </span>43<span style="color: #949494;">, </span>33<span style="color: #949494;">, </span>32<span style="color: #949494;">, </span>41<span style="color: #949494;">, </span>42<span style="color: #949494;">, </span>21<span style="color: #949494;">,</span>…</span></span>
 <span><span class="co">## $ urbanicity_raw_cat <span style="color: #949494; font-style: italic;">&lt;fct&gt;</span> "Town, Remote"<span style="color: #949494;">, </span>"Rural, Fringe"<span style="color: #949494;">, </span>"Rural, Fringe"<span style="color: #949494;">, </span>"…</span></span>
 <span><span class="co">## $ urbanicity         <span style="color: #949494; font-style: italic;">&lt;fct&gt;</span> Town<span style="color: #949494;">, </span>Rural<span style="color: #949494;">, </span>Rural<span style="color: #949494;">, </span>Suburb<span style="color: #949494;">, </span>Town<span style="color: #949494;">, </span>City<span style="color: #949494;">, </span>Rural<span style="color: #949494;">, </span>Rura…</span></span>
+<span><span class="co">## $ land_area_sq_mi    <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> 405.292<span style="color: #949494;">, </span>343.724<span style="color: #949494;">, </span>467.280<span style="color: #949494;">, </span>2.991<span style="color: #949494;">, </span>202.260<span style="color: #949494;">, </span>13.437<span style="color: #949494;">, </span>…</span></span>
+<span><span class="co">## $ s_per_sq_mi        <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> 6.469410<span style="color: #949494;">, </span>9.161420<span style="color: #949494;">, </span>9.600240<span style="color: #949494;">, </span>135.406219<span style="color: #949494;">, </span>18.550381…</span></span>
 <span><span class="co">## $ schlev             <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span> "03"<span style="color: #949494;">, </span>"03"<span style="color: #949494;">, </span>"03"<span style="color: #949494;">, </span>"01"<span style="color: #949494;">, </span>"03"<span style="color: #949494;">, </span>"03"<span style="color: #949494;">, </span>"03"<span style="color: #949494;">, </span>"03"<span style="color: #949494;">, </span>"03…</span></span>
 <span><span class="co">## $ lea_type           <span style="color: #949494; font-style: italic;">&lt;fct&gt;</span> Regular public school district that is not a compon…</span></span>
 <span><span class="co">## $ lea_type_id        <span style="color: #949494; font-style: italic;">&lt;int&gt;</span> 1<span style="color: #949494;">, </span>1<span style="color: #949494;">, </span>1<span style="color: #949494;">, </span>1<span style="color: #949494;">, </span>1<span style="color: #949494;">, </span>1<span style="color: #949494;">, </span>1<span style="color: #949494;">, </span>1<span style="color: #949494;">, </span>1<span style="color: #949494;">, </span>1<span style="color: #949494;">, </span>1<span style="color: #949494;">, </span>1<span style="color: #949494;">, </span>1<span style="color: #949494;">, </span>1<span style="color: #949494;">, </span>1<span style="color: #949494;">, </span>1<span style="color: #949494;">, </span>1<span style="color: #949494;">, </span>…</span></span>
@@ -216,7 +221,7 @@ districts from the 2022-23 school year:</p>
 <h2 id="dataset-types-skinny-vs--full">Dataset types: skinny vs. full<a class="anchor" aria-label="anchor" href="#dataset-types-skinny-vs--full"></a>
 </h2>
 <p>By default, <code><a href="../reference/get_finance_data.html">get_finance_data()</a></code> returns a “skinny”
-dataset with 57 essential variables covering:</p>
+dataset with 59 essential variables covering:</p>
 <ul>
 <li>District identifiers and characteristics.</li>
 <li>Total revenues by source (local, state, federal).</li>
@@ -224,9 +229,11 @@ dataset with 57 essential variables covering:</p>
 (<code>exp_cap_total</code>, <code>exp_cap_total_pp</code>).</li>
 <li>Key demographic and economic indicators (including the CWIFT
 teacher-wage index).</li>
+<li>District land area and student density
+(<code>land_area_sq_mi</code>, <code>s_per_sq_mi</code>).</li>
 </ul>
 <p>For more detailed analysis, you can request the “full” dataset with
-122 variables that includes:</p>
+124 variables that includes:</p>
 <ul>
 <li>All skinny dataset variables.</li>
 <li>Detailed expenditure data.</li>
@@ -279,7 +286,7 @@ article).</li>
 <div class="section level2">
 <h2 id="finding-variables">Finding variables<a class="anchor" aria-label="anchor" href="#finding-variables"></a>
 </h2>
-<p>With 122 variables in the full dataset, the data dictionary is the
+<p>With 124 variables in the full dataset, the data dictionary is the
 fastest way to find what you need. <code><a href="../reference/list_variables.html">list_variables()</a></code> returns
 it as a tibble, so you can filter and search it like any other data.</p>
 <div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
@@ -287,7 +294,7 @@ it as a tibble, so you can filter and search it like any other data.</p>
 <span><span class="co"># first_yr_avail, and description for every variable</span></span>
 <span><span class="va">vars</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/list_variables.html">list_variables</a></span><span class="op">(</span><span class="st">"full"</span><span class="op">)</span></span>
 <span><span class="va">vars</span></span></code></pre></div>
-<pre><code><span><span class="co">## <span style="color: #949494;"># A tibble: 122 × 7</span></span></span>
+<pre><code><span><span class="co">## <span style="color: #949494;"># A tibble: 124 × 7</span></span></span>
 <span><span class="co">##    name         type      category    source f33_item first_yr_avail description</span></span>
 <span><span class="co">##    <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>        <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>     <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>       <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>  <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>          <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>      </span></span>
 <span><span class="co">## <span style="color: #BCBCBC;"> 1</span> ncesid       character id          NCES … LEAID    2012           NCES distr…</span></span>
@@ -300,7 +307,7 @@ it as a tibble, so you can filter and search it like any other data.</p>
 <span><span class="co">## <span style="color: #BCBCBC;"> 8</span> rev_state_pp numeric   revenue     NCES … <span style="color: #BB0000;">NA</span>       2012           State adju…</span></span>
 <span><span class="co">## <span style="color: #BCBCBC;"> 9</span> rev_fed_pp   numeric   revenue     NCES … <span style="color: #BB0000;">NA</span>       2012           Federal ad…</span></span>
 <span><span class="co">## <span style="color: #BCBCBC;">10</span> rev_total    numeric   revenue     NCES … <span style="color: #BB0000;">NA</span>       2012           Total adju…</span></span>
-<span><span class="co">## <span style="color: #949494;"># ℹ 112 more rows</span></span></span></code></pre>
+<span><span class="co">## <span style="color: #949494;"># ℹ 114 more rows</span></span></span></code></pre>
 <div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># filter by category; 0.2.0 adds "debt" and "cwift" categories</span></span>
 <span><span class="fu"><a href="../reference/list_variables.html">list_variables</a></span><span class="op">(</span><span class="st">"full"</span>, category <span class="op">=</span> <span class="st">"debt"</span><span class="op">)</span></span></code></pre></div>
@@ -316,35 +323,13 @@ it as a tibble, so you can filter and search it like any other data.</p>
 <span><span class="co">## <span style="color: #BCBCBC;">7</span> fund_bal_debt_svc numeric debt     NCES F… W01      2012           Debt servi…</span></span>
 <span><span class="co">## <span style="color: #BCBCBC;">8</span> fund_bal_bond     numeric debt     NCES F… W31      2012           Bond fund …</span></span>
 <span><span class="co">## <span style="color: #BCBCBC;">9</span> fund_bal_other    numeric debt     NCES F… W61      2012           Other fund…</span></span></code></pre>
-<p>Two dictionary columns deserve special attention.
-<code>first_yr_avail</code> records the first fiscal year each variable
-is available, because not every variable spans the whole 2012-2023
-panel:</p>
-<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">vars</span> <span class="op">|&gt;</span></span>
-<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">first_yr_avail</span> <span class="op">!=</span> <span class="st">"2012"</span><span class="op">)</span> <span class="op">|&gt;</span></span>
-<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/count.html" class="external-link">count</a></span><span class="op">(</span><span class="va">first_yr_avail</span>, <span class="va">category</span><span class="op">)</span></span></code></pre></div>
-<pre><code><span><span class="co">## <span style="color: #949494;"># A tibble: 6 × 3</span></span></span>
-<span><span class="co">##   first_yr_avail category        n</span></span>
-<span><span class="co">##   <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>          <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>       <span style="color: #949494; font-style: italic;">&lt;int&gt;</span></span></span>
-<span><span class="co">## <span style="color: #BCBCBC;">1</span> 2015           cwift           4</span></span>
-<span><span class="co">## <span style="color: #BCBCBC;">2</span> 2015           expenditure     3</span></span>
-<span><span class="co">## <span style="color: #BCBCBC;">3</span> 2016           expenditure     2</span></span>
-<span><span class="co">## <span style="color: #BCBCBC;">4</span> 2018           expenditure     1</span></span>
-<span><span class="co">## <span style="color: #BCBCBC;">5</span> 2020           expenditure     6</span></span>
-<span><span class="co">## <span style="color: #BCBCBC;">6</span> 2021           expenditure     2</span></span></code></pre>
-<p>And <code>f33_item</code> records the F-33 survey item(s) each
-F-33-sourced variable is drawn from (for example,
-<code>exp_cap_construction</code> comes from item F12), which is useful
-when comparing edfinr output against raw NCES files. See the “Data
-Sources and Methodology” vignette for the full crosswalk.</p>
 </div>
 <div class="section level2">
 <h2 id="multiple-years-and-states">Multiple years and states<a class="anchor" aria-label="anchor" href="#multiple-years-and-states"></a>
 </h2>
 <p>The <code><a href="../reference/get_finance_data.html">get_finance_data()</a></code> function makes it easy to access
 data across multiple years and states:</p>
-<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># get data for multiple states across multiple years</span></span>
 <span><span class="va">sec_data</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/get_finance_data.html">get_finance_data</a></span><span class="op">(</span></span>
 <span>  yr <span class="op">=</span> <span class="st">"2019:2023"</span>,  <span class="co"># years 2019 through 2023</span></span>
@@ -368,7 +353,7 @@ cache instead of re-downloading. Two arguments control this behavior:
 <code>refresh = TRUE</code> forces a fresh download (for example, after
 a data update is announced), and <code>quiet = TRUE</code> suppresses
 the download progress messages.</p>
-<div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># re-download even if a cached copy exists, without progress messages</span></span>
 <span><span class="va">ky_fresh</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/get_finance_data.html">get_finance_data</a></span><span class="op">(</span>yr <span class="op">=</span> <span class="st">"2023"</span>, geo <span class="op">=</span> <span class="st">"KY"</span>, refresh <span class="op">=</span> <span class="cn">TRUE</span>, quiet <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div>
 </div>
@@ -382,10 +367,7 @@ patterns:</p>
 <h3 id="do-high-local-revenue-share-districts-end-up-with-more-total-revenue">Do high local revenue share districts end up with more total
 revenue?<a class="anchor" aria-label="anchor" href="#do-high-local-revenue-share-districts-end-up-with-more-total-revenue"></a>
 </h3>
-<p>Plotting the local <em>share</em> of revenue against total per-pupil
-revenue shows whether districts that fund themselves mostly from local
-sources also end up with more money overall.</p>
-<div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># download 2023 data for connecticut</span></span>
 <span><span class="va">ct_sy23</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/get_finance_data.html">get_finance_data</a></span><span class="op">(</span>yr <span class="op">=</span> <span class="st">"2023"</span>, geo <span class="op">=</span> <span class="st">"CT"</span><span class="op">)</span></span>
 <span></span>
@@ -415,13 +397,7 @@ sources also end up with more money overall.</p>
 <div class="section level3">
 <h3 id="how-do-revenue-sources-differ-by-urbanicity">How do revenue sources differ by urbanicity?<a class="anchor" aria-label="anchor" href="#how-do-revenue-sources-differ-by-urbanicity"></a>
 </h3>
-<p>Summing dollars before dividing gives each group’s true revenue mix,
-weighted by where the money actually flows. The alternative, averaging
-each district’s share with <code><a href="https://rdrr.io/r/base/mean.html" class="external-link">mean()</a></code>, weights a 300-student
-district the same as the state’s largest system; the two can diverge
-substantially wherever large and small districts fund themselves
-differently, so be deliberate about the approach you use.</p>
-<div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># compare revenue mix across urbanicity groups (dollar-weighted)</span></span>
 <span><span class="va">revenue_analysis</span> <span class="op">&lt;-</span> <span class="va">ct_sy23</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/group_by.html" class="external-link">group_by</a></span><span class="op">(</span><span class="va">urbanicity</span><span class="op">)</span> <span class="op">|&gt;</span></span>
@@ -447,9 +423,6 @@ differently, so be deliberate about the approach you use.</p>
 <h2 id="see-also">See also<a class="anchor" aria-label="anchor" href="#see-also"></a>
 </h2>
 <ul>
-<li>Use <code><a href="../reference/list_variables.html">list_variables()</a></code> to see all available variables and
-their descriptions, and <code><a href="../reference/get_states.html">get_states()</a></code> to see valid state
-codes.</li>
 <li>The “CPI Adjustments” vignette for inflation adjustment across
 years.</li>
 <li>The “Data Sources and Methodology” vignette for detailed methodology

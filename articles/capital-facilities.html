@@ -82,10 +82,8 @@
 <div class="section level2">
 <h2 id="introduction">Introduction<a class="anchor" aria-label="anchor" href="#introduction"></a>
 </h2>
-<p>Beyond current operating spending, the F-33 survey reports how
-districts fund and build their facilities. <code>edfinr</code> exposes
-these as a set of capital, debt, and fund-balance variables aimed at
-analysts working on school facilities.</p>
+<p><code>edfinr</code> includes capital, debt, and fund-balance
+variables to provide more inforation on school facilities funding.</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/bellwetherorg/edfinr" class="external-link">edfinr</a></span><span class="op">)</span></span>
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://dplyr.tidyverse.org" class="external-link">dplyr</a></span><span class="op">)</span></span>
@@ -130,10 +128,11 @@ excluded from <code>exp_cur_total</code> by definition. Do not add it to
 current spending to get a “total” without knowing what you are
 combining.</li>
 <li>
-<strong>Capital is lumpy.</strong> A district that builds a school
-records a large <code>exp_cap_total_pp</code> in one year and near-zero
-in the surrounding years. Single-year per-pupil capital rankings are
-misleading; use <strong>3-5 year averages</strong> instead.</li>
+<strong>Capital spending is lumpy.</strong> A district that builds a
+school records a large <code>exp_cap_total_pp</code> in one year and
+near-zero in the surrounding years. Single-year per-pupil capital
+rankings are misleading; <strong>3-5 year averages</strong> can provide
+a more accurate picture.</li>
 <li>
 <strong>Compare per-pupil, not totals.</strong> Raw dollar rankings
 mostly rank district size. Only <code>exp_cap_total_pp</code> ships as a
@@ -145,11 +144,6 @@ may be financed by borrowing rather than current resources. Read
 <code>debt_lt_issued</code> and <code>fund_bal_bond</code> alongside the
 outlay flows to understand how construction was paid for.</li>
 <li>
-<strong>Interest, not principal.</strong>
-<code>exp_debt_interest</code> is interest only. Principal retirement
-(<code>debt_lt_retired</code>) is repayment of a liability, not an
-expenditure.</li>
-<li>
 <strong>Interplay with the state-revenue adjustment.</strong> edfinr
 nets state capital and debt aid out of <code>rev_state</code>; that
 netted-out amount ships as <code>rev_state_cap_debt</code>, the
@@ -158,13 +152,9 @@ pre-adjustment value is preserved in <code>rev_state_unadj</code> /
 district-years where that adjustment spikes. Consider these when
 relating revenue to capital activity.</li>
 <li>
-<strong><code>NA</code> is not zero.</strong> A missing capital,
-debt, or fund-balance value means the item was not reported, not that
-the district spent or owed nothing.</li>
-<li>
 <strong>Stocks stay nominal.</strong> Debt and fund-balance
 <strong>stocks</strong> (<code>debt_*</code>, <code>fund_bal_*</code>)
-are balance-sheet levels and are never CPI-adjusted, even when you pass
+are balance-sheet levels and are never CPI-adjusted when you pass
 <code>cpi_adj</code>. Capital outlay flows and
 <code>exp_debt_interest</code> <em>are</em> adjusted.</li>
 </ol>
@@ -172,23 +162,19 @@ are balance-sheet levels and are never CPI-adjusted, even when you pass
 <div class="section level2">
 <h2 id="worked-example-multi-year-average-capital-per-pupil">Worked example: multi-year average capital per pupil<a class="anchor" aria-label="anchor" href="#worked-example-multi-year-average-capital-per-pupil"></a>
 </h2>
-<p>Because capital is lumpy, average it over several years. Here we pull
-the full Ohio panel in 2023 dollars, then average per-pupil capital
-outlay over the five most recent years, keeping districts with at least
-three years of data and at least 1,000 students (very small districts
-produce extreme per-pupil values from modest projects). Window length is
-a tradeoff: longer windows smooth more of the project cycle but blur
-recent changes and mix in years with different enrollment, which is why
-the caveats recommend 3-5 years rather than more.</p>
+<p>Because capital expenditures are lumpy, averaging over several years
+can produce more interperatable results. The example below examined Ohio
+school distircts, using CPI-adjusted 2023 dollars, to average per-pupil
+capital outlay over the five most recent years. Only districts with at
+least three years of data and at least 1,000 students are included,
+since very small districts can produce extreme per-pupil values from
+modest capital projects.</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">oh</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/get_finance_data.html">get_finance_data</a></span><span class="op">(</span></span>
 <span>  yr <span class="op">=</span> <span class="st">"2012:2023"</span>, geo <span class="op">=</span> <span class="st">"OH"</span>,</span>
 <span>  dataset_type <span class="op">=</span> <span class="st">"full"</span>, cpi_adj <span class="op">=</span> <span class="st">"2023"</span></span>
 <span><span class="op">)</span></span>
 <span></span>
-<span><span class="co"># group by ncesid, not dist_name: names can change across years</span></span>
-<span><span class="co"># (e.g. "Grandview Heights City" became "Grandview Heights Schools" in 2015),</span></span>
-<span><span class="co"># so we keep the most recent name as the label</span></span>
 <span><span class="va">cap_multiyear</span> <span class="op">&lt;-</span> <span class="va">oh</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">year</span> <span class="op">&gt;=</span> <span class="fl">2019</span><span class="op">)</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/group_by.html" class="external-link">group_by</a></span><span class="op">(</span><span class="va">ncesid</span><span class="op">)</span> <span class="op">|&gt;</span></span>
@@ -219,14 +205,12 @@ the caveats recommend 3-5 years rather than more.</p>
 <div class="section level3">
 <h3 id="how-lumpy-is-capital-spending">How lumpy is capital spending?<a class="anchor" aria-label="anchor" href="#how-lumpy-is-capital-spending"></a>
 </h3>
-<p>Plotting the full 2012-2023 series for the districts with the highest
-recent averages shows why single-year rankings mislead: a district’s
-per-pupil capital outlay can swing by thousands of dollars from one year
-to the next as projects start and finish.</p>
+<p>Plotting the full 2012-2023 series for Ohio districts with the
+highest recent averages shows why single-year rankings mislead: a
+district’s per-pupil capital outlay can swing by thousands of dollars
+from one year to the next as projects start and finish.</p>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co"># join on ncesid and use cap_multiyear's canonical name so a district whose</span></span>
-<span><span class="co"># name changed mid-panel doesn't split into two facets</span></span>
-<span><span class="va">oh</span> <span class="op">|&gt;</span></span>
+<code class="sourceCode R"><span><span class="va">oh</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html" class="external-link">select</a></span><span class="op">(</span><span class="op">-</span><span class="va">dist_name</span><span class="op">)</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate-joins.html" class="external-link">inner_join</a></span><span class="op">(</span></span>
 <span>    <span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">cap_multiyear</span>, <span class="fl">6</span><span class="op">)</span> <span class="op">|&gt;</span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html" class="external-link">select</a></span><span class="op">(</span><span class="va">ncesid</span>, <span class="va">dist_name</span><span class="op">)</span>,</span>
@@ -249,73 +233,17 @@ to the next as projects start and finish.</p>
 </div>
 </div>
 <div class="section level2">
-<h2 id="worked-example-how-was-construction-paid-for">Worked example: how was construction paid for?<a class="anchor" aria-label="anchor" href="#worked-example-how-was-construction-paid-for"></a>
-</h2>
-<p>Pair the outlay flow with debt issued and the bond fund balance, all
-expressed per pupil. Debt and fund balances are nominal, so this example
-leaves <code>cpi_adj</code> at its default.</p>
-<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">oh_2023</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/get_finance_data.html">get_finance_data</a></span><span class="op">(</span>yr <span class="op">=</span> <span class="st">"2023"</span>, geo <span class="op">=</span> <span class="st">"OH"</span>, dataset_type <span class="op">=</span> <span class="st">"full"</span><span class="op">)</span></span>
-<span></span>
-<span><span class="va">cap_finance</span> <span class="op">&lt;-</span> <span class="va">oh_2023</span> <span class="op">|&gt;</span></span>
-<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="op">!</span><span class="fu"><a href="https://rdrr.io/r/base/NA.html" class="external-link">is.na</a></span><span class="op">(</span><span class="va">exp_cap_total_pp</span><span class="op">)</span>, <span class="va">enroll</span> <span class="op">&gt;=</span> <span class="fl">1000</span><span class="op">)</span> <span class="op">|&gt;</span></span>
-<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span></span>
-<span>    debt_issued_pp <span class="op">=</span> <span class="va">debt_lt_issued</span> <span class="op">/</span> <span class="va">enroll</span>,</span>
-<span>    bond_fund_pp <span class="op">=</span> <span class="va">fund_bal_bond</span> <span class="op">/</span> <span class="va">enroll</span></span>
-<span>  <span class="op">)</span> <span class="op">|&gt;</span></span>
-<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html" class="external-link">select</a></span><span class="op">(</span><span class="va">dist_name</span>, <span class="va">enroll</span>, <span class="va">exp_cap_total_pp</span>, <span class="va">debt_issued_pp</span>, <span class="va">bond_fund_pp</span><span class="op">)</span></span>
-<span></span>
-<span><span class="va">cap_finance</span> <span class="op">|&gt;</span></span>
-<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/arrange.html" class="external-link">arrange</a></span><span class="op">(</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/desc.html" class="external-link">desc</a></span><span class="op">(</span><span class="va">exp_cap_total_pp</span><span class="op">)</span><span class="op">)</span> <span class="op">|&gt;</span></span>
-<span>  <span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="fl">10</span><span class="op">)</span></span></code></pre></div>
-<pre><code><span><span class="co">## <span style="color: #949494;"># A tibble: 10 × 5</span></span></span>
-<span><span class="co">##    dist_name                 enroll exp_cap_total_pp debt_issued_pp bond_fund_pp</span></span>
-<span><span class="co">##    <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>                      <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>            <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>          <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>        <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span></span></span>
-<span><span class="co">## <span style="color: #BCBCBC;"> 1</span> Warrensville Heights City   <span style="text-decoration: underline;">1</span>797           <span style="text-decoration: underline;">20</span>526.              0       <span style="text-decoration: underline;">12</span>965.</span></span>
-<span><span class="co">## <span style="color: #BCBCBC;"> 2</span> Indian Hill Exempted Vil…   <span style="text-decoration: underline;">2</span>189           <span style="text-decoration: underline;">20</span>352.              0       <span style="text-decoration: underline;">17</span>238.</span></span>
-<span><span class="co">## <span style="color: #BCBCBC;"> 3</span> Wickliffe City              <span style="text-decoration: underline;">1</span>337           <span style="text-decoration: underline;">19</span>957.              0       <span style="text-decoration: underline;">12</span>508.</span></span>
-<span><span class="co">## <span style="color: #BCBCBC;"> 4</span> Logan Elm Local             <span style="text-decoration: underline;">1</span>693           <span style="text-decoration: underline;">18</span>903.              0        <span style="text-decoration: underline;">9</span>078.</span></span>
-<span><span class="co">## <span style="color: #BCBCBC;"> 5</span> Tuscarawas Valley Local     <span style="text-decoration: underline;">1</span>267           <span style="text-decoration: underline;">18</span>272.              0       <span style="text-decoration: underline;">16</span>560.</span></span>
-<span><span class="co">## <span style="color: #BCBCBC;"> 6</span> Liberty-Benton Local        <span style="text-decoration: underline;">1</span>562           <span style="text-decoration: underline;">17</span>064.              0        <span style="text-decoration: underline;">4</span>357.</span></span>
-<span><span class="co">## <span style="color: #BCBCBC;"> 7</span> East Clinton Local          <span style="text-decoration: underline;">1</span>227           <span style="text-decoration: underline;">13</span>934.              0        <span style="text-decoration: underline;">6</span>380.</span></span>
-<span><span class="co">## <span style="color: #BCBCBC;"> 8</span> Batavia Local               <span style="text-decoration: underline;">2</span>430           <span style="text-decoration: underline;">13</span>842.              0        <span style="text-decoration: underline;">5</span>474.</span></span>
-<span><span class="co">## <span style="color: #BCBCBC;"> 9</span> Southeast Local             <span style="text-decoration: underline;">1</span>243           <span style="text-decoration: underline;">13</span>287.              0       <span style="text-decoration: underline;">32</span>366.</span></span>
-<span><span class="co">## <span style="color: #BCBCBC;">10</span> Bethel Local                <span style="text-decoration: underline;">1</span>868           <span style="text-decoration: underline;">12</span>560.              0        <span style="text-decoration: underline;">2</span>025.</span></span></code></pre>
-<p>Districts with large per-pupil outlay and large per-pupil debt
-issuance are financing facilities with borrowing; those with high outlay
-but little new debt are more likely using current resources or
-accumulated bond-fund balances. Keep in mind that issuance and outlay
-are rarely contemporaneous: bond proceeds raised in one year fund
-construction over the following several, so a district drawing down a
-prior-year issue sits above the line without being pay-as-you-go.
-Plotting the two against each other still separates the financing
-strategies:</p>
-<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span><span class="va">cap_finance</span>, <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">debt_issued_pp</span>, y <span class="op">=</span> <span class="va">exp_cap_total_pp</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
-<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_point.html" class="external-link">geom_point</a></span><span class="op">(</span>alpha <span class="op">=</span> <span class="fl">0.5</span><span class="op">)</span> <span class="op">+</span></span>
-<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_abline.html" class="external-link">geom_abline</a></span><span class="op">(</span>slope <span class="op">=</span> <span class="fl">1</span>, intercept <span class="op">=</span> <span class="fl">0</span>, linetype <span class="op">=</span> <span class="st">"dashed"</span><span class="op">)</span> <span class="op">+</span></span>
-<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/scale_continuous.html" class="external-link">scale_x_continuous</a></span><span class="op">(</span>labels <span class="op">=</span> <span class="fu">scales</span><span class="fu">::</span><span class="fu"><a href="https://scales.r-lib.org/reference/dollar_format.html" class="external-link">label_dollar</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
-<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/scale_continuous.html" class="external-link">scale_y_continuous</a></span><span class="op">(</span>labels <span class="op">=</span> <span class="fu">scales</span><span class="fu">::</span><span class="fu"><a href="https://scales.r-lib.org/reference/dollar_format.html" class="external-link">label_dollar</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
-<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">labs</a></span><span class="op">(</span></span>
-<span>    title <span class="op">=</span> <span class="st">"Capital Outlay vs. New Long-Term Debt, Ohio SY2022-23"</span>,</span>
-<span>    subtitle <span class="op">=</span> <span class="st">"Per-pupil; districts above the dashed line spent more than they borrowed"</span>,</span>
-<span>    x <span class="op">=</span> <span class="st">"Long-Term Debt Issued Per-Pupil"</span>,</span>
-<span>    y <span class="op">=</span> <span class="st">"Capital Outlay Per-Pupil"</span></span>
-<span>  <span class="op">)</span> <span class="op">+</span></span>
-<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggtheme.html" class="external-link">theme_minimal</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
-<p><img src="capital-facilities_files/figure-html/bond-vs-paygo-plot-1.png" class="r-plt" alt="Scatterplot of Ohio districts' per-pupil capital outlay versus per-pupil long-term debt issued in SY2022-23, with a dashed 45-degree line separating districts that spent more than they borrowed." width="768"></p>
-</div>
-<div class="section level2">
 <h2 id="how-does-capitals-share-of-spending-vary-by-state">How does capital’s share of spending vary by state?<a class="anchor" aria-label="anchor" href="#how-does-capitals-share-of-spending-vary-by-state"></a>
 </h2>
 <p>Statewide aggregates smooth out district-level lumpiness and show how
 much of each state’s total K-12 spending goes to facilities. Shares are
 computed only from districts reporting both current and capital
-expenditure. Smoothing is not immunity, though: a state’s single-year
-share still moves with bond-program cycles and any one big-city building
-program, so treat the ranking below as a snapshot and pool several years
-before drawing conclusions about a state’s ranking.</p>
-<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
+expenditure. Smoothing is not a cure-all: a state’s single-year share
+still moves with bond program cycles and could be affected by a single
+large district’s projects. Treat the ranking below as a snapshot; pool
+several years of data before drawing conclusions about a state’s
+ranking.</p>
+<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">us_2023</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/get_finance_data.html">get_finance_data</a></span><span class="op">(</span>yr <span class="op">=</span> <span class="st">"2023"</span>, geo <span class="op">=</span> <span class="st">"all"</span>, dataset_type <span class="op">=</span> <span class="st">"full"</span><span class="op">)</span></span>
 <span></span>
 <span><span class="va">state_cap</span> <span class="op">&lt;-</span> <span class="va">us_2023</span> <span class="op">|&gt;</span></span>
@@ -338,23 +266,6 @@ before drawing conclusions about a state’s ranking.</p>
 <p><img src="capital-facilities_files/figure-html/state-shares-1.png" class="r-plt" alt="Horizontal bar chart ranking states by capital outlay's share of current plus capital spending in SY2022-23." width="768"></p>
 </div>
 <div class="section level2">
-<h2 id="confirming-stocks-are-not-inflation-adjusted">Confirming stocks are not inflation-adjusted<a class="anchor" aria-label="anchor" href="#confirming-stocks-are-not-inflation-adjusted"></a>
-</h2>
-<p><code>cpi_adj</code> scales the capital outlay flow but leaves the
-debt stock untouched:</p>
-<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">raw</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/get_finance_data.html">get_finance_data</a></span><span class="op">(</span>yr <span class="op">=</span> <span class="st">"2019"</span>, geo <span class="op">=</span> <span class="st">"OH"</span>, dataset_type <span class="op">=</span> <span class="st">"full"</span><span class="op">)</span></span>
-<span><span class="va">adj</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/get_finance_data.html">get_finance_data</a></span><span class="op">(</span>yr <span class="op">=</span> <span class="st">"2019"</span>, geo <span class="op">=</span> <span class="st">"OH"</span>, dataset_type <span class="op">=</span> <span class="st">"full"</span>, cpi_adj <span class="op">=</span> <span class="st">"2023"</span><span class="op">)</span></span>
-<span></span>
-<span><span class="co"># capital outlay (a flow) is scaled up to 2023 dollars</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">adj</span><span class="op">$</span><span class="va">exp_cap_total</span> <span class="op">/</span> <span class="va">raw</span><span class="op">$</span><span class="va">exp_cap_total</span>, <span class="fl">3</span><span class="op">)</span></span></code></pre></div>
-<pre><code><span><span class="co">## [1] 1.183272 1.183272 1.183272</span></span></code></pre>
-<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co"># long-term debt outstanding (a stock) is identical in both</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/base/identical.html" class="external-link">identical</a></span><span class="op">(</span><span class="va">adj</span><span class="op">$</span><span class="va">debt_lt_end</span>, <span class="va">raw</span><span class="op">$</span><span class="va">debt_lt_end</span><span class="op">)</span></span></code></pre></div>
-<pre><code><span><span class="co">## [1] TRUE</span></span></code></pre>
-</div>
-<div class="section level2">
 <h2 id="see-also">See also<a class="anchor" aria-label="anchor" href="#see-also"></a>
 </h2>
 <ul>
@@ -364,9 +275,6 @@ districts.</li>
 constant dollars.</li>
 <li>The “Data Quality and Comparability” article for
 <code>c11_spike_flag</code> and the state-revenue adjustment.</li>
-<li>
-<code>list_variables("full")</code> for the complete data
-dictionary.</li>
 </ul>
 </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>

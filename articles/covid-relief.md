@@ -6,11 +6,8 @@ Beginning in FY2020, the F-33 survey added items tracking district
 expenditures of temporary federal COVID-19 assistance funds (ESSER and
 related programs). `edfinr`’s **full** dataset carries these as the
 `exp_covid_*` variables, which let you see how much pandemic aid
-districts spent, on what, and how spending ramped up and began to
-decline within the FY2020-FY2023 window. The window is right-censored:
-FY2023 ends in June 2023, more than a year before the ESSER III
-obligation deadline of September 30, 2024, so the final spend-down (and
-the fiscal cliff that followed it) lies beyond this panel.
+districts reported spending, on what, and how spending ramped up and
+began to decline from FY20-FY23.
 
 ``` r
 
@@ -20,8 +17,8 @@ library(tidyr)
 library(ggplot2)
 ```
 
-The eight variables map to F-33 items AE1-AE8 (see
-`list_variables("full")`):
+The eight `edfinr` COVID expenditure variables map to F-33 items AE1-AE8
+(see `list_variables("full")`):
 
 - `exp_covid_total` (AE1) – total expenditures from COVID-19 federal
   assistance funds.
@@ -39,25 +36,21 @@ The eight variables map to F-33 items AE1-AE8 (see
 
 1.  **Full dataset only.** The `exp_covid_*` variables are not in the
     skinny dataset; request `dataset_type = "full"`.
-2.  **Availability.** AE1-AE6 begin in FY2020; AE7 and AE8 begin in
-    FY2021 (`first_yr_avail` in the dictionary records this).
-3.  **A lens, not an addition.** The AE items report spending *from*
-    federal COVID assistance funds. That spending also appears in the
-    regular expenditure items, so do not add `exp_covid_*` to the
-    standard expenditure variables – that double counts.
-4.  **`NA` is not zero.** Districts that did not report an item show
+2.  **Availability.** AE1-AE6 begin in FY2020; AE7 and AE8 begin in FY21
+    (`first_yr_avail` in the dictionary records this).
+3.  **`NA` is not zero.** Districts that did not report an item show
     `NA`, including districts whose raw F-33 values are zero-filled but
     flagged missing (`FL_AE1 = "M"`); edfinr converts those to `NA`
-    during cleaning. New York never reported these items, so its
+    during cleaning. New York did not report these items, so its
     districts are `NA` in every year FY2020-FY2023, and roughly a third
     to half of California districts are `NA` from FY2021 onward. A `0`
     that survives cleaning is a genuine reported zero, which is common
     in FY2020 when most ESSER funds were not yet spent. Treat
     state-level comparisons with care.
-5.  **CPI adjustment applies.** Like other expenditure flows, the
+4.  **CPI adjustment applies.** Like other expenditure flows, the
     `exp_covid_*` variables are scaled when you pass `cpi_adj`. The
-    examples below stay nominal to match how federal awards are usually
-    described.
+    examples below use nominal dollars to match how federal awards are
+    usually described.
 
 ## The arc of relief spending
 
@@ -102,12 +95,6 @@ expenditure among districts reporting both items.
 
 ## What did districts spend relief funds on?
 
-The component items break spending into instruction, support services,
-capital outlay, technology, plant operations, and food service.
-Components do not mechanically sum to `exp_covid_total` – districts
-report each item separately and some spending falls outside the listed
-categories – so shares below are of the summed components, by year.
-
 ``` r
 
 component_labels <- c(
@@ -147,10 +134,6 @@ services.](covid-relief_files/figure-html/composition-1.png)
 
 ## How did relief spending vary across districts?
 
-Per-pupil relief spending in FY2023 varied widely across districts,
-reflecting both the poverty-weighted allocation formulas and differences
-in spend-down pacing:
-
 ``` r
 
 covid |>
@@ -176,12 +159,6 @@ group.](covid-relief_files/figure-html/distribution-1.png)
 
 ## Tracking the wind-down in large districts
 
-For any given district, the FY2020-FY2023 series shows the ramp-up and,
-in districts that moved quickly, the start of the spend-down. Keep the
-right-censoring in mind: FY2023 predates the ESSER III obligation
-deadline (September 30, 2024), so a series that is still high or rising
-in FY2023 is not evidence a district failed to spend its funds.
-
 ``` r
 
 largest_ids <- covid |>
@@ -189,10 +166,6 @@ largest_ids <- covid |>
   slice_max(enroll, n = 6) |>
   pull(ncesid)
 
-# label each district by its most recent name: dist_name changes across years
-# for some districts (Chicago, Clark County), and faceting on the raw names
-# would split one district into two panels; NA rows are kept so districts
-# that never reported (New York City) still render as an empty panel
 covid |>
   filter(ncesid %in% largest_ids) |>
   mutate(
@@ -219,15 +192,15 @@ then decline by FY2023, while New York City's panel is empty because the
 state never reported these
 items.](covid-relief_files/figure-html/wind-down-1.png)
 
-The empty New York City panel is the sharpest illustration of caveat 4’s
-reporting warning: the nation’s largest district shows `NA` on every AE
-item in all four years. The raw F-33 files carry those items as zeros,
-but the accompanying data-item flags mark them missing (`FL_AE1 = "M"`)
-– New York State never reported the COVID items for any of its districts
-– so edfinr surfaces them as `NA` rather than letting billions of
-dollars in allocated relief funds masquerade as zero spending. Before
-reading any single district’s series, confirm the state actually
-reported these items in the years you are comparing.
+The empty New York City panel is the sharpest illustration of caveat 3’s
+warning: the nation’s largest district shows `NA` on every AE item in
+all four years. The raw F-33 files carry those items as zeros, but the
+accompanying data-item flags mark them missing (`FL_AE1 = "M"`) – New
+York State never reported the COVID items for any of its districts – so
+`edfinr` labels them as `NA` rather than letting billions of dollars in
+allocated relief funds appear as zero spending. Before reading any
+single district’s series, confirm the state actually reported these
+items in the years you are comparing.
 
 ## See also
 
@@ -235,5 +208,3 @@ reported these items in the years you are comparing.
   reporting caveats that apply doubly to these items.
 - The “CPI Adjustments” vignette if you need relief spending in constant
   dollars.
-- `list_variables("full", category = "expenditure")` for the full
-  expenditure dictionary.

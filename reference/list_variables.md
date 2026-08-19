@@ -52,7 +52,7 @@ head(vars)
 # list all variables in full dataset
 full_vars <- list_variables(dataset_type = "full")
 nrow(full_vars)
-#> [1] 122
+#> [1] 124
 
 # list only expenditure variables in full dataset
 exp_vars <- list_variables(dataset_type = "full", category = "expenditure")

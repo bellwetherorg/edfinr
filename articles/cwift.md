@@ -3,10 +3,11 @@
 ## What CWIFT is
 
 The **Comparable Wage Index for Teachers (CWIFT)** is a National Center
-for Education Statistics (NCES) EDGE index of how much it costs to
-employ college-educated workers in a given labor market, relative to the
-national average. It lets you account for the fact that a dollar buys
-less teacher labor in a high-wage metro than in a low-cost rural area.
+for Education Statistics (NCES) index of how much it costs to employ
+college-educated workers in a given labor market, relative to the
+national average. It allows you account for how much teacher labor a
+dollar buys in a high-wage metro area compared to a lower-cost rural
+area.
 
 ``` r
 
@@ -18,28 +19,26 @@ library(ggplot2)
 `edfinr` provides four CWIFT columns:
 
 - `cwift_est` – the index value (roughly centered on 1.0; above 1.0
-  means higher-than-average labor costs). In the skinny dataset.
+  means higher-than-average labor costs).
 - `cwift_imputed` – `TRUE` if the value was imputed rather than
-  observed. In the skinny dataset.
-- `cwift_se` – the standard error of the estimate (full dataset).
+  observed.
+- `cwift_se` – the standard error of the estimate (full dataset only).
 - `cwift_impute_method` – how the value was produced: `"observed"`,
-  `"interpolated_2019_2021"`, or `"carried_forward_2022"` (full
-  dataset).
+  `"interpolated_2019_2021"`, or `"carried_forward_2022"` (full dataset
+  only).
 
 ## When *not* to use CWIFT
 
 CWIFT is a **labor-cost index, not a general price deflator.** Use
 `cpi_adj` (see the “CPI Adjustments” vignette) to convert dollars across
 *time*; use CWIFT to compare labor costs across *places* in the same
-year. It does not deflate construction costs or non-labor inputs, and
-combining it with CPI is a two-step adjustment, not a single one (see
-below).
+year. It does not deflate construction costs or non-labor inputs.
 
 ## Coverage and imputation
 
 CWIFT is not available for every edfinr year. FY2012-FY2014 predate the
-series, FY2020 was not published (the ACS 2020 estimates were withheld),
-and no FY2023 release existed at the time of processing.
+series, FY20 was not published (the ACS 2020 estimates were withheld),
+and FY22 was the most release at the time of processing.
 
 ``` r
 
@@ -72,7 +71,7 @@ us_sy12_to_sy23
     ## 11  2022 16652    12873       0    3779
     ## 12  2023 16613        0   12860    3753
 
-The imputation rules:
+The imputation rules are straightforward:
 
 - **FY2012-FY2014:** no release; all four columns are `NA`.
 - **FY2020:** interpolated as the mean of FY2019 and FY2021 for LEAs
@@ -87,10 +86,9 @@ Treat imputed values with more caution than observed ones;
 
 ## How is CWIFT distributed?
 
-Before ranking districts, it helps to see the index’s spread. Labor
-costs rise with urbanization, so the distribution shifts upward from
-rural districts to cities. This example uses FY2022, the most recent
-observed (non-imputed) year.
+Labor costs rise with urbanization, so the distribution shifts upward
+from rural districts to cities. This example uses FY22, the most recent
+year of CWIFT data.
 
 ``` r
 
@@ -162,13 +160,13 @@ us_sy23 |>
 `cwift_se` is the standard error of `cwift_est`; smaller values mean a
 more precise estimate. It is most useful when comparing two districts
 whose point estimates are close – if their intervals overlap heavily,
-treat them as similar. Remember that the standard error for interpolated
-FY2020 values is an approximation.
+treat them as similar.
 
 Plotting estimates with intervals of plus or minus 1.96 standard errors
 makes the overlap visible. Among Ohio’s largest districts, several point
 estimates that differ in the second decimal place have intervals that
-overlap substantially, so the data cannot distinguish their labor costs:
+overlap substantially – their labor costs should be considered to be
+similar:
 
 ``` r
 
@@ -195,14 +193,15 @@ overlap substantially.](cwift_files/figure-html/se-intervals-1.png)
 
 ## Recipe: labor-cost-adjusted per-pupil dollars
 
-`edfinr` ships the raw index rather than precomputed adjusted columns,
-so you can divide any per-pupil dollar figure by `cwift_est` to express
-it in labor-cost-adjusted terms. Districts in expensive labor markets
-look relatively lower after adjustment. One known simplification: only
-the labor share of spending (roughly 80 percent of current expenditure)
-actually varies with wages, so dividing all dollars by the index applies
-the labor-cost correction to non-labor spending too. This is the
-standard convention, but it overstates the correction somewhat.
+`edfinr` ships the raw CWIFT index rather than precomputed adjusted
+columns. To adjust funding by the CWIFT index, simply divide a F-33
+dollar figure by `cwift_est` to express it in labor-cost-adjusted terms.
+Revenued and expenditures for districts in expensive labor markets look
+relatively lower after adjustment. A note of caution: only the labor
+share of spending (roughly 80 percent of current expenditure) actually
+varies with wages, so dividing all dollars by the index applies the
+labor-cost correction to non-labor spending too. This is the standard
+convention, but be aware that it may overstate the correction.
 
 ``` r
 
@@ -272,5 +271,3 @@ never scales it.
 - The “Capital and Facilities” article for capital, debt, and fund
   balances.
 - The “Mapping School Finance Data” article to put `cwift_est` on a map.
-- `list_variables("full", category = "cwift")` for the CWIFT dictionary
-  entries.
