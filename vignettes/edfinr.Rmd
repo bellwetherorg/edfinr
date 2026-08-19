@@ -68,14 +68,15 @@ glimpse(ky_sy23)
 
 ## Dataset types: skinny vs. full
 
-By default, `get_finance_data()` returns a "skinny" dataset with 57 essential variables covering:
+By default, `get_finance_data()` returns a "skinny" dataset with 59 essential variables covering:
 
 - District identifiers and characteristics.
 - Total revenues by source (local, state, federal).
 - Current expenditures and total capital outlay (`exp_cap_total`, `exp_cap_total_pp`).
 - Key demographic and economic indicators (including the CWIFT teacher-wage index).
+- District land area and student density (`land_area_sq_mi`, `s_per_sq_mi`).
 
-For more detailed analysis, you can request the "full" dataset with 122 variables that includes:
+For more detailed analysis, you can request the "full" dataset with 124 variables that includes:
 
 - All skinny dataset variables.
 - Detailed expenditure data.
@@ -93,7 +94,7 @@ setdiff(names(ky_full_sy23), names(ky_sy23))
 
 ## Finding variables
 
-With 122 variables in the full dataset, the data dictionary is the fastest way to find what you need. `list_variables()` returns it as a tibble, so you can filter and search it like any other data.
+With 124 variables in the full dataset, the data dictionary is the fastest way to find what you need. `list_variables()` returns it as a tibble, so you can filter and search it like any other data.
 
 ```{r finding-variables, eval = TRUE}
 # the full dictionary: name, type, category, source, f33_item,

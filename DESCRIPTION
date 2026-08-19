@@ -18,10 +18,11 @@ Authors@R: c(
     ),
     person("Bellwether", role = "cph")
   )
-Description: Provides easy access to tidy education finance data using Bellwether's methodology 
+Description: Provides easy access to tidy education finance data using Bellwether's methodology
     to combine NCES F-33 Survey, Census Bureau Small Area Income Poverty Estimates (SAIPE),
-    community data from the ACS 5-Year Estimates, and the Comparable Wage Index for
-    Teachers (CWIFT) from NCES EDGE. The package simplifies
+    community data from the ACS 5-Year Estimates, the Comparable Wage Index for
+    Teachers (CWIFT) from NCES EDGE, and school district land area from U.S. Census Bureau
+    Gazetteer Files. The package simplifies
     downloading, caching, and filtering education finance data by year and state,
     enabling researchers and analysts to explore K-12 education funding patterns,
     revenue sources, expenditure categories, and demographic factors across 

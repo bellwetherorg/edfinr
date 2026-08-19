@@ -103,6 +103,8 @@ list_variables <- function(dataset_type = "skinny", category = "all") {
     "urbanicity_raw", "integer", "geographic", "NCES CCD Directory", NA, "2012", "Raw NCES urban-centric locale code (numeric)", "skinny",
     "urbanicity_raw_cat", "factor", "geographic", "NCES CCD Directory", NA, "2012", "Raw NCES 12-category urban-centric locale", "skinny",
     "urbanicity", "factor", "geographic", "NCES CCD Directory", NA, "2012", "Urbanicity (NCES categories condensed into City, Suburb, Town, Rural)", "skinny",
+    "land_area_sq_mi", "numeric", "geographic", "Census Bureau Gazetteer", NA, "2012", "District land area in square miles (Gazetteer ALAND_SQMI; land only); NA for LEAs without a Census boundary (charters, ESAs, state-operated agencies)", "skinny",
+    "s_per_sq_mi", "numeric", "geographic", "Census Bureau Gazetteer", NA, "2012", "Students per square mile (enroll / land_area_sq_mi); NA, never Inf, where land area is zero or unavailable", "skinny",
     "schlev", "character", "governance", "NCES CCD Directory", NA, "2012", "LEA or school level", "skinny",
     "lea_type", "factor", "governance", "NCES CCD Directory", NA, "2012", "LEA type description", "skinny",
     "lea_type_id", "integer", "governance", "NCES CCD Directory", NA, "2012", "LEA type numeric code", "skinny",
