@@ -154,7 +154,9 @@ list_variables("full") |>
   knitr::kable()
 ```
 
-A multi-year average or trend that crosses one of these boundaries will mix real change with a coverage change. 
+A multi-year average or trend that crosses one of these boundaries will mix real change with a coverage change.
+
+`first_yr_avail` marks when a variable *enters* the panel, but it does not capture *partial* coverage within years where the variable is otherwise available. The Census Gazetteer fields are a good example: `land_area_sq_mi` and `s_per_sq_mi` both show `first_yr_avail == "2012"`, since they are populated from the first year of the panel onward, but coverage is not uniform. Districts without a Census boundary -- charters, education service agencies, and state-operated agencies -- are always `NA` for these fields, in every year, by design rather than by omission. And Vermont's FY2016-FY2021 Act 46 district consolidation left many post-consolidation LEAs without a matching Gazetteer boundary, dropping match rates there to roughly 7-12% for those years versus 97%+ elsewhere; restrict Vermont trend analyses using these fields to FY2012-FY2015 or FY2022 onward. Nothing in `first_yr_avail` flags this gap, so check a variable's actual non-missing rate by year and geography before assuming uniform coverage.
 
 ## Urbanicity: condensed vs. raw locale codes
 
@@ -173,7 +175,7 @@ The condensed categories are right for most summaries, but the raw codes can be 
 Before publishing numbers built on `edfinr` data:
 
 1. **Check missingness** for your variables and years; decide explicitly how to treat `NA` district-years rather than relying on `na.rm = TRUE`.
-2. **Check `first_yr_avail`** for every variable in a multi-year analysis.
+2. **Check `first_yr_avail`** for every variable in a multi-year analysis, and remember it does not capture partial coverage (e.g., Vermont's Gazetteer gap, FY2016-FY2021).
 3. **Check `c11_spike_flag`** (and compare against `rev_state_unadj_pp`) when state revenue is central to the analysis.
 4. **Check `osp_pct`** when high-pass-through districts could distort per-pupil comparisons.
 5. **Use a consistent sample** (or justify not doing so) for trend analyses, especially any that include California.

@@ -27,6 +27,7 @@ This package provides access to education finance data from:
 - American Community Survey 5-Year Estimates via [`tidycensus` package](https://walker-data.com/tidycensus/)
 - U.S Bureau of Labor Statistics [Consumer Price Index for All Urban Consumers (CPI-U)](https://data.bls.gov/toppicks?survey=cu)
 - NCES EDGE [Comparable Wage Index for Teachers (CWIFT)](https://nces.ed.gov/programs/edge/Economic/TeacherWage)
+- U.S. Census Bureau [Gazetteer Files](https://www.census.gov/geographies/reference-files/time-series/geo/gazetteer-files.html)
 
 ## Data Processing Methods
 
@@ -119,10 +120,26 @@ Adjustments:
 - Calculate an averaged CPI value using the second half of one year and the first half of the following year to align with the academic calendar, with the 2011-12 school year as the baseline year
 - Clean and reformat CPI data for consistency across processing scripts
 
+### Census Gazetteer Files
+
+Data source: U.S. Census Bureau [Gazetteer Files](https://www.census.gov/geographies/reference-files/time-series/geo/gazetteer-files.html), school district vintages.
+
+Raw variables selected:
+
+- District identifier (`GEOID`) and land area (`ALAND_SQMI`, land only, excludes water).
+
+Adjustments:
+
+- Rename `GEOID` to `ncesid` and `ALAND_SQMI` to `land_area_sq_mi`.
+- Each Gazetteer vintage is joined to the edfinr fiscal year covering the same school year.
+- `s_per_sq_mi` is derived as `enroll / land_area_sq_mi`; it is `NA`, never `Inf`, where land area is zero or unavailable.
+- LEAs without a Census boundary (charters, ESAs, state-operated agencies) have no Gazetteer match and are `NA` for both fields.
+- Vermont's FY2016-FY2021 Act 46 district consolidation leaves match rates around 7-12% for those years, versus 97%+ in other years and states; restrict Vermont trend analyses to FY2012-FY2015 and FY2022 onward.
+
 ## Joining Data
 
 - The joining process is implemented in the `08_edfinr_join_and_exclude.R` script (CWIFT is prepared in `07_cwift_clean.R` and joined there).
-- Data from the F-33 survey, CCD Directory, ACS (unified, elementary, and secondary), SAIPE, and CWIFT sources are merged using left joins on shared district identifiers (ncesid) and fiscal year.
+- Data from the F-33 survey, CCD Directory, ACS (unified, elementary, and secondary), SAIPE, CWIFT, and Census Gazetteer sources are merged using left joins on shared district identifiers (ncesid) and fiscal year.
 - The procedure ensures that each district record is enriched with revenue, expenditure, demographic, and economic data.
 
 ## Revenue Adjustments
@@ -153,6 +170,7 @@ Users should note the following when working with the `edfinr` datasets:
 - Inflation and adjustment factors (e.g., CPI adjustments) are based on averages and may not perfectly reflect local cost variations.
 - Capital outlay is excluded from `exp_cur_total`, is lumpy year to year (use multi-year averages), and `NA` means an item was not reported, not zero. Debt and fund-balance stocks (`debt_*`, `fund_bal_*`) are point-in-time levels and are never CPI-adjusted.
 - CWIFT is a relative labor-cost index (not a price deflator); FY2012-2014 are unavailable, FY2020 is interpolated, and FY2023 is carried forward from FY2022.
+- `land_area_sq_mi` and `s_per_sq_mi` are `NA` by design for LEAs without a Census boundary (charters, ESAs, state-operated agencies), and `s_per_sq_mi` is `NA` (never `Inf`) wherever land area is zero or unavailable. Vermont has a coverage gap from FY2016-FY2021. Use log scales when plotting `s_per_sq_mi`.
 - The hosted datasets are distributed as gzip-compressed Parquet files.
 - **Caution is advised when comparing data across fiscal years due to potential differences in data collection and processing methods.**
 

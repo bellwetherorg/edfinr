@@ -12,7 +12,7 @@ knitr::opts_chunk$set(
 
 ## Introduction
 
-The communities that fund and attend public schools are deeply connected to school finance. Alongside the F-33 finance items, `edfinr` joins each district to community measures from the American Community Survey (ACS) 5-Year Estimates and poverty estimates from the Census Bureau's Small Area Income and Poverty Estimates (SAIPE). This article explores those variables and shows how to use them for a typical analysis task: comparing districts' fiscal **capacity** (what a community can raise) with student **need**.
+The communities that fund and attend public schools are deeply connected to school finance. Alongside the F-33 finance items, `edfinr` joins each district to community measures from the American Community Survey (ACS) 5-Year Estimates, poverty estimates from the Census Bureau's Small Area Income and Poverty Estimates (SAIPE), and district land area from the Census Bureau's Gazetteer Files. This article explores those variables and shows how to use them for a typical analysis task: comparing districts' fiscal **capacity** (what a community can raise) with student **need**.
 
 ```{r setup, include = FALSE}
 library(edfinr)
@@ -35,7 +35,7 @@ source table codes:
 
 ```{r variable-tour}
 list_variables("skinny") |>
-  filter(source %in% c("5-Year ACS Survey", "Census Bureau SAIPE")) |>
+  filter(source %in% c("5-Year ACS Survey", "Census Bureau SAIPE", "Census Bureau Gazetteer")) |>
   select(name, source, description) |>
   knitr::kable()
 ```
@@ -68,23 +68,23 @@ us_2023 |>
 
 ## Fiscal capacity: property wealth and local revenue
 
-Local revenue depends heavily on the property tax base. Plotting per-pupil local revenue against median property value shows the releationship betwen the proxy for local fiscal capacity (MPV) and actual local revenue.
+Local revenue depends heavily on the property tax base. Plotting per-pupil local revenue against median property value shows the relationship between the proxy for local fiscal capacity (MPV) and actual local revenue.
 
 One caution before leaning on `mpv` as a capacity measure: it is the ACS median value of owner-occupied homes, a proxy for *residential* property wealth only. Formal fiscal-capacity measures use assessed (or equalized) valuation per pupil, which also counts commercial, industrial, and utility property and is scaled by enrollment. If your state publishes assessed valuation per pupil, use it; `mpv` is a nationally consistent fallback.
 
-```{r capacity, fig.height = 5, fig.alt = "Scatterplot of median property value versus local revenue per-pupil on log scales, colored by urbanicity, with smoothed trend lines showing local revenue rising with property wealth."}
+```{r capacity, fig.height = 5, fig.alt = "Scatterplot of median property value on a log scale versus local revenue per-pupil, colored by urbanicity, with smoothed trend lines showing local revenue rising with property wealth."}
 us_2023 |>
   filter(!is.na(mpv), !is.na(rev_local_pp), mpv > 0, rev_local_pp > 0,
          !is.na(urbanicity)) |>
   ggplot(aes(x = mpv, y = rev_local_pp, size = enroll, color = urbanicity)) +
-  geom_point(alpha = 0.2, size = 0.8) +
+  geom_point(alpha = 0.2) +
   geom_smooth(se = FALSE) +
   scale_x_log10(labels = scales::label_dollar()) +
-  scale_y_continuious(labels = scales::label_dollar()) +
+  scale_y_continuous(labels = scales::label_dollar()) +
   scale_size_area(max_size = 10) +
   labs(
     title = "Local Revenue Tracks Property Wealth, SY2022-23",
-    subtitle = "Each point is a district; log scales",
+    subtitle = "Each point is a district; log 10 scale x-axis",
     x = "Median Property Value (Log 10 scale)",
     y = "Local Revenue Per-Pupil",
     color = "Urbanicity",
@@ -133,6 +133,31 @@ us_2023 |>
   labs(
     title = "Community Indicators by Urbanicity, SY2022-23",
     x = "Urbanicity", y = NULL
+  ) +
+  theme_minimal()
+```
+
+## Geographic sparsity: land area and student density
+
+`urbanicity` classifies districts into four categories, but districts within the same category still span a wide range of physical sparsity. `s_per_sq_mi` (students per square mile, derived from `land_area_sq_mi`) offers a continuous counterpart: a rural district serving a compact town looks different from one spread across a sparsely populated county, even though both are labeled "Rural."
+
+Three caveats before using it:
+
+1. **`NA` by design, not missingness.** Districts without a Census boundary -- such as charter schools -- have no Gazetteer file match, so `land_area_sq_mi` and `s_per_sq_mi` are `NA` for them in every year.
+2. **`NA`, never `Inf`.** Where `land_area_sq_mi` is zero or unavailable, `s_per_sq_mi` is `NA` rather than an infinite or undefined ratio.
+3. **Vermont coverage gap.** Vermont's Act 46 district consolidation left many post-consolidation LEAs without a matching Gazetteer boundary; match rates there run roughly 7-12% for those years, versus 97%+ elsewhere. Restrict Vermont density analyses to FY2012-FY2015 or FY2022 onward.
+
+Density varies by orders of magnitude across urbanicity categories, so a log scale can be useful:
+
+```{r density, fig.height = 5, fig.alt = "Boxplots of students per square mile by urbanicity on a log scale, showing City districts are far denser than Suburb, Town, and Rural districts, each successively less dense."}
+us_2023 |>
+  filter(!is.na(urbanicity), !is.na(s_per_sq_mi)) |>
+  ggplot(aes(x = urbanicity, y = s_per_sq_mi)) +
+  geom_boxplot(outlier.alpha = 0.1) +
+  scale_y_log10(labels = scales::label_comma()) +
+  labs(
+    title = "Student Density by Urbanicity, SY2022-23",
+    x = "Urbanicity", y = "Students per Square Mile (Log 10 scale)"
   ) +
   theme_minimal()
 ```

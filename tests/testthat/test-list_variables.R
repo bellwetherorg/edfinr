@@ -1,8 +1,19 @@
 # The variable dictionary is static, so these tests need no network access.
 
 test_that("dictionary has the expected number of rows", {
-  expect_equal(nrow(list_variables("skinny")), 57)
-  expect_equal(nrow(list_variables("full")), 122)
+  expect_equal(nrow(list_variables("skinny")), 59)
+  expect_equal(nrow(list_variables("full")), 124)
+})
+
+test_that("gazetteer land-area variables are documented", {
+  sk <- list_variables("skinny")
+  expect_true(all(c("land_area_sq_mi", "s_per_sq_mi") %in% sk$name))
+  gaz <- list_variables("full")
+  gaz <- gaz[gaz$name %in% c("land_area_sq_mi", "s_per_sq_mi"), ]
+  expect_equal(unique(gaz$source), "Census Bureau Gazetteer")
+  expect_equal(unique(gaz$category), "geographic")
+  expect_equal(unique(gaz$type), "numeric")
+  expect_true(all(is.na(gaz$f33_item)))
 })
 
 test_that("new debt and cwift categories are present", {

@@ -5,8 +5,8 @@ test_that("fetched dimensions match expectations", {
   skip_on_cran()
   sk <- fetch_or_skip(yr = "all", dataset_type = "skinny")
   fu <- fetch_or_skip(yr = "all", dataset_type = "full")
-  expect_equal(ncol(sk), 57)
-  expect_equal(ncol(fu), 122)
+  expect_equal(ncol(sk), 59)
+  expect_equal(ncol(fu), 124)
   expect_equal(nrow(sk), nrow(fu))
   # yr = "all" still reads the combined file: full 2012-2023 panel.
   # 192,600 = 192,364 + the 236 MA regional district-years restored for
@@ -25,6 +25,16 @@ test_that("fetched columns and types match the dictionary", {
     fetched_type <- vapply(dict$name, function(n) class(d[[n]])[1], character(1))
     expect_equal(unname(fetched_type), dict$type)
   }
+})
+
+test_that("land area and student density behave as documented", {
+  skip_on_cran()
+  d <- fetch_or_skip(yr = "2023", dataset_type = "skinny")
+  expect_true(all(is.finite(d$s_per_sq_mi) | is.na(d$s_per_sq_mi)))
+  ok <- !is.na(d$land_area_sq_mi) & d$land_area_sq_mi > 0
+  expect_true(all(is.na(d$s_per_sq_mi[!ok])))
+  expect_equal(d$s_per_sq_mi[ok], d$enroll[ok] / d$land_area_sq_mi[ok],
+               tolerance = 1e-6)
 })
 
 test_that("year is integer and 2023 is available", {
@@ -75,6 +85,7 @@ test_that("cpi_adj works on the skinny dataset too", {
   # the CWIFT index and ratio columns stay untouched
   expect_equal(adj$cwift_est, raw$cwift_est)
   expect_equal(adj$osp_pct, raw$osp_pct)
+  expect_equal(adj$s_per_sq_mi, raw$s_per_sq_mi)
 })
 
 test_that("cpi_adj combines with yr = 'all' (combined-file baseline path)", {
