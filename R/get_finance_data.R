@@ -24,7 +24,7 @@
 #'                 variables are adjusted to that school year's dollars using CPI averaged over
 #'                 the months of the school year (e.g., "2023" uses the 2022-23 school year CPI).
 #'                 Capital outlay and debt-interest flows are adjusted; debt and fund-balance
-#'                 stocks (debt_*, fund_bal_*) and the CWIFT index are returned nominal.
+#'                 stocks (`debt_*`, `fund_bal_*`) and the CWIFT index are returned nominal.
 #'                 When cpi_adj is set to a value other than "none", a new column "cpi_adj_index"
 #'                 will be added to the output showing the adjustment index used for each row.
 #' @param refresh A logical value indicating whether to force a refresh of the cached data. Default is FALSE.
