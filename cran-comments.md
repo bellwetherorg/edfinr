@@ -2,7 +2,6 @@
 
 * Local: macOS (aarch64, Tahoe), R 4.5.1, `R CMD check --as-cran --run-donttest`
 * win-builder: R-devel and R-release
-* mac-builder: R-release (aarch64)
 * GitHub Actions: macOS (release), Windows (release), Ubuntu (devel, release, oldrel-1)
 
 ## R CMD check results
