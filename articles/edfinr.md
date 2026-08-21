@@ -337,9 +337,9 @@ revenue_analysis
   Methodology](https://bellwetherorg.github.io/edfinr/articles/data-sources-methods.md)
   vignette for detailed methodology and the F-33 crosswalk.
 - On the package website: articles on [capital and
-  facilities](https://bellwetherorg.github.io/edfinr/articles/capital-facilities.md),
-  [CWIFT](https://bellwetherorg.github.io/edfinr/articles/cwift.md),
+  facilities](https://bellwetherorg.github.io/edfinr/articles/capital-facilities.html),
+  [CWIFT](https://bellwetherorg.github.io/edfinr/articles/cwift.html),
   COVID relief spending, [community and economic
-  context](https://bellwetherorg.github.io/edfinr/articles/community-context.md),
+  context](https://bellwetherorg.github.io/edfinr/articles/community-context.html),
   data quality and comparability, and [mapping school finance
-  data](https://bellwetherorg.github.io/edfinr/articles/mapping.md).
+  data](https://bellwetherorg.github.io/edfinr/articles/mapping.html).
