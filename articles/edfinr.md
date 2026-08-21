@@ -2,12 +2,11 @@
 
 ## Introduction
 
-The `edfinr` package provides a simple interface for accessing school
-district finance data with an opinionated data cleaning methodology:
-NCES F-33 revenues and expenditures joined with enrollment, poverty,
-community, and labor-cost measures for U.S. school districts. This
-vignette will help you get started with the package’s core
-functionality.
+The `edfinr` package provides tidy, analysis-ready school district
+finance data for the United States — NCES F-33 revenues and expenditures
+joined with enrollment, poverty, community, and labor-cost measures —
+assembled with an opinionated cleaning methodology. This vignette will
+help you get started with the package’s core functionality.
 
 ``` r
 
@@ -15,22 +14,6 @@ library(edfinr)
 library(dplyr)
 library(ggplot2)
 ```
-
-## What’s new in 0.2.0
-
-If you used `edfinr` 0.1.x, you’ll notice three significant changes:
-
-- **Added FY23 data**: Coverage now extends through the 2022-23 school
-  year, and
-  [`get_finance_data()`](https://bellwetherorg.github.io/edfinr/reference/get_finance_data.md)
-  defaults to `yr = "2023"`. - **More variables across years**: The
-  datasets add capital outlay detail, debt stocks, fund balances, and
-  the NCES Comparable Wage Index for Teachers (CWIFT), each covered by a
-  dedicated article on the package website.
-- **Faster downloads**: Downloads are now per-year files, so small
-  requests transfer only the years they need.
-
-Refer to the NEWS.md file for the full list of updates.
 
 ## Core function: get_finance_data()
 
@@ -64,10 +47,7 @@ Kentucky school districts from the 2022-23 school year:
 
 ``` r
 
-# download "skinny" dataset for a single year and a single state
 ky_sy23 <- get_finance_data(yr = "2023", geo = "KY")
-
-# view the structure of the returned data
 glimpse(ky_sy23)
 ```
 
@@ -161,10 +141,7 @@ variables that includes:
 
 ``` r
 
-# download the full dataset with detailed expenditure data for a single year/state
 ky_full_sy23 <- get_finance_data(yr = "2023", geo = "KY", dataset_type = "full")
-
-# the full dataset adds detailed expenditure, capital, debt, and CWIFT variables
 setdiff(names(ky_full_sy23), names(ky_sy23))
 ```
 
@@ -212,8 +189,6 @@ data.
 
 ``` r
 
-# the full dictionary: name, type, category, source, f33_item,
-# first_yr_avail, and description for every variable
 vars <- list_variables("full")
 vars
 ```
@@ -235,7 +210,7 @@ vars
 
 ``` r
 
-# filter by category; 0.2.0 adds "debt" and "cwift" categories
+# filter by category
 list_variables("full", category = "debt")
 ```
 
@@ -260,13 +235,11 @@ function makes it easy to access data across multiple years and states:
 
 ``` r
 
-# get data for multiple states across multiple years
 sec_data <- get_finance_data(
   yr = "2019:2023",  # years 2019 through 2023
   geo = "AL,AR,FL,GA,KY,LA,MS,MO,OK,SC,TN,TX"  # comma-separated state codes
 )
 
-# get the most recent year of data for all states
 us_sy23 <- get_finance_data(yr = "2023", geo = "all")
 ```
 
@@ -299,10 +272,8 @@ tools to analyze it. Here are some common analysis patterns:
 
 ``` r
 
-# download 2023 data for connecticut
 ct_sy23 <- get_finance_data(yr = "2023", geo = "CT")
 
-# plot local share of revenue vs. total revenue w/ urbanicity + enrollment
 ggplot(ct_sy23) +
   geom_point(aes(
     x = rev_local / rev_total,
@@ -346,7 +317,7 @@ revenue_analysis <- ct_sy23 |>
     enrollment = sum(enroll, na.rm = TRUE)
   )
 
-print(revenue_analysis)
+revenue_analysis
 ```
 
     ## # A tibble: 4 × 6
@@ -359,9 +330,16 @@ print(revenue_analysis)
 
 ## See also
 
-- The “CPI Adjustments” vignette for inflation adjustment across years.
-- The “Data Sources and Methodology” vignette for detailed methodology
-  and the F-33 crosswalk.
-- On the package website: articles on capital and facilities, CWIFT,
-  COVID relief spending, community and economic context, data quality
-  and comparability, and mapping school finance data.
+- The [CPI
+  Adjustments](https://bellwetherorg.github.io/edfinr/articles/cpi-adjustments.md)
+  vignette for inflation adjustment across years.
+- The [Data Sources and
+  Methodology](https://bellwetherorg.github.io/edfinr/articles/data-sources-methods.md)
+  vignette for detailed methodology and the F-33 crosswalk.
+- On the package website: articles on [capital and
+  facilities](https://bellwetherorg.github.io/edfinr/articles/capital-facilities.md),
+  [CWIFT](https://bellwetherorg.github.io/edfinr/articles/cwift.md),
+  COVID relief spending, [community and economic
+  context](https://bellwetherorg.github.io/edfinr/articles/community-context.md),
+  data quality and comparability, and [mapping school finance
+  data](https://bellwetherorg.github.io/edfinr/articles/mapping.md).
