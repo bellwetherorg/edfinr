@@ -25,10 +25,10 @@ get_finance_data(
   ("2023"), a range ("2020:2023"), or "all" for all available years.
   Defaults to "2023". Only the requested year(s) are downloaded – each
   year is a separate hosted file of roughly 3-6 MB, so a single-year
-  request transfers far less than the full panel. \`yr = "all"\` fetches
-  the entire history from one combined file. When \`cpi_adj\` names a
-  year outside the request, that year's file is also downloaded to
-  source the baseline, then dropped from the returned data.
+  request transfers far less than the full panel. `yr = "all"` fetches
+  the entire history from one combined file. When `cpi_adj` names a year
+  outside the request, that year's file is also downloaded to source the
+  baseline, then dropped from the returned data.
 
 - geo:
 
@@ -51,7 +51,7 @@ get_finance_data(
   dollars using CPI averaged over the months of the school year (e.g.,
   "2023" uses the 2022-23 school year CPI). Capital outlay and
   debt-interest flows are adjusted; debt and fund-balance stocks
-  (debt\_\*, fund_bal\_\*) and the CWIFT index are returned nominal.
+  (`debt_*`, `fund_bal_*`) and the CWIFT index are returned nominal.
   When cpi_adj is set to a value other than "none", a new column
   "cpi_adj_index" will be added to the output showing the adjustment
   index used for each row.
@@ -73,12 +73,12 @@ A tibble containing the requested education finance data.
 ## Details
 
 Downloaded files are cached for the duration of the R session in a
-subdirectory of \[tempdir()\], so repeated calls in one session do not
-re-download; the cache is cleared when the session ends. Use \`refresh =
-TRUE\` to force a fresh download. During downloads the package
-temporarily raises R's download timeout to at least 600 seconds (the
-\`yr = "all"\` combined files are 38-54 MB); a higher user-set
-\`options(timeout = )\` is respected.
+subdirectory of [`tempdir()`](https://rdrr.io/r/base/tempfile.html), so
+repeated calls in one session do not re-download; the cache is cleared
+when the session ends. Use `refresh = TRUE` to force a fresh download.
+During downloads the package temporarily raises R's download timeout to
+at least 600 seconds (the `yr = "all"` combined files are 38-54 MB); a
+higher user-set `options(timeout = )` is respected.
 
 ## Examples
 

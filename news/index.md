@@ -6,8 +6,8 @@
   (fiscal year 2023).
   [`get_finance_data()`](https://bellwetherorg.github.io/edfinr/reference/get_finance_data.md)
   defaults to `yr = "2023"` and accepts years 2012-2023 (including
-  `cpi_adj` base years). \*
-  **[`list_variables()`](https://bellwetherorg.github.io/edfinr/reference/list_variables.md)
+  `cpi_adj` base years).
+- **[`list_variables()`](https://bellwetherorg.github.io/edfinr/reference/list_variables.md)
   gains an `f33_item` column** recording the F-33 survey item(s) each
   F-33-sourced variable is drawn from (e.g., `"F12"`,
   `"TCAPOUT / V33"`); `NA` for non-F-33 sources and edfinr-adjusted

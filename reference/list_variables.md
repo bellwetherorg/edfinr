@@ -25,13 +25,13 @@ list_variables(dataset_type = "skinny", category = "all")
 
 ## Value
 
-A tibble with one row per variable and the columns \`name\`, \`type\`,
-\`category\`, \`source\`, \`f33_item\`, \`first_yr_avail\`, and
-\`description\`. \`f33_item\` gives the F-33 survey item(s) a variable
-is drawn from (e.g., "F12", "TCAPOUT / V33"); it is \`NA\` for variables
-from non-F-33 sources and for edfinr-adjusted measures (such as the
-adjusted revenue variables), whose construction is described in the
-"Data Sources and Methodology" vignette.
+A tibble with one row per variable and the columns `name`, `type`,
+`category`, `source`, `f33_item`, `first_yr_avail`, and `description`.
+`f33_item` gives the F-33 survey item(s) a variable is drawn from (e.g.,
+"F12", "TCAPOUT / V33"); it is `NA` for variables from non-F-33 sources
+and for edfinr-adjusted measures (such as the adjusted revenue
+variables), whose construction is described in the "Data Sources and
+Methodology" vignette.
 
 ## Examples
 
