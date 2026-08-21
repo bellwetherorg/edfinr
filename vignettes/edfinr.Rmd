@@ -165,4 +165,4 @@ revenue_analysis
 
 - The [CPI Adjustments](cpi-adjustments.html) vignette for inflation adjustment across years.
 - The [Data Sources and Methodology](data-sources-methods.html) vignette for detailed methodology and the F-33 crosswalk.
-- On the package website: articles on [capital and facilities](capital-facilities.html), [CWIFT](cwift.html), COVID relief spending, [community and economic context](community-context.html), data quality and comparability, and [mapping school finance data](mapping.html).
+- On the package website: articles on [capital and facilities](https://bellwetherorg.github.io/edfinr/articles/capital-facilities.html), [CWIFT](https://bellwetherorg.github.io/edfinr/articles/cwift.html), COVID relief spending, [community and economic context](https://bellwetherorg.github.io/edfinr/articles/community-context.html), data quality and comparability, and [mapping school finance data](https://bellwetherorg.github.io/edfinr/articles/mapping.html).

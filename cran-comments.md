@@ -1,3 +1,9 @@
+## Resubmission
+
+This is a resubmission. Per CRAN review, fixed four invalid file URIs in the
+"Getting Started" vignette: links to articles that appear only on the package
+website (not shipped in the package) are now absolute URLs to the site.
+
 ## Test environments
 
 * Local: macOS (aarch64, Tahoe), R 4.5.1, `R CMD check --as-cran --run-donttest`
@@ -6,17 +12,7 @@
 
 ## R CMD check results
 
-0 errors | 0 warnings | 1 note
-
-* The NOTE is in CRAN incoming feasibility: two nces.ed.gov URLs
-  (https://nces.ed.gov/ccd/files.asp and
-  https://nces.ed.gov/programs/edge/Economic/TeacherWage) are reported as
-  possibly invalid with libcurl error 60. Both URLs are correct and load in
-  browsers; they are authoritative citations for the package's federal data
-  sources. The nces.ed.gov server currently serves an incomplete TLS
-  certificate chain (the Sectigo intermediate is missing), which causes
-  strict libcurl verification to fail. This is a server-side
-  misconfiguration outside our control.
+0 errors | 0 warnings | 0 notes
 
 ## Update summary
 
