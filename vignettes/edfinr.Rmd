@@ -20,7 +20,7 @@ knitr::opts_chunk$set(
 
 ## Introduction
 
-The `edfinr` package provides a simple interface for accessing school district finance data with an opinionated data cleaning methodology: NCES F-33 revenues and expenditures joined with enrollment, poverty, community, and labor-cost measures for U.S. school districts. This vignette will help you get started with the package's core functionality.
+The `edfinr` package provides tidy, analysis-ready school district finance data for the United States — NCES F-33 revenues and expenditures joined with enrollment, poverty, community, and labor-cost measures — assembled with an opinionated cleaning methodology. This vignette will help you get started with the package's core functionality.
 
 ```{r setup, include = FALSE, eval = TRUE}
 library(edfinr)
@@ -33,15 +33,6 @@ library(edfinr)
 library(dplyr)
 library(ggplot2)
 ```
-
-## What's new in 0.2.0
-
-If you used `edfinr` 0.1.x, you'll notice three significant changes:
-
-- **Added FY23 data**: Coverage now extends through the 2022-23 school year, and `get_finance_data()` defaults to `yr = "2023"`. - **More variables across years**: The datasets add capital outlay detail, debt stocks, fund balances, and the NCES Comparable Wage Index for Teachers (CWIFT), each covered by a dedicated article on the package website. 
-- **Faster downloads**: Downloads are now per-year files, so small requests transfer only the years they need. 
-
-Refer to the NEWS.md file for the full list of updates.
 
 ## Core function: get_finance_data()
 
@@ -59,10 +50,7 @@ The primary function in `edfinr` is `get_finance_data()`, which provides access 
 The simplest way to use `get_finance_data()` is to specify a year and state. For example, to get finance data for Kentucky school districts from the 2022-23 school year:
 
 ```{r example-1}
-# download "skinny" dataset for a single year and a single state
 ky_sy23 <- get_finance_data(yr = "2023", geo = "KY")
-
-# view the structure of the returned data
 glimpse(ky_sy23)
 ```
 
@@ -85,10 +73,7 @@ For more detailed analysis, you can request the "full" dataset with 124 variable
 - The CWIFT standard error and imputation method (see the "CWIFT" article).
 
 ```{r example-2}
-# download the full dataset with detailed expenditure data for a single year/state
 ky_full_sy23 <- get_finance_data(yr = "2023", geo = "KY", dataset_type = "full")
-
-# the full dataset adds detailed expenditure, capital, debt, and CWIFT variables
 setdiff(names(ky_full_sy23), names(ky_sy23))
 ```
 
@@ -97,12 +82,10 @@ setdiff(names(ky_full_sy23), names(ky_sy23))
 With 124 variables in the full dataset, the data dictionary is the fastest way to find what you need. `list_variables()` returns it as a tibble, so you can filter and search it like any other data.
 
 ```{r finding-variables, eval = TRUE}
-# the full dictionary: name, type, category, source, f33_item,
-# first_yr_avail, and description for every variable
 vars <- list_variables("full")
 vars
 
-# filter by category; 0.2.0 adds "debt" and "cwift" categories
+# filter by category
 list_variables("full", category = "debt")
 ```
 
@@ -111,13 +94,11 @@ list_variables("full", category = "debt")
 The `get_finance_data()` function makes it easy to access data across multiple years and states:
 
 ```{r example-3}
-# get data for multiple states across multiple years
 sec_data <- get_finance_data(
   yr = "2019:2023",  # years 2019 through 2023
   geo = "AL,AR,FL,GA,KY,LA,MS,MO,OK,SC,TN,TX"  # comma-separated state codes
 )
 
-# get the most recent year of data for all states
 us_sy23 <- get_finance_data(yr = "2023", geo = "all")
 ```
 
@@ -138,11 +119,9 @@ Once you've retrieved the data, you can use standard data manipulation tools to 
 
 ### Do high local revenue share districts end up with more total revenue?
 
-```{r analysis-1, fig.alt = "Scatterplot of Connecticut districts' local share of revenue versus total revenue per-pupil for SY2022-23, with point size showing enrollment and color showing urbanicity; the most locally-reliant districts tend to have higher total revenue per-pupil."}
-# download 2023 data for connecticut
+```{r analysis-1, fig.width = 7, fig.height = 5, fig.alt = "Scatterplot of Connecticut districts' local share of revenue versus total revenue per-pupil for SY2022-23, with point size showing enrollment and color showing urbanicity; the most locally-reliant districts tend to have higher total revenue per-pupil."}
 ct_sy23 <- get_finance_data(yr = "2023", geo = "CT")
 
-# plot local share of revenue vs. total revenue w/ urbanicity + enrollment
 ggplot(ct_sy23) +
   geom_point(aes(
     x = rev_local / rev_total,
@@ -179,11 +158,11 @@ revenue_analysis <- ct_sy23 |>
     enrollment = sum(enroll, na.rm = TRUE)
   )
 
-print(revenue_analysis)
+revenue_analysis
 ```
 
 ## See also
 
-- The "CPI Adjustments" vignette for inflation adjustment across years.
-- The "Data Sources and Methodology" vignette for detailed methodology and the F-33 crosswalk.
-- On the package website: articles on capital and facilities, CWIFT, COVID relief spending, community and economic context, data quality and comparability, and mapping school finance data.
+- The [CPI Adjustments](cpi-adjustments.html) vignette for inflation adjustment across years.
+- The [Data Sources and Methodology](data-sources-methods.html) vignette for detailed methodology and the F-33 crosswalk.
+- On the package website: articles on [capital and facilities](capital-facilities.html), [CWIFT](cwift.html), COVID relief spending, [community and economic context](community-context.html), data quality and comparability, and [mapping school finance data](mapping.html).
